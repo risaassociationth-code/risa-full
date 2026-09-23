@@ -46,7 +46,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
       }
     >
       <Header />
-      <main id="main" className="flex-1">
+      <main id="main" tabIndex={-1} className="flex-1 scroll-mt-20">
         {children}
       </main>
       <Footer />
