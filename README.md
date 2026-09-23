@@ -55,6 +55,17 @@ user already exists the seed leaves it alone.
 | `DATABASE_URL` | Postgres connection string |
 | `SESSION_SECRET` | 32+ random chars, signs the session cookie |
 | `NEXT_PUBLIC_SITE_URL` | Absolute base URL used by `sitemap.xml` and `robots.txt` |
+| `RISA_CODEX_ENABLED` | Optional. Set to `1` only after approving separate OpenAI API billing; unset keeps in-page AI disabled. |
+| `RISA_OPENAI_API_KEY` | Optional private server-side OpenAI API key for the admin-only AI chat. Never use a `NEXT_PUBLIC_` prefix or expose it in the browser. |
+
+The `/admin/codex` page is restricted to the `admin` role. Its task templates and
+copy-to-Codex handoff work without either optional variable. The in-page chat
+requires **both** variables, uses the Responses API with `gpt-6-sol`, and is
+separately billed by OpenAI. It is a distinct assistant, not a connection to
+an existing Codex desktop conversation. It can draft and review text but has
+no tools to edit or publish website content. No API calls occur while the
+feature is disabled. Set a spending limit in the OpenAI Platform before
+enabling it, and deploy the variables only to the intended Vercel environment.
 
 ## Scripts
 

@@ -6,7 +6,10 @@ export type NavGroup = { label: string; links: NavLink[] };
 export const ADMIN_NAV: NavGroup[] = [
   {
     label: "ภาพรวม",
-    links: [{ href: "/admin", label: "แดชบอร์ด" }],
+    links: [
+      { href: "/admin", label: "แดชบอร์ด" },
+      { href: "/admin/codex", label: "Codex" },
+    ],
   },
   {
     label: "เนื้อหาหน้าเว็บ",

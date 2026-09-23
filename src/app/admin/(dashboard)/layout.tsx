@@ -11,7 +11,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/admin"
 
   return (
     <div className="min-h-full lg:pl-60">
-      <Sidebar />
+      <Sidebar role={user.role} />
       <div className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-line bg-paper/95 pl-16 pr-4 backdrop-blur lg:pl-8 lg:pr-8">
         <Link
           href="/th"

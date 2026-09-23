@@ -13,7 +13,7 @@ function isActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function Sidebar() {
+export function Sidebar({ role }: { role: "admin" | "editor" }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -33,7 +33,7 @@ export function Sidebar() {
             {group.label}
           </p>
           <ul>
-            {group.links.map((link) => {
+            {group.links.filter((link) => role === "admin" || link.href !== "/admin/codex").map((link) => {
               const active = isActive(pathname, link.href);
               return (
                 <li key={link.href}>
