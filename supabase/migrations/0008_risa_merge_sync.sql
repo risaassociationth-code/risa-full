@@ -1,0 +1,1 @@
+-- Intentionally empty. Triggers the first merged RISA Supabase migration sync.
