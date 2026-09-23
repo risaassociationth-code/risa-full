@@ -11,13 +11,13 @@ export function StaffCard({ member, locale, preview = false }: { member: StaffPr
   const phone = member.phone.trim();
   return (
     <article className="min-w-0">
-      <div className="border border-[#b9af98] bg-[#eeeae1] p-2 shadow-[0_5px_18px_rgba(38,43,33,0.08)]">
-        <div className="border border-[#d3ccbc] bg-[#faf9f6] p-3 sm:p-4">
-          <div className="aspect-[4/5] overflow-hidden bg-[#e7e4dc]">
+      <div className="border border-line bg-surface p-2 shadow-[0_5px_18px_rgba(38,43,33,0.08)]">
+        <div className="border border-line bg-paper p-3 sm:p-4">
+          <div className="aspect-[4/5] overflow-hidden bg-surface-2">
             {photo ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={photo} alt={name} className="size-full object-cover" style={{ objectPosition: position }} loading="lazy" />
-            ) : <div className="flex size-full items-center justify-center text-[#8c8a7a]"><UserRound className="size-20" strokeWidth={1} aria-hidden /><span className="sr-only">{locale === "th" ? "ยังไม่มีรูปภาพ" : "No photo yet"}</span></div>}
+            ) : <div className="flex size-full items-center justify-center text-faint"><UserRound className="size-20" strokeWidth={1} aria-hidden /><span className="sr-only">{locale === "th" ? "ยังไม่มีรูปภาพ" : "No photo yet"}</span></div>}
           </div>
         </div>
       </div>

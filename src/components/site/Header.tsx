@@ -5,6 +5,7 @@ import { getLocale } from "@/lib/request";
 import { localePath, pick, t } from "@/lib/i18n";
 import { HeaderNav, type NavNode } from "./HeaderNav";
 import { LocaleSwitch } from "./LocaleSwitch";
+import { ThemeToggle } from "./ThemeToggle";
 
 export async function Header() {
   const [locale, nav, settings, map] = await Promise.all([
@@ -57,6 +58,7 @@ export async function Header() {
             ctaHref={ctaHref.startsWith("/") ? L(ctaHref) : ctaHref}
             menuLabel={t(locale, "menu")}
           />
+          <ThemeToggle locale={locale} />
           <LocaleSwitch current={locale} />
         </div>
       </div>

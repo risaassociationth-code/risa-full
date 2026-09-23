@@ -20,6 +20,13 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const locale = await getLocale();
   return (
     <html lang={locale} className={`${notoThaiLooped.variable} h-full`} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("risa-theme");var d=t==="dark"||(!t&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.theme=d?"dark":"light"}catch(e){}})()`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col antialiased">
         {children}
         <Toaster position="bottom-center" richColors closeButton />

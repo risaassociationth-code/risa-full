@@ -30,21 +30,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   if (!isLocale(locale)) notFound();
 
   return (
-    <div
-      lang={locale}
-      className="risa-public flex min-h-full flex-col"
-      style={
-        {
-          "--color-accent": "#796332",
-          "--color-ink": "#102b3c",
-          "--color-ink-2": "#344b58",
-          "--color-paper": "#faf9f6",
-          "--color-surface": "#f0efeb",
-          "--color-muted": "#616a70",
-          "--color-line": "#dadbd7",
-        } as React.CSSProperties
-      }
-    >
+    <div lang={locale} className="risa-public flex min-h-full flex-col">
       <Header />
       <main id="main" className="flex-1">
         {children}
