@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CurtainEntrance } from "./CurtainEntrance";
+import { RisingLineEntrance } from "./RisingLineEntrance";
 import { getContentMap, blockValue, getNav, getSettings } from "@/lib/content";
 import { getLocale } from "@/lib/request";
 import { localePath, pick, t } from "@/lib/i18n";
@@ -29,7 +29,7 @@ export async function Header() {
   const orgName = pick(settings, "org_name", locale);
 
   return (
-    <CurtainEntrance locale={locale}>
+    <RisingLineEntrance locale={locale}>
     <header className="sticky top-0 z-[60] border-b border-line bg-paper/92 backdrop-blur-md">
       <a
         href="#main"
@@ -61,6 +61,6 @@ export async function Header() {
         </div>
       </div>
     </header>
-    </CurtainEntrance>
+    </RisingLineEntrance>
   );
 }
