@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { AdminText } from '@/components/admin/AdminLanguage';
 
 export function Label({ className, ...props }: React.LabelHTMLAttributes<HTMLLabelElement>) {
   return (
@@ -36,11 +37,11 @@ export function Field({
   return (
     <div className={className}>
       <Label>
-        {label}
+        <AdminText>{label}</AdminText>
         {required && <span className="ml-0.5 text-red-600">*</span>}
       </Label>
       {children}
-      {hint && <p className="mt-1 text-xs text-faint">{hint}</p>}
+      {hint && <p className="mt-1 text-xs text-faint"><AdminText>{hint}</AdminText></p>}
     </div>
   );
 }

@@ -1,4 +1,6 @@
 "use client";
+import { AdminText } from "@/components/admin/AdminLanguage";
+
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -22,10 +24,7 @@ function LinkField({ label, hint, ...props }: React.ComponentProps<typeof Input>
 }
 
 function EditingHelp() {
-  return <p className="border-b border-line-soft px-5 py-3 text-sm leading-relaxed text-muted">
-    แก้ไขข้อความแล้วคลิกออกจากช่องเพื่อบันทึกอัตโนมัติ การเพิ่ม ลบ และเปลี่ยนลำดับมีผลทันที
-    ใช้ปุ่มลูกศรเพื่อเลื่อนรายการขึ้นหรือลง
-  </p>;
+  return <p className="border-b border-line-soft px-5 py-3 text-sm leading-relaxed text-muted"><AdminText>{"แก้ไขข้อความแล้วคลิกออกจากช่องเพื่อบันทึกอัตโนมัติ การเพิ่ม ลบ และเปลี่ยนลำดับมีผลทันที ใช้ปุ่มลูกศรเพื่อเลื่อนรายการขึ้นหรือลง"}</AdminText></p>;
 }
 
 type NavRow = {
@@ -77,8 +76,7 @@ export function NavItemsEditor({ items }: { items: NavRow[] }) {
             onClick={addRoot}
             className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-accent px-3 text-xs font-medium text-accent-ink hover:brightness-110"
           >
-            <Plus className="size-3.5" /> เพิ่มเมนูหลัก
-          </button>
+            <Plus className="size-3.5" /><AdminText>{"เพิ่มเมนูหลัก"}</AdminText></button>
         }
       />
       <EditingHelp />
@@ -111,7 +109,7 @@ export function NavItemsEditor({ items }: { items: NavRow[] }) {
                   onClick={() => addChild(root.id)}
                   className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-medium text-accent hover:bg-accent-soft"
                 >
-                  <Plus className="size-3" /> เพิ่มเมนูย่อยใต้ “{root.label_th}”
+                  <Plus className="size-3" /><AdminText>{"เพิ่มเมนูย่อยใต้ “"}</AdminText>{root.label_th}”
                 </button>
               </div>
             </div>
@@ -184,9 +182,7 @@ function NavRowEditor({
           type="checkbox"
           defaultChecked={row.new_tab}
           onChange={(e) => save({ new_tab: e.target.checked })}
-        />
-        เปิดลิงก์ในแท็บใหม่
-      </label>
+        /><AdminText>{"เปิดลิงก์ในแท็บใหม่"}</AdminText></label>
       <button
         type="button"
         disabled={pending}
@@ -265,7 +261,7 @@ export function FooterLinksEditor({ links }: { links: FooterRow[] }) {
                   onClick={() => addLink(col.value)}
                   className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-medium text-accent hover:bg-accent-soft"
                 >
-                  <Plus className="size-3" /> เพิ่มลิงก์ใน{col.label}
+                  <Plus className="size-3" /><AdminText>{"เพิ่มลิงก์ใน"}</AdminText>{col.label}
                 </button>
               </div>
             </div>

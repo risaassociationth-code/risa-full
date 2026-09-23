@@ -1,4 +1,6 @@
 "use client";
+import { AdminText } from "@/components/admin/AdminLanguage";
+
 
 import Link from "next/link";
 import { Plus } from "lucide-react";
@@ -11,8 +13,6 @@ export function AddPhotoButton({ albumId }: { albumId: string }) {
       href={`/admin/gallery/${albumId}/photos/new`}
       className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-accent px-3 text-xs font-medium text-accent-ink hover:brightness-110"
     >
-      <Plus className="size-3.5" />
-      เพิ่มภาพ
-    </Link>
+      <Plus className="size-3.5" /><AdminText>{"เพิ่มภาพ"}</AdminText></Link>
   );
 }

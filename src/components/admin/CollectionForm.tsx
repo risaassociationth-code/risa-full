@@ -1,4 +1,6 @@
 "use client";
+import { AdminText } from "@/components/admin/AdminLanguage";
+
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
@@ -110,9 +112,7 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
                 type="button"
                 onClick={() => set(name, slugify(seed))}
                 className="shrink-0 rounded-lg border border-line px-3 text-xs text-muted hover:bg-surface"
-              >
-                สร้างอัตโนมัติ
-              </button>
+              ><AdminText>{"สร้างอัตโนมัติ"}</AdminText></button>
             )}
           </div>
         );
@@ -207,7 +207,7 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
             ) : (
               <span className="flex flex-col items-center gap-1.5 text-muted">
                 <ImagePlus className="size-5" />
-                <span className="text-xs">เลือกรูปภาพ</span>
+                <span className="text-xs"><AdminText>{"เลือกรูปภาพ"}</AdminText></span>
               </span>
             )}
             <span className="absolute inset-0 bg-ink/0 transition-colors group-hover:bg-ink/10" />
@@ -226,9 +226,7 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
               type="button"
               onClick={() => setMediaField(name)}
               className="shrink-0 rounded-lg border border-line px-3 py-2.5 text-xs text-muted hover:bg-surface"
-            >
-              เลือกจากคลัง
-            </button>
+            ><AdminText>{"เลือกจากคลัง"}</AdminText></button>
           </div>
         );
       default:
@@ -251,7 +249,7 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
             {(["th", "en"] as const).map(lang => <button key={lang} type="button" aria-pressed={previewLocale === lang} onClick={() => setPreviewLocale(lang)} className="rounded border border-line px-3 py-1.5 text-sm aria-pressed:bg-accent aria-pressed:text-accent-ink">{lang === "th" ? "ไทย" : "English"}</button>)}
           </div>
           <div className="max-w-xs"><StaffCard preview locale={previewLocale} member={Object.fromEntries(["name_th", "name_en", "position_th", "position_en", "department_th", "department_en", "bio_th", "bio_en", "photo_url", "photo_position", "email", "phone"].map(key => [key, String(values[key] ?? "")])) as StaffProfile} /></div>
-          {values.photo_url ? <button type="button" onClick={() => set("photo_url", "")} className="mt-3 text-sm text-muted underline">เอารูปออกจากโปรไฟล์ (ไฟล์ยังอยู่ในคลัง)</button> : null}
+          {values.photo_url ? <button type="button" onClick={() => set("photo_url", "")} className="mt-3 text-sm text-muted underline"><AdminText>{"เอารูปออกจากโปรไฟล์ (ไฟล์ยังอยู่ในคลัง)"}</AdminText></button> : null}
         </div>
       </Card>}
       <Card>
@@ -285,9 +283,7 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
               onClick={() => setConfirmDelete(true)}
               className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-red-600 hover:bg-red-50"
             >
-              <Trash2 className="size-4" />
-              ลบ{config.singular}นี้
-            </button>
+              <Trash2 className="size-4" /><AdminText>{"ลบ"}</AdminText>{config.singular}<AdminText>{"นี้"}</AdminText></button>
           )}
         </div>
         <div className="flex items-center gap-2">
@@ -295,17 +291,13 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
             type="button"
             onClick={() => router.push(backHref)}
             className="rounded-lg px-4 py-2.5 text-sm text-muted hover:bg-surface"
-          >
-            ยกเลิก
-          </button>
+          ><AdminText>{"ยกเลิก"}</AdminText></button>
           <button
             type="submit"
             disabled={pending}
             className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-accent-ink hover:brightness-110 disabled:opacity-60"
           >
-            {pending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
-            บันทึก
-          </button>
+            {pending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}<AdminText>{"บันทึก"}</AdminText></button>
         </div>
       </div>
 
@@ -345,7 +337,7 @@ function IconPickerDialog({
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4">
       <button aria-label="ปิด" onClick={() => onOpenChange(false)} className="absolute inset-0 bg-ink/40 backdrop-blur-[2px]" />
       <div className="relative max-h-[70vh] w-[min(32rem,100%)] overflow-y-auto rounded-2xl border border-line bg-paper p-4 shadow-2xl">
-        <p className="mb-3 text-sm font-semibold">เลือกไอคอน</p>
+        <p className="mb-3 text-sm font-semibold"><AdminText>{"เลือกไอคอน"}</AdminText></p>
         <div className="grid grid-cols-6 gap-2 sm:grid-cols-8">
           {ICON_NAMES.map((name) => (
             <button

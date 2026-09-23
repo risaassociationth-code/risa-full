@@ -1,4 +1,6 @@
 "use client";
+import { AdminText } from "@/components/admin/AdminLanguage";
+
 
 import { useEffect, useRef, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -79,8 +81,8 @@ export function MediaPickerDialog({ open, onOpenChange, onSelect, kind = "image"
         <Dialog.Overlay className="fixed inset-0 z-[90] bg-ink/40 backdrop-blur-[2px]" />
         <Dialog.Content className="fixed left-1/2 top-1/2 z-[91] flex max-h-[85vh] w-[min(56rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-line bg-paper shadow-2xl">
           <header className="flex flex-wrap items-center gap-3 border-b border-line px-5 py-3.5">
-            <Dialog.Title className="text-sm font-semibold">คลังไฟล์ / Media library</Dialog.Title>
-            <Dialog.Description className="sr-only">เลือกรูปภาพหรือเอกสาร · {UPLOAD_SIZE_HINT}</Dialog.Description>
+            <Dialog.Title className="text-sm font-semibold"><AdminText>{"คลังไฟล์ / Media library"}</AdminText></Dialog.Title>
+            <Dialog.Description className="sr-only"><AdminText>{"เลือกรูปภาพหรือเอกสาร ·"}</AdminText>{UPLOAD_SIZE_HINT}</Dialog.Description>
             <div className="relative ml-auto">
               <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-faint" />
               <input
@@ -92,9 +94,7 @@ export function MediaPickerDialog({ open, onOpenChange, onSelect, kind = "image"
               />
             </div>
             <Button size="sm" variant="accent" onClick={() => inputRef.current?.click()} disabled={uploading}>
-              {uploading ? <Loader2 className="size-3.5 animate-spin" /> : <Upload className="size-3.5" />}
-              อัปโหลด
-            </Button>
+              {uploading ? <Loader2 className="size-3.5 animate-spin" /> : <Upload className="size-3.5" />}<AdminText>{"อัปโหลด"}</AdminText></Button>
             <input
               ref={inputRef}
               type="file"
@@ -119,10 +119,8 @@ export function MediaPickerDialog({ open, onOpenChange, onSelect, kind = "image"
             ) : items.length === 0 ? (
               <div className="flex flex-col items-center gap-3 py-14 text-center">
                 <ImagePlus className="size-8 text-faint" />
-                <p className="text-sm text-muted">ยังไม่มีไฟล์ในคลัง — อัปโหลดไฟล์แรกได้เลย</p>
-                <Button size="sm" variant="outline" onClick={() => inputRef.current?.click()}>
-                  เลือกไฟล์
-                </Button>
+                <p className="text-sm text-muted"><AdminText>{"ยังไม่มีไฟล์ในคลัง — อัปโหลดไฟล์แรกได้เลย"}</AdminText></p>
+                <Button size="sm" variant="outline" onClick={() => inputRef.current?.click()}><AdminText>{"เลือกไฟล์"}</AdminText></Button>
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 md:grid-cols-5">

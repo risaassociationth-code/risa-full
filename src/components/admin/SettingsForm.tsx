@@ -1,4 +1,6 @@
 "use client";
+import { AdminText } from "@/components/admin/AdminLanguage";
+
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -175,9 +177,7 @@ export function SettingsForm({ initial }: { initial: SiteSettings }) {
           disabled={pending}
           className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-accent-ink shadow-lg hover:brightness-110 disabled:opacity-60"
         >
-          {pending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
-          บันทึกการตั้งค่า
-        </button>
+          {pending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}<AdminText>{"บันทึกการตั้งค่า"}</AdminText></button>
       </div>
 
       <MediaPickerDialog

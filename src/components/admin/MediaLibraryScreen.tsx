@@ -1,4 +1,6 @@
 "use client";
+import { AdminText } from "@/components/admin/AdminLanguage";
+
 
 import { useRef, useState } from "react";
 import { toast } from "sonner";
@@ -64,7 +66,7 @@ export function MediaLibraryScreen({ initial }: { initial: MediaItem[] }) {
 
   return (
     <div>
-      <p className="mb-4 text-sm text-muted">รูปภาพและเอกสารสำหรับเว็บไซต์ · {UPLOAD_SIZE_HINT}</p>
+      <p className="mb-4 text-sm text-muted"><AdminText>{"รูปภาพและเอกสารสำหรับเว็บไซต์ ·"}</AdminText>{UPLOAD_SIZE_HINT}</p>
       <div className="mb-5 flex flex-wrap items-center gap-2">
         <div className="relative">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-faint" />
@@ -82,9 +84,7 @@ export function MediaLibraryScreen({ initial }: { initial: MediaItem[] }) {
           disabled={uploading}
           className="ml-auto inline-flex h-9 items-center gap-1.5 rounded-lg bg-accent px-3.5 text-sm font-medium text-accent-ink hover:brightness-110 disabled:opacity-60"
         >
-          {uploading ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
-          อัปโหลดไฟล์
-        </button>
+          {uploading ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}<AdminText>{"อัปโหลดไฟล์"}</AdminText></button>
         <input ref={inputRef} type="file" multiple hidden onChange={(e) => upload(e.target.files)} />
       </div>
 

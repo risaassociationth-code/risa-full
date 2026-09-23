@@ -1,4 +1,6 @@
 "use client";
+import { AdminText } from "@/components/admin/AdminLanguage";
+
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -29,8 +31,7 @@ export function UsersScreen({ initial, currentUserId }: { initial: User[]; curre
               onClick={() => setShowNew((v) => !v)}
               className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-accent px-3 text-xs font-medium text-accent-ink hover:brightness-110"
             >
-              <Plus className="size-3.5" /> เพิ่มผู้ใช้
-            </button>
+              <Plus className="size-3.5" /><AdminText>{"เพิ่มผู้ใช้"}</AdminText></button>
           }
         />
         {showNew && (
@@ -86,8 +87,8 @@ function NewUserForm({ onCreated, onCancel }: { onCreated: (u: User) => void; on
       </Field>
       <Field label="สิทธิ์การใช้งาน" required>
         <Select value={role} onChange={(e) => setRole(e.target.value as "admin" | "editor")}>
-          <option value="editor">ผู้แก้ไข</option>
-          <option value="admin">ผู้ดูแลระบบ</option>
+          <option value="editor"><AdminText>{"ผู้แก้ไข"}</AdminText></option>
+          <option value="admin"><AdminText>{"ผู้ดูแลระบบ"}</AdminText></option>
         </Select>
       </Field>
       <Field label="รหัสผ่านเริ่มต้น" required hint="อย่างน้อย 8 ตัวอักษร">
@@ -95,10 +96,8 @@ function NewUserForm({ onCreated, onCancel }: { onCreated: (u: User) => void; on
       </Field>
       <div className="flex items-end gap-2 sm:col-span-2">
         <button type="submit" disabled={pending} className="inline-flex h-10 items-center gap-2 rounded-lg bg-ink px-4 text-sm font-medium text-white disabled:opacity-60">
-          {pending && <Loader2 className="size-4 animate-spin" />}
-          บันทึก
-        </button>
-        <button type="button" onClick={onCancel} className="h-10 rounded-lg px-4 text-sm text-muted hover:bg-surface">ยกเลิก</button>
+          {pending && <Loader2 className="size-4 animate-spin" />}<AdminText>{"บันทึก"}</AdminText></button>
+        <button type="button" onClick={onCancel} className="h-10 rounded-lg px-4 text-sm text-muted hover:bg-surface"><AdminText>{"ยกเลิก"}</AdminText></button>
       </div>
     </form>
   );
@@ -142,7 +141,7 @@ function UserRow({
   return (
     <div className="flex flex-wrap items-center gap-3 px-5 py-3.5">
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium">{user.name} {isSelf && <span className="text-xs text-faint">(คุณ)</span>}</p>
+        <p className="text-sm font-medium">{user.name} {isSelf && <span className="text-xs text-faint"><AdminText>{"(คุณ)"}</AdminText></span>}</p>
         <p className="truncate text-[13px] text-muted">@{user.username}</p>
       </div>
       <p className="hidden shrink-0 text-xs text-faint sm:block">
@@ -154,8 +153,8 @@ function UserRow({
         disabled={pending}
         className="h-8 w-32 shrink-0 text-xs"
       >
-        <option value="editor">ผู้แก้ไข</option>
-        <option value="admin">ผู้ดูแลระบบ</option>
+        <option value="editor"><AdminText>{"ผู้แก้ไข"}</AdminText></option>
+        <option value="admin"><AdminText>{"ผู้ดูแลระบบ"}</AdminText></option>
       </Select>
       <button
         type="button"
@@ -191,8 +190,8 @@ function UserRow({
         <div className="fixed inset-0 z-[95] flex items-center justify-center p-4">
           <button aria-label="ปิด" onClick={() => setConfirmReset(false)} className="absolute inset-0 bg-ink/40 backdrop-blur-[2px]" />
           <div className="relative w-[min(22rem,100%)] rounded-2xl border border-line bg-paper p-5 shadow-2xl">
-            <p className="text-[15px] font-semibold">ตั้งรหัสผ่านใหม่</p>
-            <p className="mt-1 text-sm text-muted">สำหรับ @{user.username}</p>
+            <p className="text-[15px] font-semibold"><AdminText>{"ตั้งรหัสผ่านใหม่"}</AdminText></p>
+            <p className="mt-1 text-sm text-muted"><AdminText>{"สำหรับ @"}</AdminText>{user.username}</p>
             <Input
               type="text"
               value={newPassword}
@@ -202,16 +201,14 @@ function UserRow({
               autoFocus
             />
             <div className="mt-4 flex justify-end gap-2">
-              <button type="button" onClick={() => setConfirmReset(false)} className="rounded-lg px-3.5 py-2 text-sm text-muted hover:bg-surface">ยกเลิก</button>
+              <button type="button" onClick={() => setConfirmReset(false)} className="rounded-lg px-3.5 py-2 text-sm text-muted hover:bg-surface"><AdminText>{"ยกเลิก"}</AdminText></button>
               <button
                 type="button"
                 onClick={resetPassword}
                 disabled={pending || newPassword.length < 8}
                 className="inline-flex items-center gap-1.5 rounded-lg bg-ink px-3.5 py-2 text-sm font-medium text-white disabled:opacity-50"
               >
-                {pending && <Loader2 className="size-3.5 animate-spin" />}
-                ยืนยัน
-              </button>
+                {pending && <Loader2 className="size-3.5 animate-spin" />}<AdminText>{"ยืนยัน"}</AdminText></button>
             </div>
           </div>
         </div>

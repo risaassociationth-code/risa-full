@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { AdminText } from './AdminLanguage';
 
 /** Small presentational pieces shared by every admin screen. */
 
@@ -14,8 +15,8 @@ export function PageHeader({
   return (
     <header className="admin-page-header mb-6 flex flex-wrap items-start justify-between gap-4">
       <div className="min-w-0">
-        <h1 className="text-xl font-semibold tracking-[-0.01em]">{title}</h1>
-        {description && <p className="mt-1 max-w-2xl text-[13px] text-muted">{description}</p>}
+        <h1 className="text-xl font-semibold tracking-[-0.01em]"><AdminText>{title}</AdminText></h1>
+        {description && <p className="mt-1 max-w-2xl text-[13px] text-muted"><AdminText>{description}</AdminText></p>}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
     </header>
@@ -53,7 +54,7 @@ export function CardHead({
       )}
     >
       <div className="min-w-0">
-        <h2 className="text-sm font-semibold">{title}</h2>
+        <h2 className="text-sm font-semibold">{typeof title==='string'?<AdminText>{title}</AdminText>:title}</h2>
         {hint && <p className="mt-0.5 text-xs text-faint">{hint}</p>}
       </div>
       {actions && <div className="flex items-center gap-2">{actions}</div>}
@@ -79,8 +80,8 @@ export function EmptyState({
         className,
       )}
     >
-      <p className="text-sm font-medium text-ink-2">{title}</p>
-      {hint && <p className="max-w-sm text-[13px] text-muted">{hint}</p>}
+      <p className="text-sm font-medium text-ink-2"><AdminText>{title}</AdminText></p>
+      {hint && <p className="max-w-sm text-[13px] text-muted"><AdminText>{hint}</AdminText></p>}
       {action}
     </div>
   );

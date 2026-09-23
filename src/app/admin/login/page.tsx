@@ -1,3 +1,5 @@
+
+import { AdminText } from "@/components/admin/AdminLanguage";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { LoginForm } from "@/components/admin/LoginForm";
@@ -20,20 +22,20 @@ export default async function LoginPage({ searchParams }: PageProps<"/admin/logi
         </Link>
         <div>
           <span className="text-[11px] tracking-[.2em] text-[#dcc99c]">RISA / CONTENT STUDIO</span>
-          <h2>ทุกเรื่องราวของ RISA<br />เริ่มต้นได้ที่นี่</h2>
-          <p>พื้นที่สำหรับทีมงานในการเผยแพร่ข่าวสาร กิจกรรม และองค์ความรู้ของสมาคม</p>
+          <h2><AdminText>{"ทุกเรื่องราวของ RISA"}</AdminText><br /><AdminText>{"เริ่มต้นได้ที่นี่"}</AdminText></h2>
+          <p><AdminText>{"พื้นที่สำหรับทีมงานในการเผยแพร่ข่าวสาร กิจกรรม และองค์ความรู้ของสมาคม"}</AdminText></p>
         </div>
         <p className="text-xs">RESEARCH · KNOWLEDGE · COMMUNITY</p>
       </section>
       <main className="admin-login-form">
         <div className="w-full max-w-sm">
           <p className="admin-kicker mb-4">WELCOME BACK</p>
-          <h1 className="mb-3 text-3xl font-normal">เข้าสู่ระบบผู้ดูแล</h1>
-          <p className="mb-8 text-sm text-muted">จัดการเนื้อหาและอัปเดตเว็บไซต์ RISA</p>
+          <h1 className="mb-3 text-3xl font-normal"><AdminText>{"เข้าสู่ระบบผู้ดูแล"}</AdminText></h1>
+          <p className="mb-8 text-sm text-muted"><AdminText>{"จัดการเนื้อหาและอัปเดตเว็บไซต์ RISA"}</AdminText></p>
           <LoginForm next={target} />
-          <p className="mt-6 border-t border-line pt-5 text-xs text-muted">ยังไม่มีบัญชีหรือลืมรหัสผ่าน? ติดต่อผู้ดูแลระบบของสมาคม</p>
+          <p className="mt-6 border-t border-line pt-5 text-xs text-muted"><AdminText>{"ยังไม่มีบัญชีหรือลืมรหัสผ่าน? ติดต่อผู้ดูแลระบบของสมาคม"}</AdminText></p>
           <Link href="/th" className="mt-8 inline-flex items-center gap-2 text-sm text-muted hover:text-ink">
-            <ArrowLeft className="size-4" /> กลับสู่เว็บไซต์ <ArrowUpRight className="size-3.5" />
+            <ArrowLeft className="size-4" /><AdminText>{"กลับสู่เว็บไซต์"}</AdminText><ArrowUpRight className="size-3.5" />
           </Link>
         </div>
       </main>

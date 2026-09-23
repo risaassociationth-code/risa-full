@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ADMIN_NAV } from "./nav";
+import { AdminText } from './AdminLanguage';
 
 function isActive(pathname: string, href: string): boolean {
   if (href === "/admin") return pathname === "/admin";
@@ -30,7 +31,7 @@ export function Sidebar() {
       {ADMIN_NAV.map((group) => (
         <div key={group.label} className="mt-5 first:mt-2">
           <p className="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-faint">
-            {group.label}
+            <AdminText>{group.label}</AdminText>
           </p>
           <ul>
             {group.links.map((link) => {
@@ -47,7 +48,7 @@ export function Sidebar() {
                         : "text-ink-2 hover:bg-surface hover:text-ink",
                     )}
                   >
-                    {link.label}
+                    <AdminText>{link.label}</AdminText>
                   </Link>
                 </li>
               );
@@ -69,7 +70,7 @@ export function Sidebar() {
         priority
       />
       <span className="text-[10px] tracking-[.2em] text-faint">CONTENT STUDIO</span>
-      <span className="sr-only">ไปยังแดชบอร์ด</span>
+      <span className="sr-only"><AdminText>{"ไปยังแดชบอร์ด"}</AdminText></span>
     </Link>
   );
 

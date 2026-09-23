@@ -1,3 +1,5 @@
+
+import { AdminText } from "@/components/admin/AdminLanguage";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ExternalLink, LogOut } from "lucide-react";
@@ -18,9 +20,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/admin"
           target="_blank"
           className="inline-flex items-center gap-1.5 text-[13px] text-muted hover:text-ink"
         >
-          <ExternalLink className="size-3.5" />
-          ดูเว็บไซต์
-        </Link>
+          <ExternalLink className="size-3.5" /><AdminText>{"ดูเว็บไซต์"}</AdminText></Link>
         <div className="ml-auto flex items-center gap-3">
           <div className="text-right leading-tight">
             <p className="text-[13px] font-medium">{user.name || user.username}</p>

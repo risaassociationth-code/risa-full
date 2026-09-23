@@ -1,4 +1,6 @@
 "use client";
+import { AdminText } from "@/components/admin/AdminLanguage";
+
 
 import { useActionState } from "react";
 import { Loader2, Lock, UserRound } from "lucide-react";
@@ -35,9 +37,7 @@ export function LoginForm({ next }: { next: string }) {
         disabled={pending}
         className="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-ink text-sm font-medium text-white transition-colors hover:bg-ink-2 disabled:opacity-60"
       >
-        {pending && <Loader2 className="size-4 animate-spin" />}
-        เข้าสู่ระบบ
-      </button>
+        {pending && <Loader2 className="size-4 animate-spin" />}<AdminText>{"เข้าสู่ระบบ"}</AdminText></button>
     </form>
   );
 }

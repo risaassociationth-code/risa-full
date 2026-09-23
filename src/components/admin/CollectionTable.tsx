@@ -1,4 +1,6 @@
 "use client";
+import { AdminText } from "@/components/admin/AdminLanguage";
+
 
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
@@ -172,8 +174,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
             href={newHref ?? `${config.adminPath}/new`}
             className="ml-auto inline-flex h-9 items-center gap-1.5 rounded-lg bg-accent px-3.5 text-sm font-medium text-accent-ink hover:brightness-110"
           >
-            <Plus className="size-4" />
-            เพิ่ม{config.singular}
+            <Plus className="size-4" /><AdminText>{"เพิ่ม"}</AdminText>{config.singular}
           </Link>
         )}
       </div>
@@ -189,14 +190,14 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
             <table className="w-full min-w-[36rem] text-sm">
               <thead>
                 <tr className="border-b border-line-soft text-left text-xs font-semibold uppercase tracking-wide text-faint">
-                  {config.hasSort && <th className="w-16 px-4 py-2.5">ลำดับ</th>}
+                  {config.hasSort && <th className="w-16 px-4 py-2.5"><AdminText>{"ลำดับ"}</AdminText></th>}
                   {config.columns.map((col) => (
                     <th key={col.name} className={cn("px-4 py-2.5", col.className)}>
-                      {col.label}
+                      <AdminText>{col.label}</AdminText>
                     </th>
                   ))}
-                  {config.hasStatus && <th className="px-4 py-2.5">สถานะ</th>}
-                  <th className="px-4 py-2.5 text-right">จัดการ</th>
+                  {config.hasStatus && <th className="px-4 py-2.5"><AdminText>{"สถานะ"}</AdminText></th>}
+                  <th className="px-4 py-2.5 text-right"><AdminText>{"จัดการ"}</AdminText></th>
                 </tr>
               </thead>
               <tbody>
@@ -276,7 +277,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                             </div>
                           ) : (
                             <Link href={linkFor(id)} className="line-clamp-2 font-medium text-ink hover:text-accent">
-                              {cellText(row, col.name, !!col.bilingual) || <span className="text-faint">(ไม่มีชื่อ)</span>}
+                              {cellText(row, col.name, !!col.bilingual) || <span className="text-faint"><AdminText>{"(ไม่มีชื่อ)"}</AdminText></span>}
                             </Link>
                           )}
                         </td>

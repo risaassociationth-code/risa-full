@@ -1,4 +1,6 @@
 "use client";
+import { AdminText } from "@/components/admin/AdminLanguage";
+
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -86,8 +88,7 @@ function SectionCard({
           disabled={pending || dirtyKeys.length === 0}
           className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-accent px-3 text-xs font-medium text-accent-ink disabled:opacity-40"
         >
-          {pending ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" />}
-          บันทึก{dirtyKeys.length > 0 ? ` (${dirtyKeys.length})` : ""}
+          {pending ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" />}<AdminText>{"บันทึก"}</AdminText>{dirtyKeys.length > 0 ? ` (${dirtyKeys.length})` : ""}
         </button>
       </div>
       <div className="space-y-5 p-5">

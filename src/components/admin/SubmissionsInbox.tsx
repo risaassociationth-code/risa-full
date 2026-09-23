@@ -1,4 +1,6 @@
 "use client";
+import { AdminText } from "@/components/admin/AdminLanguage";
+
 
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -57,9 +59,7 @@ export function SubmissionsInbox({ items }: { items: Submission[] }) {
           href={`/admin/submissions/export${tab !== "all" ? `?kind=${tab}` : ""}`}
           className="ml-auto inline-flex h-8 items-center gap-1.5 rounded-lg border border-line px-3 text-xs font-medium text-ink-2 hover:bg-surface"
         >
-          <Download className="size-3.5" />
-          ส่งออก CSV
-        </a>
+          <Download className="size-3.5" /><AdminText>{"ส่งออก CSV"}</AdminText></a>
       </div>
 
       {filtered.length === 0 ? (
@@ -157,7 +157,7 @@ function SubmissionRow({
           </div>
 
           <div className="mt-4">
-            <label className="mb-1 block text-xs font-medium text-ink-2">หมายเหตุภายใน</label>
+            <label className="mb-1 block text-xs font-medium text-ink-2"><AdminText>{"หมายเหตุภายใน"}</AdminText></label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

@@ -1,4 +1,6 @@
 "use client";
+import { AdminText } from "@/components/admin/AdminLanguage";
+
 
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
@@ -49,13 +51,13 @@ export function AuditLog({ entries }: { entries: Entry[] }) {
             {openId === e.id && (
               <div className="grid gap-4 border-t border-line-soft bg-surface/50 px-5 py-4 sm:grid-cols-2">
                 <div>
-                  <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-faint">ก่อนแก้ไข</p>
+                  <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-faint"><AdminText>{"ก่อนแก้ไข"}</AdminText></p>
                   <pre className="max-h-56 overflow-auto rounded-lg bg-paper p-3 text-[11px] leading-relaxed text-ink-2">
                     {JSON.stringify(e.before, null, 2) ?? "—"}
                   </pre>
                 </div>
                 <div>
-                  <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-faint">หลังแก้ไข</p>
+                  <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-faint"><AdminText>{"หลังแก้ไข"}</AdminText></p>
                   <pre className="max-h-56 overflow-auto rounded-lg bg-paper p-3 text-[11px] leading-relaxed text-ink-2">
                     {JSON.stringify(e.after, null, 2) ?? "—"}
                   </pre>

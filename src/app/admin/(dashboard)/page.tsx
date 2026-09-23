@@ -1,3 +1,5 @@
+
+import { AdminText } from "@/components/admin/AdminLanguage";
 import Link from "next/link";
 import { ArrowUpRight, FilePenLine, ImagePlus, Plus } from "lucide-react";
 import { sql } from "@/lib/db";
@@ -39,13 +41,13 @@ export default async function DashboardPage() {
 
       <div className="mb-10 grid gap-4 xl:grid-cols-3">
         <Link href="/admin/news/new" className="admin-quick-link">
-          <Plus className="size-6" /><div><h2 className="text-base font-medium">เขียนข่าวใหม่</h2><p>เพิ่มหัวข้อ เนื้อหา และภาพประกอบ</p></div><ArrowUpRight className="size-4" />
+          <Plus className="size-6" /><div><h2 className="text-base font-medium"><AdminText>{"เขียนข่าวใหม่"}</AdminText></h2><p><AdminText>{"เพิ่มหัวข้อ เนื้อหา และภาพประกอบ"}</AdminText></p></div><ArrowUpRight className="size-4" />
         </Link>
         <Link href="/admin/media" className="admin-quick-link">
-          <ImagePlus className="size-6" /><div><h2 className="text-base font-medium">อัปโหลดไฟล์</h2><p>เก็บรูปภาพและเอกสารไว้พร้อมใช้งาน</p></div><ArrowUpRight className="size-4" />
+          <ImagePlus className="size-6" /><div><h2 className="text-base font-medium"><AdminText>{"อัปโหลดไฟล์"}</AdminText></h2><p><AdminText>{"เก็บรูปภาพและเอกสารไว้พร้อมใช้งาน"}</AdminText></p></div><ArrowUpRight className="size-4" />
         </Link>
         <Link href="/admin/pages" className="admin-quick-link">
-          <FilePenLine className="size-6" /><div><h2 className="text-base font-medium">แก้ไขหน้าเว็บไซต์</h2><p>ปรับข้อความและรูปภาพในแต่ละหน้า</p></div><ArrowUpRight className="size-4" />
+          <FilePenLine className="size-6" /><div><h2 className="text-base font-medium"><AdminText>{"แก้ไขหน้าเว็บไซต์"}</AdminText></h2><p><AdminText>{"ปรับข้อความและรูปภาพในแต่ละหน้า"}</AdminText></p></div><ArrowUpRight className="size-4" />
         </Link>
       </div>
 
@@ -65,7 +67,7 @@ export default async function DashboardPage() {
           className="admin-metric"
         >
           <strong className="text-accent">{submissionTotal[0]?.n ?? 0}</strong>
-          <p className="mt-1 text-sm text-muted">ข้อความใหม่</p>
+          <p className="mt-1 text-sm text-muted"><AdminText>{"ข้อความใหม่"}</AdminText></p>
         </Link>
       </div>
 
@@ -74,9 +76,7 @@ export default async function DashboardPage() {
           <CardHead
             title="ข้อความใหม่"
             actions={
-              <Link href="/admin/submissions" className="text-xs font-medium text-accent hover:underline">
-                ดูทั้งหมด
-              </Link>
+              <Link href="/admin/submissions" className="text-xs font-medium text-accent hover:underline"><AdminText>{"ดูทั้งหมด"}</AdminText></Link>
             }
           />
           {newSubmissions.length === 0 ? (
@@ -98,9 +98,7 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHead title="ประวัติการแก้ไขล่าสุด" actions={
-            <Link href="/admin/audit" className="text-xs font-medium text-accent hover:underline">
-              ดูทั้งหมด
-            </Link>
+            <Link href="/admin/audit" className="text-xs font-medium text-accent hover:underline"><AdminText>{"ดูทั้งหมด"}</AdminText></Link>
           } />
           {recentAudit.length === 0 ? (
             <EmptyState title="ยังไม่มีการแก้ไข" className="border-0" />

@@ -1,4 +1,6 @@
 "use client";
+import { AdminText } from "@/components/admin/AdminLanguage";
+
 
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { Loader2 } from "lucide-react";
@@ -35,9 +37,7 @@ export function ConfirmDialog({
             <AlertDialog.Cancel
               disabled={pending}
               className="rounded-lg px-3.5 py-2 text-sm text-muted hover:bg-surface disabled:opacity-50"
-            >
-              ยกเลิก
-            </AlertDialog.Cancel>
+            ><AdminText>{"ยกเลิก"}</AdminText></AlertDialog.Cancel>
             <button
               type="button"
               disabled={pending}
