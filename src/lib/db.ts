@@ -21,7 +21,9 @@ const rawSql =
     prepare: false,
   });
 
-if (process.env.NODE_ENV !== "production") global.__risa_sql = rawSql;
+// Vercel can reuse a server instance for many requests. Keep its pool alive
+// for that instance instead of opening a new database client on every render.
+global.__risa_sql = rawSql;
 
 const QUERY_TIMEOUT_MS = 15_000;
 
