@@ -4,7 +4,7 @@ import { MsicFeature } from "@/components/site/MsicFeature";
 import { content } from "@/lib/content";
 import { getLocale } from "@/lib/request";
 import { t } from "@/lib/i18n";
-import { getActivities } from "@/lib/queries";
+import { getActivities, getManagedMmsActivityIds } from "@/lib/queries";
 import { PageHero } from "@/components/site/PageHero";
 import { Section } from "@/components/site/Section";
 import { ActivityCard } from "@/components/site/Cards";
@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ActivitiesPage() {
-  const [locale, all] = await Promise.all([getLocale(), getActivities(100)]);
+  const [locale, all, managedMmsIds] = await Promise.all([getLocale(), getActivities(100), getManagedMmsActivityIds()]);
   const today = new Date().toISOString().slice(0, 10);
   const upcoming = all.filter((a) => (a.end_date ?? a.start_date ?? "") >= today);
   const past = all.filter((a) => (a.end_date ?? a.start_date ?? "") < today);
@@ -34,7 +34,7 @@ export default async function ActivitiesPage() {
 
       <Section>
         <MsicFeature locale={locale} />
-        <MmsArchiveCards locale={locale} categories={['2']} />
+        <MmsArchiveCards locale={locale} categories={['2']} excludedIds={managedMmsIds} />
         {all.length > 0 && (
           <div className="space-y-14">
             {[

@@ -119,6 +119,11 @@ export const getActivities = cache(async (limit = 50, offset = 0) =>
   sql<Activity[]>`select * from activities where status = 'published'
                   order by start_date desc nulls last, created_at desc limit ${limit} offset ${offset}`);
 
+/** Archive cards disappear once an editor claims a partner event, even as Draft. */
+export const getManagedMmsActivityIds = cache(async () =>
+  (await sql<{ slug: string }[]>`select slug from activities where slug like 'mms-hub-%'`)
+    .map((row) => row.slug.replace(/^mms-hub-/, '')));
+
 export const getUpcomingActivities = cache(async (limit = 3) =>
   sql<Activity[]>`select * from activities where status = 'published'
                   and (end_date is null or end_date >= current_date)

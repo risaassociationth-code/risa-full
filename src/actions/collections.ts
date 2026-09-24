@@ -5,7 +5,7 @@ import { sql } from "@/lib/db";
 import { audit, requireUser } from "@/lib/auth";
 import { sanitizeHtml, slugify } from "@/lib/utils";
 import { validateStaff } from "@/lib/staff";
-import { mmsNews } from "@/lib/mms-import";
+import { mmsActivities, mmsNews } from "@/lib/mms-import";
 import {
   columnKinds,
   getCollection,
@@ -190,7 +190,7 @@ export async function updateRow(
       if (error) return { ok: false, error };
     }
     await ensureSlug(config, payload, id);
-    if (key === "news" && mmsNews.some((article) => article.slug === before.slug)) {
+    if ((key === "news" ? mmsNews : key === "activities" ? mmsActivities : []).some((article) => article.slug === before.slug)) {
       // Keep the source slug so a Draft reliably hides the archive version.
       payload.slug = String(before.slug);
     }
@@ -222,8 +222,8 @@ export async function deleteRow(key: string, id: string): Promise<ActionResult> 
       select * from ${sql(config.table)} where id = ${id} limit 1`;
     if (!before) return { ok: false, error: "ไม่พบรายการที่ต้องการลบ" };
 
-    if (key === "news" && mmsNews.some((article) => article.slug === before.slug)) {
-      return { ok: false, error: "ข่าวจาก MMS Hub ต้องใช้สถานะฉบับร่างเพื่อซ่อนจากหน้าข่าว" };
+    if ((key === "news" ? mmsNews : key === "activities" ? mmsActivities : []).some((article) => article.slug === before.slug)) {
+      return { ok: false, error: "เนื้อหาจาก MMS Hub ต้องใช้สถานะฉบับร่างเพื่อซ่อนจากหน้าเว็บ" };
     }
 
     await sql`delete from ${sql(config.table)} where id = ${id}`;
