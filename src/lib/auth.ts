@@ -112,9 +112,23 @@ export async function audit(
   before: unknown,
   after: unknown,
 ) {
-  await sql`
-    insert into audit_log (actor_email, action, entity, entity_id, before, after)
-    values (${actorEmail}, ${action}, ${entity}, ${entityId},
-            ${before ? sql.json(before as never) : null},
-            ${after ? sql.json(after as never) : null})`;
+  await sql.begin(async (tx) => {
+    // Older imported audit rows may have explicit IDs beyond the sequence's
+    // current value. Serialize admin history writes while bringing it forward.
+    await tx`select pg_advisory_xact_lock(734029, 1)`;
+    await tx`
+      select setval(
+        pg_get_serial_sequence('audit_log', 'id'),
+        greatest(
+          coalesce((select max(id) from audit_log), 0),
+          nextval(pg_get_serial_sequence('audit_log', 'id'))
+        ),
+        true
+      )`;
+    await tx`
+      insert into audit_log (actor_email, action, entity, entity_id, before, after)
+      values (${actorEmail}, ${action}, ${entity}, ${entityId},
+              ${before ? tx.json(before as never) : null},
+              ${after ? tx.json(after as never) : null})`;
+  });
 }
