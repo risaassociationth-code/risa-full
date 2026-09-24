@@ -5,6 +5,7 @@ import { getLocale } from "@/lib/request";
 import { localePath, pick, t } from "@/lib/i18n";
 import { HeaderNav, type NavNode } from "./HeaderNav";
 import { LocaleSwitch } from "./LocaleSwitch";
+import { singleHomeLink } from "@/lib/navigation";
 
 export async function Header() {
   const [locale, nav, settings, map] = await Promise.all([
@@ -12,7 +13,7 @@ export async function Header() {
   ]);
   const L = (href: string) => localePath(locale, href);
 
-  const items: NavNode[] = nav.map((n) => ({
+  const items: NavNode[] = singleHomeLink(nav.map((n) => ({
     label: pick(n, "label", locale),
     href: n.href ? L(n.href) : "",
     newTab: n.new_tab,
@@ -22,7 +23,7 @@ export async function Header() {
       newTab: c.new_tab,
       children: [],
     })),
-  }));
+  })));
 
   const ctaLabel = blockValue(map.get("global.header.cta_label"), locale);
   const ctaHref = blockValue(map.get("global.header.cta_href"), locale);
