@@ -5,6 +5,7 @@ import { sql } from "@/lib/db";
 import { audit, requireUser } from "@/lib/auth";
 import { sanitizeHtml, slugify } from "@/lib/utils";
 import { validateStaff } from "@/lib/staff";
+import { mmsNews } from "@/lib/mms-import";
 import {
   columnKinds,
   getCollection,
@@ -189,6 +190,10 @@ export async function updateRow(
       if (error) return { ok: false, error };
     }
     await ensureSlug(config, payload, id);
+    if (key === "news" && mmsNews.some((article) => article.slug === before.slug)) {
+      // Keep the source slug so a Draft reliably hides the archive version.
+      payload.slug = String(before.slug);
+    }
     if (config.hasStatus) {
       const status = readStatus(values);
       if (status) payload.status = status;
@@ -216,6 +221,10 @@ export async function deleteRow(key: string, id: string): Promise<ActionResult> 
     const [before] = await sql<Row[]>`
       select * from ${sql(config.table)} where id = ${id} limit 1`;
     if (!before) return { ok: false, error: "ไม่พบรายการที่ต้องการลบ" };
+
+    if (key === "news" && mmsNews.some((article) => article.slug === before.slug)) {
+      return { ok: false, error: "ข่าวจาก MMS Hub ต้องใช้สถานะฉบับร่างเพื่อซ่อนจากหน้าข่าว" };
+    }
 
     await sql`delete from ${sql(config.table)} where id = ${id}`;
     await audit(user.username, "delete", config.table, id, before, null);

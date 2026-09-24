@@ -307,7 +307,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                           >
                             <Copy className="size-3.5" />
                           </button>
-                          <button
+                          {!(config.key === "news" && /^mms-hub-\d+$/.test(String(row.slug ?? ""))) && <button
                             type="button"
                             onClick={() => askDelete(id)}
                             disabled={busy}
@@ -316,7 +316,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                             className="rounded-lg p-1.5 text-muted hover:bg-red-50 hover:text-red-600 disabled:opacity-40"
                           >
                             <Trash2 className="size-3.5" />
-                          </button>
+                          </button>}
                         </div>
                       </td>
                     </tr>

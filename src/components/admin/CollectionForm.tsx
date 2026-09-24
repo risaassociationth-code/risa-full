@@ -35,6 +35,7 @@ function labelFor(field: FieldDef, lang: "th" | "en") {
 
 export function CollectionForm({ config, initial, scope, backHref, createdHref }: Props) {
   const isNew = initial === null;
+  const importedNews = config.key === "news" && /^mms-hub-\d+$/.test(String(initial?.slug ?? ""));
   const [values, setValues] = useState<Row>(() => ({ ...(initial ?? {}), ...(scope ?? {}) }));
   const [pending, startTransition] = useTransition();
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -102,6 +103,7 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
             <Input
               value={String(raw ?? "")}
               onChange={(e) => set(name, e.target.value)}
+              readOnly={importedNews}
               placeholder={placeholder}
               className="font-mono text-[13px]"
             />
@@ -254,6 +256,7 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
           {values.photo_url ? <button type="button" onClick={() => set("photo_url", "")} className="mt-3 text-sm text-muted underline">เอารูปออกจากโปรไฟล์ (ไฟล์ยังอยู่ในคลัง)</button> : null}
         </div>
       </Card>}
+      {importedNews && <p className="rounded-lg border border-line bg-surface p-4 text-sm text-muted">ข่าวนี้นำเข้าจาก MMS Hub และคงเครดิตต้นฉบับไว้ เปลี่ยนสถานะเป็น “ฉบับร่าง” เพื่อซ่อนจากหน้าข่าวของ RISA</p>}
       <Card>
         <CardHead title="รายละเอียด" />
         <div className="grid gap-5 p-5">
@@ -279,7 +282,7 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
 
       <div className="flex items-center justify-between">
         <div>
-          {!isNew && (
+          {!isNew && !importedNews && (
             <button
               type="button"
               onClick={() => setConfirmDelete(true)}
