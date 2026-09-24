@@ -257,6 +257,17 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
         </div>
       </Card>}
       {importedNews && <p className="rounded-lg border border-line bg-surface p-4 text-sm text-muted">ข่าวนี้นำเข้าจาก MMS Hub และคงเครดิตต้นฉบับไว้ เปลี่ยนสถานะเป็น “ฉบับร่าง” เพื่อซ่อนจากหน้าข่าวของ RISA</p>}
+      {config.key === "news" && <Card>
+        <CardHead title="สถานะข่าว" />
+        <div className="p-5">
+          <Field label="การแสดงบนเว็บไซต์">
+            <Select value={String(values.status ?? "draft")} onChange={(e) => set("status", e.target.value)}>
+              <option value="published">เผยแพร่ — แสดงในหน้าข่าว</option>
+              <option value="draft">ฉบับร่าง — ซ่อนจากหน้าข่าว</option>
+            </Select>
+          </Field>
+        </div>
+      </Card>}
       <Card>
         <CardHead title="รายละเอียด" />
         <div className="grid gap-5 p-5">
