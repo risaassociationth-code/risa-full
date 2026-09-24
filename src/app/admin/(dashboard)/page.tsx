@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { ArrowUpRight, FilePenLine, ImagePlus, Plus } from "lucide-react";
+import { ArrowUpRight, CalendarPlus, FilePenLine, ImagePlus, Plus } from "lucide-react";
 import { sql } from "@/lib/db";
 import { PageHeader, Card, CardHead, EmptyState, formatThaiDateTime } from "@/components/admin/ui";
-import { mmsNews } from "@/lib/mms-import";
+import { mmsActivities, mmsNews } from "@/lib/mms-import";
 
 const COUNTS = [
   { table: "news", label: "ข่าวสาร", href: "/admin/news" },
@@ -20,13 +20,14 @@ export default async function DashboardPage() {
   const [counts, newSubmissions, submissionTotal, recentAudit] = await Promise.all([
     Promise.all(
       COUNTS.map(async (c) => {
-        if (c.table === "news") {
-          const rows = await sql<{ slug: string }[]>`select slug from news`;
+        if (c.table === "news" || c.table === "activities") {
+          const rows = await sql<{ slug: string; status: string }[]>`select slug, status from ${sql(c.table)}`;
           const slugs = new Set(rows.map((row) => row.slug));
-          return { ...c, n: rows.length, imported: mmsNews.filter((article) => !slugs.has(article.slug)).length };
+          const archive = c.table === "news" ? mmsNews : mmsActivities;
+          return { ...c, n: rows.length, drafts: rows.filter((row) => row.status === "draft").length, imported: archive.filter((article) => !slugs.has(article.slug)).length };
         }
         const [row] = await sql<{ n: number }[]>`select count(*)::int as n from ${sql(c.table)}`;
-        return { ...c, n: row?.n ?? 0, imported: 0 };
+        return { ...c, n: row?.n ?? 0, drafts: 0, imported: 0 };
       }),
     ),
     sql<{ id: string; kind: string; name: string; subject: string; created_at: string }[]>`
@@ -41,18 +42,24 @@ export default async function DashboardPage() {
   return (
     <div>
       <p className="admin-kicker mb-4">RISA / CONTENT STUDIO</p>
-      <PageHeader title="พื้นที่จัดการเว็บไซต์" description="แบ่งปันข่าวสาร อัปเดตกิจกรรม และดูแลทุกเรื่องราวของ RISA" />
+      <PageHeader title="โต๊ะทำงานเว็บไซต์" description="วันนี้อยากอัปเดตอะไร? เลือกงานด้านล่าง หรือเปิดรายการเดิมเพื่อแก้ไข" />
 
       <div className="mb-10 grid gap-4 xl:grid-cols-3">
         <Link href="/admin/news/new" className="admin-quick-link">
           <Plus className="size-6" /><div><h2 className="text-base font-medium">เขียนข่าวใหม่</h2><p>เพิ่มหัวข้อ เนื้อหา และภาพประกอบ</p></div><ArrowUpRight className="size-4" />
         </Link>
-        <Link href="/admin/media" className="admin-quick-link">
-          <ImagePlus className="size-6" /><div><h2 className="text-base font-medium">อัปโหลดไฟล์</h2><p>เก็บรูปภาพและเอกสารไว้พร้อมใช้งาน</p></div><ArrowUpRight className="size-4" />
+        <Link href="/admin/activities/new" className="admin-quick-link">
+          <CalendarPlus className="size-6" /><div><h2 className="text-base font-medium">เพิ่มกิจกรรม</h2><p>ใส่รายละเอียด วันจัด และรูปภาพ</p></div><ArrowUpRight className="size-4" />
         </Link>
         <Link href="/admin/pages" className="admin-quick-link">
           <FilePenLine className="size-6" /><div><h2 className="text-base font-medium">แก้ไขหน้าเว็บไซต์</h2><p>ปรับข้อความและรูปภาพในแต่ละหน้า</p></div><ArrowUpRight className="size-4" />
         </Link>
+      </div>
+
+      <div className="mb-8 flex flex-wrap items-center gap-4 rounded-2xl border border-line bg-surface p-5">
+        <div className="mr-auto"><h2 className="font-semibold">หาเรื่องที่เคยลงไว้</h2><p className="mt-1 text-sm text-muted">ค้นหาข่าว กิจกรรม ฉบับร่าง และเนื้อหาจาก MMS Hub ในที่เดียว</p><p className="mt-1 text-sm text-muted">มี {counts.reduce((n, c) => n + c.drafts, 0)} ฉบับร่างให้กลับมาเขียนต่อ</p></div>
+        <Link href="/admin/content" className="rounded-lg bg-accent px-4 py-2.5 text-sm font-medium text-accent-ink">เปิดข่าวและกิจกรรมทั้งหมด →</Link>
+        <Link href="/admin/media" className="inline-flex items-center gap-1 text-sm text-accent underline"><ImagePlus className="size-4" /> คลังรูปภาพ</Link>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -62,9 +69,9 @@ export default async function DashboardPage() {
             href={c.href}
             className="admin-metric"
           >
-            <strong>{c.n.toLocaleString("th-TH")}</strong>
-            <p className="mt-1 text-sm text-muted">{c.table === "news" ? "ข่าวที่แก้ไขได้" : c.label}</p>
-            {c.table === "news" && <p className="mt-1 text-xs text-muted">+ {c.imported.toLocaleString("th-TH")} ข่าวจาก MMS Hub บนเว็บไซต์</p>}
+            <strong>{(c.n + c.imported).toLocaleString("th-TH")}</strong>
+            <p className="mt-1 text-sm text-muted">{c.label}</p>
+            {(c.table === "news" || c.table === "activities") && <p className="mt-1 text-xs text-muted">{c.drafts} ฉบับร่าง · {c.imported} จากคลัง MMS Hub</p>}
           </Link>
         ))}
         <Link

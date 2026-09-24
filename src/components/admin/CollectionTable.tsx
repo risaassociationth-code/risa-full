@@ -52,7 +52,8 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
     setRows(initialRows);
   }
   const [q, setQ] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | "draft" | "published">("all");
+  const guided = config.key === "news" || config.key === "activities";
+  const [statusFilter, setStatusFilter] = useState<"all" | "draft" | "published" | "imported">("all");
   const [pending, startTransition] = useTransition();
   const [busyId, setBusyId] = useState<string | null>(null);
   const [confirm, setConfirm] = useState<{ id: string; title: string } | null>(null);
@@ -62,7 +63,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
 
   const filtered = useMemo(() => {
     let list = rows;
-    if (statusFilter !== "all") list = list.filter((r) => r.status === statusFilter);
+    if (statusFilter !== "all") list = list.filter((r) => statusFilter === "imported" ? String(r.id).startsWith("mms-") : r.status === statusFilter && (!guided || !String(r.id).startsWith("mms-")));
     const needle = q.trim().toLowerCase();
     if (needle) {
       list = list.filter((r) =>
@@ -70,7 +71,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
       );
     }
     return list;
-  }, [rows, q, statusFilter, search]);
+  }, [rows, q, statusFilter, search, guided]);
 
   function linkFor(id: string) {
     return hrefFor ? hrefFor(id) : `${config.adminPath}/${id}`;
@@ -148,12 +149,13 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="ค้นหา…"
+            aria-label={`ค้นหา${config.label}`}
             className="h-9 w-56 rounded-lg border border-line bg-paper pl-9 pr-3 text-sm outline-none focus:border-accent"
           />
         </div>
         {config.hasStatus && (
           <div className="flex items-center rounded-lg border border-line p-0.5">
-            {(["all", "published", "draft"] as const).map((s) => (
+            {(["all", "published", "draft", ...(guided ? ["imported" as const] : [])] as const).map((s) => (
               <button
                 key={s}
                 type="button"
@@ -163,7 +165,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                   statusFilter === s ? "bg-ink text-white" : "text-muted hover:bg-surface",
                 )}
               >
-                {s === "all" ? "ทั้งหมด" : STATUS_LABEL[s]}
+                {s === "all" ? "ทั้งหมด" : s === "imported" ? "จาก MMS Hub" : STATUS_LABEL[s]}
               </button>
             ))}
           </div>
@@ -277,7 +279,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                               )}
                             </div>
                           ) : imported ? (
-                            <ManageImportedNewsButton kind={config.key === "activities" ? "activities" : "news"} slug={String(row.slug)} label={cellText(row, col.name, !!col.bilingual) || "(ไม่มีชื่อ)"} />
+                            col.name === config.titleField ? <ManageImportedNewsButton kind={config.key === "activities" ? "activities" : "news"} slug={String(row.slug)} label={cellText(row, col.name, !!col.bilingual) || "(ไม่มีชื่อ)"} /> : <span>{cellText(row, col.name, !!col.bilingual) || "—"}</span>
                           ) : (
                             <Link href={linkFor(id)} className="line-clamp-2 font-medium text-ink hover:text-accent">
                               {cellText(row, col.name, !!col.bilingual) || <span className="text-faint">(ไม่มีชื่อ)</span>}
@@ -287,7 +289,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                       ))}
                       {config.hasStatus && (
                         <td className="px-4 py-2.5">
-                          {imported ? <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[11px] text-muted">MMS Hub archive</span> : <button
+                          {imported ? <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[11px] text-muted">จากคลัง MMS Hub</span> : guided ? <StatusBadge status={String(row.status)} /> : <button
                             type="button"
                             disabled={busy}
                             onClick={() => onToggleStatus(row)}
@@ -301,6 +303,10 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                       <td className="px-4 py-2.5">
                         <div className="flex items-center justify-end gap-1">
                           {busy && <Loader2 className="size-3.5 animate-spin text-faint" />}
+                          {guided && !imported && <>
+                            <Link href={linkFor(id)} className="rounded-lg border border-line px-2 py-1 text-xs text-accent">แก้ไข</Link>
+                            {row.status === "published" && <Link href={`/th/${config.key}/${String(row.slug)}`} target="_blank" rel="noreferrer" className="px-2 text-xs text-accent underline">ดูบนเว็บไซต์ ↗</Link>}
+                          </>}
                           {imported ? <Link href={config.key === "activities" ? `/th/mms-hub/${id.slice(4)}` : `/th/news/${String(row.slug)}`} className="text-xs text-accent hover:underline">ดูหน้าเว็บ ↗</Link> : <button
                             type="button"
                             onClick={() => onDuplicate(id)}

@@ -1,10 +1,20 @@
 "use client";
 
-import { useEditor, EditorContent, type Editor } from "@tiptap/react";
+import { useState } from "react";
+import { useEditor, EditorContent, Node, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
-import { Bold, Italic, Link2, List, ListOrdered, Quote, Undo2, Redo2, Heading2 } from "lucide-react";
+import { Bold, Italic, Link2, List, ListOrdered, Quote, Undo2, Redo2, Heading2, ImagePlus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MediaPickerDialog } from "./media-picker";
+
+// Preserve imported inline photographs when the surrounding text is edited.
+const InlineImage = Node.create({
+  name: "image", group: "inline", inline: true, atom: true, draggable: true,
+  addAttributes() { return { src: { default: null }, alt: { default: "" }, title: { default: null } }; },
+  parseHTML() { return [{ tag: "img[src]" }]; },
+  renderHTML({ HTMLAttributes }) { return ["img", HTMLAttributes]; },
+});
 
 type Props = { value: string; onChange: (html: string) => void; minHeight?: number };
 
@@ -36,6 +46,7 @@ function setLink(editor: Editor) {
 }
 
 export function RichTextEditor({ value, onChange, minHeight = 160 }: Props) {
+  const [mediaOpen, setMediaOpen] = useState(false);
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -44,12 +55,16 @@ export function RichTextEditor({ value, onChange, minHeight = 160 }: Props) {
       // click-through, rel="noopener") — keeping both registers it twice.
       StarterKit.configure({ heading: { levels: [2, 3] }, link: false }),
       Link.configure({ openOnClick: false, autolink: true, HTMLAttributes: { rel: "noopener" } }),
+      InlineImage,
     ],
     content: value || "<p></p>",
     editorProps: {
       attributes: {
         class: "prose-risa focus:outline-none px-3 py-2.5 text-sm",
         style: `min-height:${minHeight}px`,
+        role: "textbox",
+        "aria-label": "เนื้อหาบทความ",
+        "aria-multiline": "true",
       },
     },
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
@@ -73,12 +88,14 @@ export function RichTextEditor({ value, onChange, minHeight = 160 }: Props) {
         <ToolbarButton label="ลิงก์" on={editor.isActive("link")} action={() => setLink(editor)}>
           <Link2 className="size-3.5" />
         </ToolbarButton>
+        <ToolbarButton label="เพิ่มรูปในเนื้อหา" action={() => setMediaOpen(true)}><ImagePlus className="size-3.5" /></ToolbarButton>
         <span className="ml-auto flex gap-0.5">
           <ToolbarButton label="ย้อนกลับ" action={() => editor.chain().focus().undo().run()}><Undo2 className="size-3.5" /></ToolbarButton>
           <ToolbarButton label="ทำซ้ำ" action={() => editor.chain().focus().redo().run()}><Redo2 className="size-3.5" /></ToolbarButton>
         </span>
       </div>
       <EditorContent editor={editor} className="max-h-72 overflow-y-auto" />
+      <MediaPickerDialog open={mediaOpen} onOpenChange={setMediaOpen} onSelect={src => { editor.chain().focus().insertContent({ type: "image", attrs: { src, alt: "" } }).run(); setMediaOpen(false); }} />
     </div>
   );
 }
