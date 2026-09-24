@@ -8,7 +8,8 @@ const ease = (v: number) => { const t = clamp(v); return t * t * (3 - 2 * t); };
 /** Loaded only on the homepage, after hydration, when motion/data preferences allow it. */
 export async function createRisingLineScene(host: HTMLElement, signal: AbortSignal, onLost: () => void) {
   const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "low-power" });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+  // Supersample standard displays too; cap Retina rendering to contain GPU cost.
+  renderer.setPixelRatio(Math.min(Math.max(window.devicePixelRatio, 1.5), 2));
   renderer.setClearColor(0x000000, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -41,7 +42,7 @@ export async function createRisingLineScene(host: HTMLElement, signal: AbortSign
   }
 
   try {
-    const response = await fetch("/models/risa-wordmark-v1.glb", { signal });
+    const response = await fetch("/models/risa-wordmark-v2.glb", { signal });
     if (!response.ok) throw new Error("Logo unavailable");
     const gltf = await new GLTFLoader().parseAsync(await response.arrayBuffer(), "");
     if (signal.aborted) {
