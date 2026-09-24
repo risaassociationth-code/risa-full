@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight, FilePenLine, ImagePlus, Plus } from "lucide-react";
 import { sql } from "@/lib/db";
 import { PageHeader, Card, CardHead, EmptyState, formatThaiDateTime } from "@/components/admin/ui";
+import { mmsNews } from "@/lib/mms-import";
 
 const COUNTS = [
   { table: "news", label: "ข่าวสาร", href: "/admin/news" },
@@ -19,6 +20,11 @@ export default async function DashboardPage() {
   const [counts, newSubmissions, submissionTotal, recentAudit] = await Promise.all([
     Promise.all(
       COUNTS.map(async (c) => {
+        if (c.table === "news") {
+          const rows = await sql<{ slug: string }[]>`select slug from news`;
+          const slugs = new Set(rows.map((row) => row.slug));
+          return { ...c, n: rows.length + mmsNews.filter((article) => !slugs.has(article.slug)).length };
+        }
         const [row] = await sql<{ n: number }[]>`select count(*)::int as n from ${sql(c.table)}`;
         return { ...c, n: row?.n ?? 0 };
       }),
@@ -57,7 +63,7 @@ export default async function DashboardPage() {
             className="admin-metric"
           >
             <strong>{c.n.toLocaleString("th-TH")}</strong>
-            <p className="mt-1 text-sm text-muted">{c.label}</p>
+            <p className="mt-1 text-sm text-muted">{c.label}{c.table === "news" ? "บนเว็บไซต์" : ""}</p>
           </Link>
         ))}
         <Link
