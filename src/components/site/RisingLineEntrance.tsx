@@ -32,12 +32,14 @@ export function RisingLineEntrance({ children, locale }: { children: ReactNode; 
       const height = element.firstElementChild?.clientHeight || window.innerHeight;
       progress = simple ? 1 : clamp(-bounds.top / Math.max(1, element.offsetHeight - height));
       element.style.setProperty("--progress", String(progress));
-      element.style.setProperty("--copy", String(1 - ease(progress / .24)));
-      element.style.setProperty("--rise", `${ease(progress / .24) * -36}px`);
-      element.style.setProperty("--identity", String(simple ? 1 : ease((progress - .60) / .17)));
+      element.style.setProperty("--copy", String(1 - ease((progress - .08) / .19)));
+      element.style.setProperty("--rise", `${ease((progress - .08) / .19) * -36}px`);
+      element.style.setProperty("--identity", String(simple ? 1 : ease((progress - .76) / .12)));
+      element.style.setProperty("--light-x", `${-30 + ease((progress - .43) / .35) * 160}%`);
+      element.style.setProperty("--light", String(simple ? 0 : Math.sin(clamp((progress - .43) / .35) * Math.PI) * .22));
       element.style.setProperty("--trace", String(clamp(.025 + progress / .42)));
       element.style.setProperty("--fallback", String(simple ? 1 : ease((progress - .32) / .25)));
-      element.dataset.phase = progress < .28 ? "line" : progress < .65 ? "form" : "identity";
+      element.dataset.phase = progress < .28 ? "line" : progress < .76 ? "form" : "identity";
       const visible = simple || progress >= .91;
       element.dataset.entered = String(visible);
       nav.dataset.visible = String(visible);
@@ -105,16 +107,15 @@ export function RisingLineEntrance({ children, locale }: { children: ReactNode; 
     </div>
     {home && <section ref={stage} className={styles.stage} aria-label={th ? "RISA — จากความคิดสู่ความก้าวหน้า" : "RISA — a new direction"}>
       <div className={styles.scene}>
-        <div className={styles.grid} aria-hidden />
+        <div className={styles.lightSweep} aria-hidden />
         <div className={styles.topbar}>
-          <span className={styles.brand}>RISA<span>RESEARCH & INDUSTRY</span></span>
+          <span className={styles.brand}>RISA</span>
           <a href="#main" onClick={(e) => { e.preventDefault(); enter(); }} className={styles.skip}>
             {th ? "เข้าสู่เว็บไซต์" : "Enter website"}<span aria-hidden>↗</span>
           </a>
         </div>
         <div className={styles.opening}>
-          <p className={styles.eyebrow}>{th ? "งานวิจัย · อุตสาหกรรม · มาตรฐาน" : "RESEARCH · INDUSTRY · STANDARDS"}</p>
-          <h2>{th ? <>จากหนึ่งความคิด<br /><em>สู่ความก้าวหน้า</em></> : <>Every advance<br /><em>starts with a line.</em></>}</h2>
+          <h2 lang="en"><span>Research. Industry.</span><span>Standards. <em>Advancing.</em></span></h2>
         </div>
         <div ref={host} className={styles.canvas} aria-hidden="true" />
         <div className={styles.fallbackVisual} aria-hidden="true">
@@ -127,16 +128,10 @@ export function RisingLineEntrance({ children, locale }: { children: ReactNode; 
         </div>
         <div className={styles.identity}>
           <p className={styles.eyebrow}>RESEARCH AND INDUSTRY STANDARDS ADVANCEMENT ASSOCIATION</p>
-          <p className={styles.statement}>{th ? "เชื่อมโยงงานวิจัย สร้างโอกาสใหม่ให้อุตสาหกรรม" : "Connecting research. Advancing industry."}</p>
           <a href="#main" onClick={(e) => { e.preventDefault(); enter(); }}>{th ? "สำรวจข่าวสารล่าสุด" : "Explore the latest news"}<span aria-hidden>↓</span></a>
         </div>
         <div className={styles.bottom}>
           <span className={styles.scrollHint}>{th ? "เลื่อนเพื่อสำรวจ" : "SCROLL TO EXPLORE"}<span aria-hidden>↓</span></span>
-          <div className={styles.chapters} aria-hidden>
-            <span className={styles.chapterLine}>01 <i>{th ? "จุดเริ่มต้น" : "A LINE"}</i></span>
-            <span className={styles.chapterForm}>02 <i>{th ? "ทิศทาง" : "A DIRECTION"}</i></span>
-            <span className={styles.chapterIdentity}>03 <i>RISA</i></span>
-          </div>
         </div>
         <div className={styles.progress} aria-hidden><span /></div>
       </div>

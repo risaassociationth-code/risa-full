@@ -2,8 +2,9 @@
 .homeNav { position: fixed; inset: 0 0 auto; z-index: 60; opacity: 0; visibility: hidden; transition: opacity 220ms ease; }
 .homeNav[data-visible="true"] { opacity: 1; visibility: visible; }
 .homeNav header > div, .normalNav header > div { min-height: 80px; }
-.stage { --progress: 0; --copy: 1; --rise: 0px; --identity: 0; --trace: .025; --fallback: 0; height: 285svh; position: relative; color: #eeeae1; background: #081b27; }
-.scene { position: sticky; top: 0; height: 100svh; min-height: 500px; overflow: hidden; isolation: isolate; background: radial-gradient(ellipse at 52% 56%, #28404b 0%, #122b38 37%, #081b27 75%); }
+.stage { --progress: 0; --copy: 1; --rise: 0px; --identity: 0; --trace: .025; --fallback: 0; --light: 0; --light-x: -30%; height: 300svh; position: relative; color: #eeeae1; background: #050a1b; }
+.scene { position: sticky; top: 0; height: 100svh; min-height: 500px; overflow: hidden; isolation: isolate; background: radial-gradient(ellipse at 50% 43%, #192b5b 0%, #0c1635 42%, #050a1b 78%); }
+.lightSweep { position: absolute; top: -30%; left: var(--light-x); width: 24%; height: 160%; transform: translateX(-50%) rotate(18deg); background: linear-gradient(90deg, transparent, #c5d0ff22, #fff0d080, #d7e0ff22, transparent); filter: blur(25px); opacity: var(--light); pointer-events: none; }
 .grid { position: absolute; inset: 0; opacity: calc(.15 * (1 - var(--identity))); background-image: linear-gradient(#8da4ae20 1px, transparent 1px), linear-gradient(90deg, #8da4ae20 1px, transparent 1px); background-size: 84px 84px; mask-image: radial-gradient(ellipse, #000, transparent 75%); pointer-events: none; }
 .topbar { position: absolute; inset: 32px 5.5% auto; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .brand { font-size: 23px; font-weight: 500; letter-spacing: .18em; display: flex; align-items: center; gap: 22px; }
@@ -12,18 +13,19 @@
 .skip span { color: #d5bd83; font-size: 19px; }
 .opening { position: absolute; top: 20%; left: 9%; right: 8%; z-index: 3; pointer-events: none; opacity: var(--copy); transform: translateY(var(--rise)); }
 .eyebrow { font-size: 10px; letter-spacing: .19em; color: #b7c3c7; line-height: 1.7; }
-.opening h2 { font-size: clamp(44px, 5.5vw, 88px); font-weight: 300; letter-spacing: -.045em; line-height: 1.13; margin-top: 25px; }
+.opening h2 { font-size: clamp(36px, 5.4vw, 84px); font-weight: 300; letter-spacing: -.045em; line-height: 1.22; margin-top: 25px; }
+.opening h2 > span { display: block; }
 .opening h2 em { font-style: normal; color: #cbb782; }
-.canvas { position: absolute; inset: 25% 3% 18%; pointer-events: none; }
+.canvas { position: absolute; inset: 24% 5% 35%; pointer-events: none; }
 .canvas canvas { width: 100%; height: 100%; display: block; }
 .fallbackVisual { position: absolute; inset: 29% 9% 19%; pointer-events: none; display: grid; align-items: center; }
 .fallbackVisual img { width: 100%; filter: brightness(0) invert(1); opacity: var(--fallback); grid-area: 1 / 1; }
 .trace { width: 100%; grid-area: 1 / 1; }
 .trace path { stroke: #d9bd78; stroke-width: 2; stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--trace)); }
 .stage[data-ready="true"] .fallbackVisual { visibility: hidden; }
-.identity { position: absolute; left: 8%; right: 8%; bottom: 14%; text-align: center; opacity: var(--identity); visibility: hidden; transform: translateY(calc(18px * (1 - var(--identity)))); }
+.identity { position: absolute; left: 8%; right: 8%; top: 76%; text-align: center; opacity: var(--identity); visibility: hidden; transform: translateY(calc(18px * (1 - var(--identity)))); }
 .stage[data-phase="identity"] .identity, .stage[data-simple="true"] .identity { visibility: visible; }
-.identity .eyebrow { font-size: 9px; letter-spacing: .22em; max-width: 640px; margin-inline: auto; }
+.identity .eyebrow { font-size: clamp(10px, .9vw, 13px); letter-spacing: .18em; line-height: 1.9; max-width: 720px; margin-inline: auto; }
 .statement { font-size: clamp(16px, 1.7vw, 23px); font-weight: 300; margin-top: 15px; color: #e2e7e8; }
 .identity a { margin-top: 20px; font-size: 12px; display: inline-flex; align-items: center; gap: 20px; border-bottom: 1px solid #bfa36380; padding-bottom: 7px; }
 .identity a span { color: #d5bd83; }
@@ -43,18 +45,18 @@
 .stage[data-simple="true"] .fallbackVisual img { opacity: 1; }
 .stage[data-simple="true"] .identity { opacity: 1; transform: none; }
 @media (max-width: 700px) {
-  .stage { height: 240svh; }
+  .stage { height: 270svh; }
   .scene { min-height: 500px; }
   .topbar { top: 23px; inset-inline: 6%; }
   .brand { font-size: 20px; }
   .brand > span { display: none; }
   .skip { font-size: 11px; gap: 16px; }
   .opening { top: 24%; left: 7%; right: 7%; }
-  .opening h2 { font-size: clamp(38px, 8.7vw, 60px); margin-top: 20px; }
+  .opening h2 { font-size: clamp(24px, 6.8vw, 46px); line-height: 1.5; margin-top: 20px; }
   .opening .eyebrow { font-size: 9px; letter-spacing: .09em; }
-  .canvas { inset: 31% 0% 26%; }
+  .canvas { inset: 25% 0% 38%; }
   .fallbackVisual { inset: 31% 6% 26%; }
-  .identity { left: 8%; right: 8%; bottom: 20%; }
+  .identity { left: 9%; right: 9%; top: 70%; }
   .identity .eyebrow { font-size: 8px; letter-spacing: .10em; }
   .statement { margin-top: 12px; font-size: 16px; }
   .identity a { margin-top: 14px; }
@@ -69,7 +71,7 @@
   .opening { top: 22%; }
   .opening h2 { font-size: 40px; margin-top: 10px; }
   .canvas { inset: 20% 10% 25%; }
-  .identity { bottom: 16%; }
+  .identity { top: 74%; }
   .identity .statement { margin-top: 4px; font-size: 16px; }
   .identity a { margin-top: 8px; }
   .bottom { bottom: 17px; }
@@ -78,7 +80,7 @@
   .homeNav { position: sticky; opacity: 1; visibility: visible; transition: none; }
   .stage { height: 80svh; min-height: 480px; }
   .scene { position: relative; height: 100%; }
-  .opening, .canvas, .trace, .bottom, .progress, .grid { display: none; }
+  .opening, .canvas, .trace, .bottom, .progress, .grid, .lightSweep { display: none; }
   .fallbackVisual img { opacity: 1; }
   .identity { opacity: 1; visibility: visible; transform: none; }
 }
