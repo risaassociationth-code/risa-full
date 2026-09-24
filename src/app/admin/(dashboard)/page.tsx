@@ -23,10 +23,10 @@ export default async function DashboardPage() {
         if (c.table === "news") {
           const rows = await sql<{ slug: string }[]>`select slug from news`;
           const slugs = new Set(rows.map((row) => row.slug));
-          return { ...c, n: rows.length + mmsNews.filter((article) => !slugs.has(article.slug)).length };
+          return { ...c, n: rows.length, imported: mmsNews.filter((article) => !slugs.has(article.slug)).length };
         }
         const [row] = await sql<{ n: number }[]>`select count(*)::int as n from ${sql(c.table)}`;
-        return { ...c, n: row?.n ?? 0 };
+        return { ...c, n: row?.n ?? 0, imported: 0 };
       }),
     ),
     sql<{ id: string; kind: string; name: string; subject: string; created_at: string }[]>`
@@ -63,7 +63,8 @@ export default async function DashboardPage() {
             className="admin-metric"
           >
             <strong>{c.n.toLocaleString("th-TH")}</strong>
-            <p className="mt-1 text-sm text-muted">{c.label}{c.table === "news" ? "บนเว็บไซต์" : ""}</p>
+            <p className="mt-1 text-sm text-muted">{c.table === "news" ? "ข่าวที่แก้ไขได้" : c.label}</p>
+            {c.table === "news" && <p className="mt-1 text-xs text-muted">+ {c.imported.toLocaleString("th-TH")} ข่าวจาก MMS Hub บนเว็บไซต์</p>}
           </Link>
         ))}
         <Link

@@ -1,18 +1,25 @@
-import { CollectionListScreen } from "@/components/admin/CollectionTable";
+import { CollectionTable } from "@/components/admin/CollectionTable";
 import { getCollection } from "@/components/admin/collection-config";
 import { listRows } from "@/components/admin/collection-data";
 import Link from "next/link";
 import { mmsNews } from "@/lib/mms-import";
+import { PageHeader } from "@/components/admin/ui";
 
 export default async function Page() {
   const config = getCollection("news");
   const rows = await listRows("news");
   const imported = mmsNews.filter((article) => !rows.some((row) => row.slug === article.slug));
   return <div>
-    <CollectionListScreen config={config} rows={rows} description={`${rows.length} ข่าวในตัวแก้ไข · ${imported.length} ข่าวจากคลัง MMS Hub บนเว็บไซต์`} />
+    <PageHeader title="ข่าวสาร" description="ข่าวที่เขียนใน RISA และข่าวจากคลัง MMS Hub" />
+    {rows.length ? <section><h2 className="mb-4 text-lg font-semibold">ข่าวที่เขียนใน RISA ({rows.length})</h2><CollectionTable config={config} rows={rows} /></section> :
+      <section className="rounded-xl border border-line bg-paper p-5">
+        <h2 className="text-lg font-semibold">ข่าวที่เขียนใน RISA (0)</h2>
+        <p className="mt-2 text-sm text-muted">ยังไม่มีข่าวที่สร้างผ่านตัวแก้ไข ข่าวจาก MMS Hub แสดงอยู่ด้านล่าง</p>
+        <Link href="/admin/news/new" className="mt-4 inline-block rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-ink">เขียนข่าวใหม่</Link>
+      </section>}
     <section className="mt-8 rounded-xl border border-line bg-paper p-5">
-      <h2 className="text-lg font-semibold">ข่าวที่นำเข้าจาก MMS Hub ({imported.length})</h2>
-      <p className="mt-2 text-sm text-muted">ข่าวเหล่านี้เผยแพร่บนเว็บไซต์แล้ว โดยเก็บเป็นคลังต้นฉบับแยกจากข่าวที่เขียนในตัวแก้ไข</p>
+      <h2 className="text-lg font-semibold">ข่าวจาก MMS Hub ({imported.length})</h2>
+      <p className="mt-2 text-sm text-muted">เผยแพร่อยู่บนเว็บไซต์ในฐานะเนื้อหาจากเครือข่าย คลิกหัวข้อเพื่อดูหน้าเว็บ ข่าวเหล่านี้ยังแก้ไขผ่านตัวแก้ไข RISA ไม่ได้</p>
       <ul className="mt-5 divide-y divide-line-soft">
         {imported.map((article) => <li key={article.id} className="py-3">
           <Link href={`/th/news/${article.slug}`} className="text-sm font-medium text-ink hover:text-accent">{article.title_th} ↗</Link>
