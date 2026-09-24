@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import styles from "./RisingLineEntrance.module.css";
 
 type Scene = { render: (progress: number) => void; dispose: () => void };
@@ -32,6 +33,7 @@ export function RisingLineEntrance({ children, locale }: { children: ReactNode; 
       const height = element.firstElementChild?.clientHeight || window.innerHeight;
       progress = simple ? 1 : clamp(-bounds.top / Math.max(1, element.offsetHeight - height));
       element.style.setProperty("--progress", String(progress));
+      element.style.setProperty("--collage", String(simple ? .23 : .18 + .28 * ease(progress / .24) - .23 * ease((progress - .40) / .36)));
       element.style.setProperty("--copy", String(1 - ease((progress - .08) / .19)));
       element.style.setProperty("--rise", `${ease((progress - .08) / .19) * -36}px`);
       element.style.setProperty("--identity", String(simple ? 1 : ease((progress - .76) / .12)));
@@ -107,6 +109,13 @@ export function RisingLineEntrance({ children, locale }: { children: ReactNode; 
     </div>
     {home && <section ref={stage} className={styles.stage} aria-label={th ? "RISA — จากความคิดสู่ความก้าวหน้า" : "RISA — a new direction"}>
       <div className={styles.scene}>
+        <div className={styles.collage} aria-hidden="true">
+          {["student-presentation", "discussion", "award-group", "event-room"].map((photo) => (
+            <div key={photo} className={styles.photo}>
+              <Image src={`/images/msic-2026/${photo}.jpg`} alt="" fill sizes="(max-width: 700px) 65vw, 45vw" quality={70} />
+            </div>
+          ))}
+        </div>
         <div className={styles.lightSweep} aria-hidden />
         <div className={styles.topbar}>
           <span className={styles.brand}>RISA</span>
