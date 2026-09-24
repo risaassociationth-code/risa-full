@@ -16,6 +16,7 @@ import { STATUS_LABEL, searchableColumns } from "./collection-config";
 import { Card, EmptyState, Mono, PageHeader, StatusBadge, formatThaiDate } from "./ui";
 import { Icon } from "@/components/site/Icon";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { ManageImportedNewsButton } from "./ManageImportedNewsButton";
 
 type Props = {
   config: CollectionConfig;
@@ -202,6 +203,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
               <tbody>
                 {filtered.map((row, i) => {
                   const id = String(row.id);
+                  const imported = config.key === "news" && id.startsWith("mms-");
                   const busy = busyId === id;
                   return (
                     <tr key={id} className="border-b border-line-soft last:border-0 hover:bg-surface/60">
@@ -274,6 +276,8 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                                 <span className="text-faint">—</span>
                               )}
                             </div>
+                          ) : imported ? (
+                            <ManageImportedNewsButton slug={String(row.slug)} label={cellText(row, col.name, !!col.bilingual) || "(ไม่มีชื่อ)"} />
                           ) : (
                             <Link href={linkFor(id)} className="line-clamp-2 font-medium text-ink hover:text-accent">
                               {cellText(row, col.name, !!col.bilingual) || <span className="text-faint">(ไม่มีชื่อ)</span>}
@@ -283,7 +287,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                       ))}
                       {config.hasStatus && (
                         <td className="px-4 py-2.5">
-                          <button
+                          {imported ? <StatusBadge status="published" /> : <button
                             type="button"
                             disabled={busy}
                             onClick={() => onToggleStatus(row)}
@@ -291,13 +295,13 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                             title="คลิกเพื่อสลับสถานะ"
                           >
                             <StatusBadge status={row.status as string} />
-                          </button>
+                          </button>}
                         </td>
                       )}
                       <td className="px-4 py-2.5">
                         <div className="flex items-center justify-end gap-1">
                           {busy && <Loader2 className="size-3.5 animate-spin text-faint" />}
-                          <button
+                          {imported ? <Link href={`/th/news/${String(row.slug)}`} className="text-xs text-accent hover:underline">ดูหน้าเว็บ ↗</Link> : <button
                             type="button"
                             onClick={() => onDuplicate(id)}
                             disabled={busy}
@@ -306,8 +310,8 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                             className="rounded-lg p-1.5 text-muted hover:bg-surface-2 hover:text-ink disabled:opacity-40"
                           >
                             <Copy className="size-3.5" />
-                          </button>
-                          {!(config.key === "news" && /^mms-hub-\d+$/.test(String(row.slug ?? ""))) && <button
+                          </button>}
+                          {!imported && !(config.key === "news" && /^mms-hub-\d+$/.test(String(row.slug ?? ""))) && <button
                             type="button"
                             onClick={() => askDelete(id)}
                             disabled={busy}
