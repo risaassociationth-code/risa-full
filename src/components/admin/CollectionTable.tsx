@@ -55,7 +55,6 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
   const [q, setQ] = useState("");
   const guided = config.key === "news" || config.key === "activities";
   const [statusFilter, setStatusFilter] = useState<"all" | "draft" | "published">("all");
-  const [sourceFilter, setSourceFilter] = useState("all");
   const [pending, startTransition] = useTransition();
   const [busyId, setBusyId] = useState<string | null>(null);
   const [confirm, setConfirm] = useState<{ id: string; title: string } | null>(null);
@@ -65,7 +64,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
 
   const filtered = useMemo(() => {
     let list = rows;
-    list = list.filter((r) => matchesContentFilters(r, statusFilter, guided ? sourceFilter : "all"));
+    list = list.filter((r) => matchesContentFilters(r, statusFilter));
     const needle = q.trim().toLowerCase();
     if (needle) {
       list = list.filter((r) =>
@@ -73,7 +72,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
       );
     }
     return list;
-  }, [rows, q, statusFilter, sourceFilter, search, guided]);
+  }, [rows, q, statusFilter, search]);
 
   function linkFor(id: string) {
     return hrefFor ? hrefFor(id) : `${config.adminPath}/${id}`;
@@ -172,7 +171,6 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
             ))}
           </div>
         )}
-        {guided && <label className="text-xs">แหล่งที่มา <select className="rounded-lg border border-line bg-paper p-2" value={sourceFilter} onChange={e => setSourceFilter(e.target.value)}><option value="all">ทุกแหล่งที่มา</option><option value="mms">MMS Hub</option><option value="risa">RISA</option></select></label>}
         {!hideNew && (
           <Link
             href={newHref ?? `${config.adminPath}/new`}
@@ -293,7 +291,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                       ))}
                       {config.hasStatus && (
                         <td className="px-4 py-2.5">
-                          {guided ? <div className="flex flex-col items-start gap-1"><StatusBadge status={String(row.status)} />{/^mms-hub-\d+$/.test(String(row.slug ?? "")) && <span className="text-[11px] text-muted">จาก MMS Hub</span>}</div> : <button
+                          {guided ? <StatusBadge status={String(row.status)} /> : <button
                             type="button"
                             disabled={busy}
                             onClick={() => onToggleStatus(row)}
