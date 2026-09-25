@@ -16,7 +16,7 @@
 .photo:nth-child(4) { bottom: 1%; right: -5%; transform: rotate(-6deg); }
 .lightSweep { position: absolute; top: -30%; left: var(--light-x); width: 24%; height: 160%; transform: translateX(-50%) rotate(18deg); background: linear-gradient(90deg, transparent, #c5d0ff22, #fff0d080, #d7e0ff22, transparent); filter: blur(25px); opacity: var(--light); pointer-events: none; }
 .grid { position: absolute; inset: 0; opacity: calc(.15 * (1 - var(--identity))); background-image: linear-gradient(#8da4ae20 1px, transparent 1px), linear-gradient(90deg, #8da4ae20 1px, transparent 1px); background-size: 84px 84px; mask-image: radial-gradient(ellipse, #000, transparent 75%); pointer-events: none; }
-.topbar { position: absolute; inset: 32px 5.5% auto; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.topbar { position: absolute; inset: 32px 5.5% auto; z-index: 5; display: flex; align-items: center; justify-content: flex-end; gap: 24px; }
 .brand { font-size: 23px; font-weight: 500; letter-spacing: .18em; display: flex; align-items: center; gap: 22px; }
 .brand > span { font-size: 9px; letter-spacing: .18em; font-weight: 400; color: #a7b7be; border-left: 1px solid #788d9755; padding-left: 22px; }
 .skip { display: inline-flex; align-items: center; gap: 25px; padding: 10px 0; border-bottom: 1px solid #a8bbc04d; font-size: 12px; }

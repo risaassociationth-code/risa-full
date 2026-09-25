@@ -118,7 +118,6 @@ export function RisingLineEntrance({ children, locale }: { children: ReactNode; 
         </div>
         <div className={styles.lightSweep} aria-hidden />
         <div className={styles.topbar}>
-          <span className={styles.brand}>RISA</span>
           <a href="#main" onClick={(e) => { e.preventDefault(); enter(); }} className={styles.skip}>
             {th ? "เข้าสู่เว็บไซต์" : "Enter website"}<span aria-hidden>↗</span>
           </a>
