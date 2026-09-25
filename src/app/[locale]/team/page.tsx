@@ -8,7 +8,7 @@ import { Section } from "@/components/site/Section";
 
 export async function generateMetadata(): Promise<Metadata> {
   const th = (await getLocale()) === "th";
-  return { title: th ? "บุคลากร" : "Our Team", description: th ? "รู้จักบุคลากรและช่องทางติดต่อของ RISA" : "Meet the RISA team and find their professional contact details." };
+  return { title: th ? "บุคลากร" : "Personnel", description: th ? "รู้จักบุคลากรและช่องทางติดต่อของ RISA" : "Meet the RISA team and find their professional contact details." };
 }
 
 export default async function TeamPage() {
@@ -19,14 +19,12 @@ export default async function TeamPage() {
       bio_th, bio_en, photo_url, photo_position, email, phone
     from staff_members where status = 'published' order by sort, created_at`;
   return <Section>
-    <nav aria-label={th ? "เกี่ยวกับสมาคม" : "About the association"} className="mb-10 flex flex-wrap gap-6 border-b border-line text-sm">
-      <Link href={`/${locale}/about`} className="pb-3 text-muted hover:text-ink">{th ? "เกี่ยวกับสมาคม" : "About RISA"}</Link>
-      <Link href={`/${locale}/committee`} className="pb-3 text-muted hover:text-ink">{th ? "คณะกรรมการ" : "Committee"}</Link>
-      <Link href={`/${locale}/team`} aria-current="page" className="border-b-2 border-accent pb-3 text-ink">{th ? "บุคลากร" : "Our Team"}</Link>
-    </nav>
-    <h1 className="text-4xl font-normal tracking-tight md:text-5xl">{th ? "บุคลากร" : "Our Team"}</h1>
-    <p className="mb-12 mt-4 max-w-2xl text-base leading-relaxed text-muted">{th ? "รู้จักทีมงานและช่องทางติดต่อของ RISA" : "Meet the people behind RISA and find their professional contact details."}</p>
+    <div className="mb-12 border-b border-line pb-10 md:pb-14">
+      <p className="mb-5 text-xs font-medium uppercase tracking-[.24em] text-accent">RISA · {th ? "ทีมงานของเรา" : "Our people"}</p>
+      <h1 className="text-4xl font-normal tracking-tight md:text-6xl">{th ? "บุคลากร" : "Personnel"}</h1>
+      <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted">{th ? "รู้จักทีมงานที่ร่วมขับเคลื่อน RISA พร้อมบทบาท ความเชี่ยวชาญ และช่องทางติดต่อสำหรับงาน" : "Meet the people behind RISA—their roles, expertise, and professional contact details."}</p>
+    </div>
     {members.length ? <div className="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{members.map(member => <StaffCard key={member.id} member={member} locale={locale} />)}</div>
-      : <div className="border-y border-line py-14 text-center text-muted"><p>{th ? "กำลังจัดเตรียมข้อมูลบุคลากร" : "Team profiles are coming soon."}</p><Link href={`/${locale}/contact`} className="mt-4 inline-block text-accent underline underline-offset-4">{th ? "ติดต่อสมาคม" : "Contact RISA"}</Link></div>}
+      : <div className="rounded-2xl border border-dashed border-line bg-surface px-6 py-16 text-center"><h2 className="text-xl text-ink">{th ? "กำลังจัดเตรียมข้อมูลบุคลากร" : "Our team profiles are coming soon"}</h2><p className="mt-3 text-sm text-muted">{th ? "เราจะนำเสนอทีมงานของ RISA ที่นี่เร็ว ๆ นี้" : "We look forward to introducing the RISA team here."}</p><Link href={`/${locale}/news`} className="mt-6 inline-block text-accent underline underline-offset-4">{th ? "ติดตามข่าวสารจาก RISA" : "Read the latest RISA news"}</Link></div>}
   </Section>;
 }

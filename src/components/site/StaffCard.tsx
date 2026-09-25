@@ -10,18 +10,18 @@ export function StaffCard({ member, locale, preview = false }: { member: StaffPr
   const email = member.email.trim();
   const phone = member.phone.trim();
   return (
-    <article className="min-w-0">
-      <div className="border border-[#b9af98] bg-[#eeeae1] p-2 shadow-[0_5px_18px_rgba(38,43,33,0.08)]">
-        <div className="border border-[#d3ccbc] bg-[#faf9f6] p-3 sm:p-4">
-          <div className="aspect-[4/5] overflow-hidden bg-[#e7e4dc]">
+    <article className="min-w-0 overflow-hidden rounded-2xl border border-line bg-paper shadow-sm">
+      <div className="border-b border-line bg-surface p-3">
+        <div className="overflow-hidden rounded-xl">
+          <div className="aspect-[4/5] overflow-hidden bg-[#e8edf2]">
             {photo ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={photo} alt={name} className="size-full object-cover" style={{ objectPosition: position }} loading="lazy" />
-            ) : <div className="flex size-full items-center justify-center text-[#8c8a7a]"><UserRound className="size-20" strokeWidth={1} aria-hidden /><span className="sr-only">{locale === "th" ? "ยังไม่มีรูปภาพ" : "No photo yet"}</span></div>}
+            ) : <div className="flex size-full items-center justify-center text-[#64758a]"><UserRound className="size-20" strokeWidth={1} aria-hidden /><span className="sr-only">{locale === "th" ? "ยังไม่มีรูปภาพ" : "No photo yet"}</span></div>}
           </div>
         </div>
       </div>
-      <div className="px-1 pb-3 pt-5">
+      <div className="p-5">
         <h2 className="break-words text-xl font-medium text-ink">{name}</h2>
         {pick(member, "position", locale) && <p className="mt-2 break-words text-sm text-accent">{pick(member, "position", locale)}</p>}
         {pick(member, "department", locale) && <p className="mt-1 break-words text-sm text-muted">{pick(member, "department", locale)}</p>}

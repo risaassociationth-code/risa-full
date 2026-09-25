@@ -8,7 +8,7 @@ export const revalidate = 3600;
 
 /** Every page that exists without a database row behind it. An empty path is the home page. */
 const STATIC_ROUTES = [
-  "", "/news", "/activities",
+  "", "/news", "/activities", "/team",
 ] as const;
 
 type SlugRow = { slug: string; updated_at: Date };

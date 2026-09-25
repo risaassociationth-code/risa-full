@@ -17,7 +17,7 @@ import {
 import { isContentCollection } from "@/lib/site-scope";
 
 function getCollection(key: string) {
-  if (!isContentCollection(key)) throw new Error("Only News and Activities editing is enabled.");
+  if (!isContentCollection(key)) throw new Error("Only News, Activities and Personnel editing is enabled.");
   return getConfiguredCollection(key);
 }
 

@@ -331,7 +331,7 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
         </div>}
       </>}
       {config.key === "team" && <Card>
-        <CardHead title="ตัวอย่างกรอบรูปและข้อมูลบนเว็บไซต์" />
+        <CardHead title="ตัวอย่างโปรไฟล์บนเว็บไซต์ / Live profile preview" />
         <div className="p-5">
           <div className="mb-4 flex gap-2" aria-label="ภาษาตัวอย่าง">
             {(["th", "en"] as const).map(lang => <button key={lang} type="button" aria-pressed={previewLocale === lang} onClick={() => setPreviewLocale(lang)} className="rounded border border-line px-3 py-1.5 text-sm aria-pressed:bg-accent aria-pressed:text-accent-ink">{lang === "th" ? "ไทย" : "English"}</button>)}
@@ -396,7 +396,7 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
             className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-accent-ink hover:brightness-110 disabled:opacity-60"
           >
             {pending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
-            {guided ? step < 3 ? "ถัดไป →" : values.status === "published" ? "บันทึกและเผยแพร่" : "บันทึกฉบับร่าง" : "บันทึก"}
+            {guided ? step < 3 ? "ถัดไป →" : values.status === "published" ? "บันทึกและเผยแพร่" : "บันทึกฉบับร่าง" : config.key === "team" ? (values.status === "published" ? "บันทึกและเผยแพร่ / Save and publish" : "บันทึกฉบับร่าง / Save draft") : "บันทึก"}
           </button>
         </div>
       </div>

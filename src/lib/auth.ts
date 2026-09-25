@@ -105,7 +105,7 @@ export async function isEditMode(): Promise<boolean> {
 /** Server-side lock: hidden legacy UI actions must not remain writable. */
 export async function requireDisabledFeature(): Promise<AdminUser> {
   await requireUser();
-  throw new Error("ขณะนี้เปิดให้จัดการเฉพาะข่าวสารและกิจกรรม / Only News and Activities editing is enabled.");
+  throw new Error("ขณะนี้เปิดให้จัดการเฉพาะข่าวสาร กิจกรรม และบุคลากร / Only News, Activities and Personnel editing is enabled.");
 }
 
 export async function audit(

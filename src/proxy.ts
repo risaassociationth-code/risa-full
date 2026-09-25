@@ -24,7 +24,7 @@ export function proxy(request: NextRequest) {
   if (matched) {
     const page = pathname.slice(matched.length + 1);
     // Keep old archive article URLs working for imported content.
-    if (page && page !== "/" && !/^\/(news|activities)(\/[^/]+)?\/?$/.test(page) && !/^\/mms-hub\/\d+\/?$/.test(page)) {
+    if (page && page !== "/" && page !== "/team" && page !== "/team/" && !/^\/(news|activities)(\/[^/]+)?\/?$/.test(page) && !/^\/mms-hub\/\d+\/?$/.test(page)) {
       return NextResponse.redirect(new URL(`/${matched}/news`, request.url));
     }
     const headers = new Headers(request.headers);
