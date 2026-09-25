@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { matchesContentFilters } from "@/lib/content-status";
 import { ManageImportedNewsButton } from "./ManageImportedNewsButton";
 
 export type DeskItem = {
@@ -13,22 +14,25 @@ export function ContentDesk({ items }: { items: DeskItem[] }) {
   const [query, setQuery] = useState("");
   const [kind, setKind] = useState("all");
   const [status, setStatus] = useState("all");
+  const [source, setSource] = useState("all");
   const filtered = items.filter(item =>
     (kind === "all" || item.kind === kind) &&
-    (status === "all" || (status === "imported" ? item.imported : !item.imported && item.status === status)) &&
+    matchesContentFilters(item, status, source) &&
     `${item.title} ${item.titleEn} ${item.partner ? "MMS Hub" : ""}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
   return <div>
-    <div className="mb-5 grid gap-3 sm:grid-cols-[1fr_auto_auto]">
+    <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_auto_auto_auto]">
       <label className="text-sm">ค้นหาหัวข้อ<input className="mt-1 block w-full rounded-lg border border-line bg-paper p-3" value={query} onChange={e => setQuery(e.target.value)} placeholder="พิมพ์ชื่อข่าว กิจกรรม หรือ MMS Hub…" /></label>
       <label className="text-sm">ประเภท<select className="mt-1 block w-full rounded-lg border border-line bg-paper p-3" value={kind} onChange={e => setKind(e.target.value)}><option value="all">ข่าวและกิจกรรม</option><option value="news">ข่าว</option><option value="activities">กิจกรรม</option></select></label>
-      <label className="text-sm">สถานะ<select className="mt-1 block w-full rounded-lg border border-line bg-paper p-3" value={status} onChange={e => setStatus(e.target.value)}><option value="all">ทุกสถานะ</option><option value="published">เผยแพร่แล้ว</option><option value="draft">ฉบับร่าง</option><option value="imported">จากคลัง MMS Hub</option></select></label>
+      <label className="text-sm">สถานะ<select className="mt-1 block w-full rounded-lg border border-line bg-paper p-3" value={status} onChange={e => setStatus(e.target.value)}><option value="all">ทุกสถานะ</option><option value="published">เผยแพร่แล้ว</option><option value="draft">ฉบับร่าง</option></select></label>
+      <label className="text-sm">แหล่งที่มา<select className="mt-1 block w-full rounded-lg border border-line bg-paper p-3" value={source} onChange={e => setSource(e.target.value)}><option value="all">ทุกแหล่งที่มา</option><option value="mms">MMS Hub</option><option value="risa">RISA</option></select></label>
     </div>
     <p className="mb-3 text-sm text-muted" aria-live="polite">พบ {filtered.length} จาก {items.length} รายการ</p>
+    <p className="mb-3 text-sm text-muted">เปลี่ยนสถานะ: เปิดตัวแก้ไข → ขั้นตอนเผยแพร่ → เลือกสถานะ → บันทึก</p>
     <div className="space-y-3">
       {filtered.map(item => <article key={`${item.kind}-${item.id}`} className="flex flex-wrap items-center gap-4 rounded-xl border border-line bg-paper p-4">
         {item.cover && <img src={item.cover} alt="" className="h-16 w-24 rounded-lg object-cover" /> /* eslint-disable-line @next/next/no-img-element */}
         <div className="min-w-0 flex-1 basis-48">
-          <div className="mb-2 flex flex-wrap gap-2 text-xs"><span>{item.kind === "news" ? "ข่าว" : "กิจกรรม"}</span><span className="rounded-full bg-surface px-2 py-0.5">{item.imported ? "จากคลัง MMS Hub" : item.status === "published" ? "เผยแพร่แล้ว" : "ฉบับร่าง — ยังไม่แสดงบนหน้าเว็บ"}</span>{item.partner && !item.imported && <span>MMS Hub · เนื้อหาจากเครือข่าย</span>}</div>
+          <div className="mb-2 flex flex-wrap gap-2 text-xs"><span>{item.kind === "news" ? "ข่าว" : "กิจกรรม"}</span><span className="rounded-full bg-surface px-2 py-0.5">{item.status === "published" ? "เผยแพร่แล้ว" : "ฉบับร่าง — ยังไม่แสดงบนหน้าเว็บ"}</span>{item.partner && <span>MMS Hub · เนื้อหาจากเครือข่าย</span>}</div>
           <h2 className="font-medium">{item.title || item.titleEn || "ยังไม่มีหัวข้อ"}</h2>
         </div>
         <div className="flex flex-wrap items-center gap-4 text-sm">

@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
+import { matchesContentFilters } from "@/lib/content-status";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
@@ -53,7 +54,8 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
   }
   const [q, setQ] = useState("");
   const guided = config.key === "news" || config.key === "activities";
-  const [statusFilter, setStatusFilter] = useState<"all" | "draft" | "published" | "imported">("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "draft" | "published">("all");
+  const [sourceFilter, setSourceFilter] = useState("all");
   const [pending, startTransition] = useTransition();
   const [busyId, setBusyId] = useState<string | null>(null);
   const [confirm, setConfirm] = useState<{ id: string; title: string } | null>(null);
@@ -63,7 +65,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
 
   const filtered = useMemo(() => {
     let list = rows;
-    if (statusFilter !== "all") list = list.filter((r) => statusFilter === "imported" ? String(r.id).startsWith("mms-") : r.status === statusFilter && (!guided || !String(r.id).startsWith("mms-")));
+    list = list.filter((r) => matchesContentFilters(r, statusFilter, guided ? sourceFilter : "all"));
     const needle = q.trim().toLowerCase();
     if (needle) {
       list = list.filter((r) =>
@@ -71,7 +73,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
       );
     }
     return list;
-  }, [rows, q, statusFilter, search, guided]);
+  }, [rows, q, statusFilter, sourceFilter, search, guided]);
 
   function linkFor(id: string) {
     return hrefFor ? hrefFor(id) : `${config.adminPath}/${id}`;
@@ -155,7 +157,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
         </div>
         {config.hasStatus && (
           <div className="flex items-center rounded-lg border border-line p-0.5">
-            {(["all", "published", "draft", ...(guided ? ["imported" as const] : [])] as const).map((s) => (
+            {(["all", "published", "draft"] as const).map((s) => (
               <button
                 key={s}
                 type="button"
@@ -165,11 +167,12 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                   statusFilter === s ? "bg-ink text-white" : "text-muted hover:bg-surface",
                 )}
               >
-                {s === "all" ? "ทั้งหมด" : s === "imported" ? "จาก MMS Hub" : STATUS_LABEL[s]}
+                {s === "all" ? "ทั้งหมด" : STATUS_LABEL[s]}
               </button>
             ))}
           </div>
         )}
+        {guided && <label className="text-xs">แหล่งที่มา <select className="rounded-lg border border-line bg-paper p-2" value={sourceFilter} onChange={e => setSourceFilter(e.target.value)}><option value="all">ทุกแหล่งที่มา</option><option value="mms">MMS Hub</option><option value="risa">RISA</option></select></label>}
         {!hideNew && (
           <Link
             href={newHref ?? `${config.adminPath}/new`}
@@ -181,6 +184,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
         )}
       </div>
 
+      {guided && <p className="mb-3 text-sm text-muted">เปลี่ยนสถานะ: เปิดตัวแก้ไข → ขั้นตอนเผยแพร่ → เลือกสถานะ → บันทึก</p>}
       <Card className="overflow-hidden">
         {filtered.length === 0 ? (
           <EmptyState
@@ -289,7 +293,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                       ))}
                       {config.hasStatus && (
                         <td className="px-4 py-2.5">
-                          {imported ? <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[11px] text-muted">จากคลัง MMS Hub</span> : guided ? <StatusBadge status={String(row.status)} /> : <button
+                          {guided ? <div className="flex flex-col items-start gap-1"><StatusBadge status={String(row.status)} />{/^mms-hub-\d+$/.test(String(row.slug ?? "")) && <span className="text-[11px] text-muted">จาก MMS Hub</span>}</div> : <button
                             type="button"
                             disabled={busy}
                             onClick={() => onToggleStatus(row)}
