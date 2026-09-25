@@ -7,6 +7,7 @@ export function isEnabledAdminPath(path: string) {
 }
 export function publicTabs(locale: string) {
   return [
+    { href: `/${locale}`, label: locale === "th" ? "หน้าแรก" : "Home", newTab: false, children: [] },
     { href: `/${locale}/news`, label: locale === "th" ? "ข่าวสาร" : "News", newTab: false, children: [] },
     { href: `/${locale}/activities`, label: locale === "th" ? "กิจกรรม" : "Activities", newTab: false, children: [] },
   ];
