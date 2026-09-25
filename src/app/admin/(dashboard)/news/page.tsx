@@ -14,7 +14,7 @@ export default async function Page() {
   const allNews: Row[] = [...rows, ...imported.map((article) => ({ ...article } as Row))]
     .sort((a, b) => (Date.parse(String(b.published_at ?? "")) || 0) - (Date.parse(String(a.published_at ?? "")) || 0));
   return <div>
-    <Link href="/admin/content" className="mb-4 inline-block text-sm text-accent">ดูข่าวและกิจกรรมในที่เดียว →</Link>
+    <Link href="/admin/activities" className="mb-4 inline-block text-sm text-accent">จัดการกิจกรรม →</Link>
     <PageHeader title="ข่าวสาร" description={`${allNews.length} ข่าวบนหน้าจัดการ · ${rows.length} ข่าวในตัวแก้ไข · ${imported.length} ข่าวจาก MMS Hub`} />
     <p className="mb-4 text-sm text-muted">คลิกหัวข้อหรือ “แก้ไข” แล้วทำตามขั้นตอน เนื้อหา → รูปภาพ → ดูตัวอย่าง → เผยแพร่ ข่าวจาก MMS Hub จะคงเครดิตต้นฉบับไว้</p>
     <CollectionTable config={{ ...config, hasSort: false }} rows={allNews} />

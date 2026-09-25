@@ -91,12 +91,12 @@ export function HeaderNav({ items, ctaLabel, ctaHref, menuLabel }: Props) {
         </ul>
       </nav>
 
-      <Link
-        href={ctaHref || "#"}
+      {ctaHref && ctaLabel && <Link
+        href={ctaHref}
         className="hidden h-9 shrink-0 items-center rounded-lg bg-ink px-4 text-[13px] font-medium text-white transition-colors hover:bg-ink-2 lg:inline-flex"
       >
         {ctaLabel}
-      </Link>
+      </Link>}
 
       <button
         type="button"
@@ -181,12 +181,12 @@ export function HeaderNav({ items, ctaLabel, ctaHref, menuLabel }: Props) {
                   </li>
                 ))}
               </ul>
-              <Link
-                href={ctaHref || "#"}
+              {ctaHref && ctaLabel && <Link
+                href={ctaHref}
                 className="mt-4 flex h-11 items-center justify-center rounded-lg bg-ink px-4 text-sm font-medium text-white"
               >
                 {ctaLabel}
-              </Link>
+              </Link>}
             </nav>
           </div>
         </div>, document.body

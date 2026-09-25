@@ -1,22 +1,22 @@
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { SocialIcon, type SocialName } from "./SocialIcons";
-import { getFooterLinks, getSettings } from "@/lib/content";
+import { getSettings } from "@/lib/content";
+import { publicTabs } from "@/lib/site-scope";
 import { getLocale } from "@/lib/request";
-import { localePath, pick } from "@/lib/i18n";
+import { pick } from "@/lib/i18n";
 import { Editable, EditableRich } from "@/components/editable/Editable";
 
 export async function Footer() {
-  const [locale, links, settings] = await Promise.all([
-    getLocale(), getFooterLinks(), getSettings(),
+  const [locale, settings] = await Promise.all([
+    getLocale(), getSettings(),
   ]);
-  const L = (href: string) => localePath(locale, href);
+  const links = publicTabs(locale).map((item) => ({ id: item.href, href: item.href, label_th: item.label, label_en: item.label, new_tab: false, column_key: "menu" }));
   const address = pick(settings, "address", locale);
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${settings.map_lat},${settings.map_lng}`;
 
   const columns = [
     { key: "menu", titleKey: "global.footer.menu_title" },
-    { key: "resources", titleKey: "global.footer.contact_title" },
   ];
 
   const socials = [
@@ -77,7 +77,7 @@ export async function Footer() {
                 .map((l) => (
                   <li key={l.id}>
                     <Link
-                      href={l.href.startsWith("/") ? L(l.href) : l.href}
+                      href={l.href}
                       target={l.new_tab ? "_blank" : undefined}
                       className="text-sm text-muted transition-colors hover:text-accent"
                     >

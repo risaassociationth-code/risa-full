@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { sql } from "@/lib/db";
-import { audit, hashPassword, requireAdmin, requireUser } from "@/lib/auth";
+import { audit, hashPassword, requireDisabledFeature as requireAdmin, requireDisabledFeature as requireUser } from "@/lib/auth";
 
 export type ActionResult<T = undefined> =
   | ({ ok: true } & (T extends undefined ? { data?: undefined } : { data: T }))

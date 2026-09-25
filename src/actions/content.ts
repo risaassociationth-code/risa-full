@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { sql } from "@/lib/db";
-import { audit, requireUser } from "@/lib/auth";
+import { audit, requireDisabledFeature as requireUser } from "@/lib/auth";
 import { sanitizeHtml } from "@/lib/utils";
 import { REGISTRY } from "@/content/registry";
 

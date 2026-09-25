@@ -13,10 +13,10 @@ export default async function Page() {
   const imported = mmsActivities.filter((activity) => !managedSlugs.has(activity.slug));
   const all: Row[] = [...rows, ...imported.map((activity) => ({ ...activity } as Row))];
   return <div>
-    <Link href="/admin/content" className="mb-4 inline-block text-sm text-accent">ดูข่าวและกิจกรรมในที่เดียว →</Link>
+    <Link href="/admin/news" className="mb-4 inline-block text-sm text-accent">จัดการข่าวสาร →</Link>
     <PageHeader title="กิจกรรม" description={`${all.length} รายการ · ${rows.length} รายการในตัวแก้ไข · ${imported.length} รายการจาก MMS Hub`} />
     <p className="mb-4 text-sm text-muted">คลิกชื่อกิจกรรมจาก MMS Hub เพื่อนำเข้าและแก้ไข โดยคงสถานะเผยแพร่เดิม วันที่เผยแพร่ต้นฉบับไม่ใช่วันจัดกิจกรรม โปรดตรวจสอบและเพิ่มวันจัดจริงเมื่อแก้ไข</p>
     <CollectionTable config={{ ...config, hasSort: false }} rows={all} />
-    <Link href="/th/mms-hub" className="mt-5 inline-block text-sm text-accent hover:underline">ดูคลัง MMS Hub ทั้งหมด ↗</Link>
+    <Link href="/th/activities" className="mt-5 inline-block text-sm text-accent hover:underline">ดูกิจกรรมบนเว็บไซต์ ↗</Link>
   </div>;
 }

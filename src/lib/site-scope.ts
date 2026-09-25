@@ -1,0 +1,13 @@
+export const CONTENT_COLLECTIONS = ["news", "activities"] as const;
+export function isContentCollection(key: string) {
+  return CONTENT_COLLECTIONS.some(value => value === key);
+}
+export function isEnabledAdminPath(path: string) {
+  return path === "/admin/login" || /^\/admin\/(news|activities)(\/[^/]+)?\/?$/.test(path);
+}
+export function publicTabs(locale: string) {
+  return [
+    { href: `/${locale}/news`, label: locale === "th" ? "ข่าวสาร" : "News", newTab: false, children: [] },
+    { href: `/${locale}/activities`, label: locale === "th" ? "กิจกรรม" : "Activities", newTab: false, children: [] },
+  ];
+}

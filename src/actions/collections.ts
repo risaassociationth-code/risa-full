@@ -8,12 +8,18 @@ import { validateStaff } from "@/lib/staff";
 import { mmsActivities, mmsNews } from "@/lib/mms-import";
 import {
   columnKinds,
-  getCollection,
+  getCollection as getConfiguredCollection,
   rowTitle,
   type CollectionConfig,
   type ColumnKind,
   type Row,
 } from "@/components/admin/collection-config";
+import { isContentCollection } from "@/lib/site-scope";
+
+function getCollection(key: string) {
+  if (!isContentCollection(key)) throw new Error("Only News and Activities editing is enabled.");
+  return getConfiguredCollection(key);
+}
 
 /** Everything postgres.js will accept as a bound parameter in this console. */
 export type DbValue = string | number | boolean | string[] | null;

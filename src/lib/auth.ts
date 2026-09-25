@@ -99,9 +99,13 @@ export async function requireAdmin(): Promise<AdminUser> {
 
 /** Inline editing is on only when an admin is signed in AND has toggled it. */
 export async function isEditMode(): Promise<boolean> {
-  const jar = await cookies();
-  if (jar.get(EDIT_COOKIE)?.value !== "1") return false;
-  return (await getCurrentUser()) !== null;
+  return false;
+}
+
+/** Server-side lock: hidden legacy UI actions must not remain writable. */
+export async function requireDisabledFeature(): Promise<AdminUser> {
+  await requireUser();
+  throw new Error("ขณะนี้เปิดให้จัดการเฉพาะข่าวสารและกิจกรรม / Only News and Activities editing is enabled.");
 }
 
 export async function audit(

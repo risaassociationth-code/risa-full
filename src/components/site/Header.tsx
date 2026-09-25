@@ -1,32 +1,19 @@
 import Link from "next/link";
 import { RisingLineEntrance } from "./RisingLineEntrance";
-import { getContentMap, blockValue, getNav, getSettings } from "@/lib/content";
+import { getSettings } from "@/lib/content";
 import { getLocale } from "@/lib/request";
 import { localePath, pick, t } from "@/lib/i18n";
-import { HeaderNav, type NavNode } from "./HeaderNav";
+import { HeaderNav } from "./HeaderNav";
 import { LocaleSwitch } from "./LocaleSwitch";
-import { singleHomeLink } from "@/lib/navigation";
+import { publicTabs } from "@/lib/site-scope";
 
 export async function Header() {
-  const [locale, nav, settings, map] = await Promise.all([
-    getLocale(), getNav(), getSettings(), getContentMap(),
+  const [locale, settings] = await Promise.all([
+    getLocale(), getSettings(),
   ]);
   const L = (href: string) => localePath(locale, href);
 
-  const items: NavNode[] = singleHomeLink(nav.map((n) => ({
-    label: pick(n, "label", locale),
-    href: n.href ? L(n.href) : "",
-    newTab: n.new_tab,
-    children: n.children.map((c) => ({
-      label: pick(c, "label", locale),
-      href: c.href ? L(c.href) : "",
-      newTab: c.new_tab,
-      children: [],
-    })),
-  })));
-
-  const ctaLabel = blockValue(map.get("global.header.cta_label"), locale);
-  const ctaHref = blockValue(map.get("global.header.cta_href"), locale);
+  const items = publicTabs(locale);
   const orgName = pick(settings, "org_name", locale);
 
   return (
@@ -54,8 +41,8 @@ export async function Header() {
         <div className="ml-auto flex items-center gap-2 lg:gap-3">
           <HeaderNav
             items={items}
-            ctaLabel={ctaLabel}
-            ctaHref={ctaHref.startsWith("/") ? L(ctaHref) : ctaHref}
+            ctaLabel=""
+            ctaHref=""
             menuLabel={t(locale, "menu")}
           />
           <LocaleSwitch current={locale} />
