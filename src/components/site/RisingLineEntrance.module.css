@@ -2,7 +2,8 @@
 .homeNav { position: fixed; inset: 0 0 auto; z-index: 60; opacity: 0; visibility: hidden; transition: opacity 220ms ease; }
 .homeNav[data-visible="true"] { opacity: 1; visibility: visible; }
 .homeNav header > div, .normalNav header > div { min-height: 80px; }
-.stage { --progress: 0; --copy: 1; --rise: 0px; --identity: 0; --trace: .025; --fallback: 0; --light: 0; --light-x: -30%; height: 300svh; position: relative; color: #eeeae1; background: #171918; }
+/* The pinned scene occupies 100svh; the remaining height is the animation's scroll distance. */
+.stage { --progress: 0; --copy: 1; --rise: 0px; --identity: 0; --trace: .025; --fallback: 0; --light: 0; --light-x: -30%; height: 200svh; position: relative; color: #eeeae1; background: #171918; }
 .scene { position: sticky; top: 0; height: 100svh; min-height: 500px; overflow: hidden; isolation: isolate; background: radial-gradient(ellipse at 50% 43%, #3c403d 0%, #262b29 42%, #171918 78%); }
 .collage { position: absolute; inset: 0; pointer-events: none; opacity: var(--collage, .18); }
 .collage::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 46%, #08112b 0%, #08112bd9 24%, transparent 63%), linear-gradient(0deg, #050a1b 0%, transparent 20%, transparent 84%, #050a1b 100%); }
@@ -60,7 +61,7 @@
   .photo:nth-child(2) { top: 9%; right: -19%; }
   .photo:nth-child(3) { bottom: 9%; left: -18%; }
   .photo:nth-child(4) { bottom: 3%; right: -20%; }
-  .stage { height: 270svh; }
+  .stage { height: 185svh; }
   .scene { min-height: 500px; }
   .topbar { top: 23px; inset-inline: 6%; }
   .brand { font-size: 20px; }
