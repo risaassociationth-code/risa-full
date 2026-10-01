@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import { ArrowDown, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import styles from "./RisingLineEntrance.module.css";
 
@@ -119,7 +120,7 @@ export function RisingLineEntrance({ children, locale }: { children: ReactNode; 
         <div className={styles.lightSweep} aria-hidden />
         <div className={styles.topbar}>
           <a href="#main" onClick={(e) => { e.preventDefault(); enter(); }} className={styles.skip}>
-            {th ? "เข้าสู่เว็บไซต์" : "Enter website"}<span aria-hidden>↗</span>
+            {th ? "เข้าสู่เว็บไซต์" : "Enter website"}<ArrowRight size={18} aria-hidden />
           </a>
         </div>
         <div className={styles.opening}>
@@ -136,10 +137,10 @@ export function RisingLineEntrance({ children, locale }: { children: ReactNode; 
         </div>
         <div className={styles.identity}>
           <p className={styles.eyebrow}>RESEARCH AND INDUSTRY STANDARDS ADVANCEMENT ASSOCIATION</p>
-          <a href="#main" onClick={(e) => { e.preventDefault(); enter(); }}>{th ? "สำรวจข่าวสารล่าสุด" : "Explore the latest news"}<span aria-hidden>↓</span></a>
+          <a href="#main" onClick={(e) => { e.preventDefault(); enter(); }}>{th ? "สำรวจข่าวสารล่าสุด" : "Explore the latest news"}<ArrowDown size={18} aria-hidden /></a>
         </div>
         <div className={styles.bottom}>
-          <span className={styles.scrollHint}>{th ? "เลื่อนเพื่อสำรวจ" : "SCROLL TO EXPLORE"}<span aria-hidden>↓</span></span>
+          <span className={styles.scrollHint}>{th ? "เลื่อนเพื่อสำรวจ" : "SCROLL TO EXPLORE"}<ArrowDown size={18} aria-hidden /></span>
         </div>
         <div className={styles.progress} aria-hidden><span /></div>
       </div>

@@ -2,8 +2,8 @@
 .homeNav { position: fixed; inset: 0 0 auto; z-index: 60; opacity: 0; visibility: hidden; transition: opacity 220ms ease; }
 .homeNav[data-visible="true"] { opacity: 1; visibility: visible; }
 .homeNav header > div, .normalNav header > div { min-height: 80px; }
-.stage { --progress: 0; --copy: 1; --rise: 0px; --identity: 0; --trace: .025; --fallback: 0; --light: 0; --light-x: -30%; height: 300svh; position: relative; color: #eeeae1; background: #050a1b; }
-.scene { position: sticky; top: 0; height: 100svh; min-height: 500px; overflow: hidden; isolation: isolate; background: radial-gradient(ellipse at 50% 43%, #192b5b 0%, #0c1635 42%, #050a1b 78%); }
+.stage { --progress: 0; --copy: 1; --rise: 0px; --identity: 0; --trace: .025; --fallback: 0; --light: 0; --light-x: -30%; height: 300svh; position: relative; color: #eeeae1; background: #171918; }
+.scene { position: sticky; top: 0; height: 100svh; min-height: 500px; overflow: hidden; isolation: isolate; background: radial-gradient(ellipse at 50% 43%, #3c403d 0%, #262b29 42%, #171918 78%); }
 .collage { position: absolute; inset: 0; pointer-events: none; opacity: var(--collage, .18); }
 .collage::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 46%, #08112b 0%, #08112bd9 24%, transparent 63%), linear-gradient(0deg, #050a1b 0%, transparent 20%, transparent 84%, #050a1b 100%); }
 .photo { position: absolute; width: 46%; height: 43%; overflow: hidden; background: #254377; mask-image: radial-gradient(ellipse, #000 30%, transparent 73%); }
@@ -35,9 +35,9 @@
 .stage[data-ready="true"] .fallbackVisual { visibility: hidden; }
 .identity { position: absolute; left: 8%; right: 8%; top: 76%; text-align: center; opacity: var(--identity); visibility: hidden; transform: translateY(calc(18px * (1 - var(--identity)))); }
 .stage[data-phase="identity"] .identity, .stage[data-simple="true"] .identity { visibility: visible; }
-.identity .eyebrow { font-size: clamp(10px, .9vw, 13px); letter-spacing: .18em; line-height: 1.9; max-width: 720px; margin-inline: auto; }
+.identity .eyebrow { font-size: clamp(12px, 1.1vw, 15px); letter-spacing: .1em; line-height: 1.8; max-width: 720px; margin-inline: auto; }
 .statement { font-size: clamp(16px, 1.7vw, 23px); font-weight: 300; margin-top: 15px; color: #e2e7e8; }
-.identity a { margin-top: 20px; font-size: 12px; display: inline-flex; align-items: center; gap: 20px; border-bottom: 1px solid #bfa36380; padding-bottom: 7px; }
+.identity a { margin-top: 20px; font-size: 15px; display: inline-flex; align-items: center; gap: 20px; border-bottom: 1px solid #bfa36380; padding-bottom: 7px; }
 .identity a span { color: #d5bd83; }
 .bottom { position: absolute; inset: auto 5.5% 35px; display: flex; justify-content: space-between; align-items: end; gap: 20px; }
 .scrollHint { display: flex; align-items: center; gap: 20px; font-size: 9px; letter-spacing: .17em; color: #a7b7be; }
@@ -72,7 +72,7 @@
   .canvas { inset: 25% 0% 38%; }
   .fallbackVisual { inset: 31% 6% 26%; }
   .identity { left: 9%; right: 9%; top: 70%; }
-  .identity .eyebrow { font-size: 8px; letter-spacing: .10em; }
+  .identity .eyebrow { font-size: 12px; letter-spacing: .06em; }
   .statement { margin-top: 12px; font-size: 16px; }
   .identity a { margin-top: 14px; }
   .bottom { inset-inline: 6%; bottom: 27px; align-items: center; }

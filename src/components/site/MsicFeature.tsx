@@ -1,3 +1,4 @@
+import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -11,7 +12,7 @@ export function MsicFeature({ locale }: { locale: string }) {
       <p className="minimal-eyebrow">{th ? "ภาพกิจกรรมที่ผ่านมา · MSIC" : "EVENT HIGHLIGHT · MSIC"}</p>
       <h2>MedSpark Innovation Competition</h2>
       <p>{th ? "พื้นที่สำหรับนำเสนอแนวคิด แลกเปลี่ยนมุมมอง และต่อยอดนวัตกรรมทางการแพทย์ของเยาวชน" : "A space for young people to present ideas, exchange perspectives and explore medical innovation."}</p>
-      <Link href={`/${locale}/activities/msic-2026`}>{th ? "ชมภาพกิจกรรม" : "Explore the event"} <span aria-hidden>↗</span></Link>
+      <Link href={`/${locale}/activities/msic-2026`}>{th ? "ชมภาพกิจกรรม" : "Explore the event"} <ArrowRight size={18} aria-hidden /></Link>
     </div>
   </section>;
 }
