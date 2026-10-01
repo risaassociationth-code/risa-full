@@ -3,7 +3,7 @@ export function isContentCollection(key: string) {
   return CONTENT_COLLECTIONS.some(value => value === key);
 }
 export function isEnabledAdminPath(path: string) {
-  return path === "/admin/login" || /^\/admin\/(news|activities|team)(\/[^/]+)?\/?$/.test(path);
+  return path === "/admin" || path === "/admin/" || path === "/admin/login" || /^\/admin\/(news|activities|team)(\/[^/]+)?\/?$/.test(path);
 }
 export function publicTabs(locale: string) {
   return [

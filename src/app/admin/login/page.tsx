@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
+import { safeLoginReturn } from "@/lib/login-return";
 import { LoginForm } from "@/components/admin/LoginForm";
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
@@ -7,9 +8,9 @@ import { ArrowLeft, ArrowUpRight } from "lucide-react";
 export const metadata = { title: "เข้าสู่ระบบ · RISA Admin" };
 
 export default async function LoginPage({ searchParams }: PageProps<"/admin/login">) {
-  if (await getCurrentUser()) redirect("/admin");
   const { next } = await searchParams;
-  const target = typeof next === "string" && next.startsWith("/") ? next : "/admin";
+  const target = safeLoginReturn(next);
+  if (await getCurrentUser()) redirect(target);
 
   return (
     <div className="admin-login">

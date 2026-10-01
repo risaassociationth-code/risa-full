@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import { proxy } from "../src/proxy";
 import { ADMIN_NAV } from "../src/components/admin/nav";
 import { isContentCollection, publicTabs } from "../src/lib/site-scope";
-assert.deepEqual(ADMIN_NAV.flatMap(g => g.links.map(l => l.href)), ["/admin/news", "/admin/activities", "/admin/team"]);
+assert.deepEqual(ADMIN_NAV.flatMap(g => g.links.map(l => l.href)), ["/admin", "/admin/news", "/admin/activities", "/admin/team"]);
 for (const locale of ["th", "en"]) {
   assert.deepEqual(publicTabs(locale).map(t => t.href), [`/${locale}`, `/${locale}/news`, `/${locale}/activities`, `/${locale}/team`]);
   assert.equal(publicTabs(locale)[3].label, locale === "th" ? "บุคลากร" : "Personnel");
@@ -14,11 +14,11 @@ for (const locale of ["th", "en"]) {
   }
   assert.equal(proxy(new NextRequest(`https://risa-association.com/${locale}/research`)).headers.get("location"), `https://risa-association.com/${locale}/news`);
 }
-for (const path of ["/admin", "/admin/settings", "/admin/pages", "/admin/content", "/admin/navigation", "/admin/codex"]) {
+for (const path of ["/admin/settings", "/admin/pages", "/admin/content", "/admin/navigation", "/admin/codex"]) {
   assert.equal(proxy(new NextRequest(`https://risa-association.com${path}`)).headers.get("location"), "https://risa-association.com/admin/news");
   assert.equal(proxy(new NextRequest(`https://risa-association.com${path}`, {method:"POST"})).status, 403);
 }
-for (const path of ["/admin/login", "/admin/news", "/admin/activities/new", "/admin/news/123", "/admin/team", "/admin/team/new", "/admin/team/123"]) {
+for (const path of ["/admin", "/admin/", "/admin/login", "/admin/news", "/admin/activities/new", "/admin/news/123", "/admin/team", "/admin/team/new", "/admin/team/123"]) {
   assert.equal(proxy(new NextRequest(`https://risa-association.com${path}`)).status, 200);
 }
 assert.equal(proxy(new NextRequest("https://risa-association.com/api/admin/codex", {method:"POST"})).status,403);

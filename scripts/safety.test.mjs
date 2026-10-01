@@ -47,8 +47,10 @@ test('HTML policy preserves editorial formatting, local images and permitted lin
 
 const { safeLoginReturn } = load('src/lib/login-return.ts');
 test('login return only accepts enabled same-origin admin paths', () => {
-  for (const input of ['//example.invalid', 'https://example.invalid', '/admin/../news', '/admin/news/../../evil', '/admin/news\\evil', '/admin/%2f%2fevil', '/admin/news/%2e%2e', '/admin/login', '/admin/settings', '/admin/news\n', null]) assert.equal(safeLoginReturn(input), '/admin/news', String(input));
+  for (const input of ['//example.invalid', 'https://example.invalid', '/admin/../news', '/admin/news/../../evil', '/admin/news\\evil', '/admin/%2f%2fevil', '/admin/news/%2e%2e', '/admin/login', '/admin/settings', '/admin/news\n', null]) assert.equal(safeLoginReturn(input), '/admin', String(input));
   assert.equal(safeLoginReturn('/admin/activities/new?from=list#form'), '/admin/activities/new?from=list#form');
+  assert.equal(safeLoginReturn('/admin'), '/admin');
+  assert.equal(safeLoginReturn('/admin?from=login#start'), '/admin?from=login#start');
   assert.equal(safeLoginReturn('/admin/team/abc'), '/admin/team/abc');
 });
 test('locale links preserve repeated query keys, filters and pagination', () => {
@@ -56,6 +58,23 @@ test('locale links preserve repeated query keys, filters and pagination', () => 
   assert.equal(switchLocaleHref('/en/news', 'page=2&tag=a&tag=b', 'th'), '/th/news?page=2&tag=a&tag=b');
   assert.equal(switchLocaleHref('/th', '', 'en'), '/en');
   assert.equal(switchLocaleHref('/en/activities/msic-2026', '', 'th'), '/th/activities/msic-2026');
+});
+
+test('successful sign-in opens home by default and retains a permitted deep link', async () => {
+  let sessions = 0;
+  const { loginAction } = load('src/actions/auth.ts', {
+    'next/navigation': { redirect: value => { throw new Error(`REDIRECT:${value}`); } },
+    'next/cache': {},
+    '@/lib/auth': {
+      verifyLogin: async () => ({ id: 'local-editor', role: 'editor' }),
+      createSession: async () => { sessions++; },
+    },
+  });
+  for (const [next, expected] of [[null, '/admin'], ['/admin', '/admin'], ['/admin/news/example?from=list', '/admin/news/example?from=list'], ['//example.invalid', '/admin']]) {
+    const values = { username: 'local-editor', password: 'synthetic-only', next };
+    await assert.rejects(loginAction({}, { get: key => values[key] }), error => error.message === `REDIRECT:${expected}`);
+  }
+  assert.equal(sessions, 4);
 });
 test('language markup distinguishes translated English and Thai fallback', () => {
   const { contentLanguage } = load('src/lib/i18n.ts');

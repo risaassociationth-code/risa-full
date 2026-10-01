@@ -302,7 +302,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                             disabled={busy}
                             onClick={() => onToggleStatus(row)}
                             className="disabled:opacity-50"
-                            title="คลิกเพื่อสลับสถานะ"
+                            title={config.key === "team" ? "เปิดหน้าต่างยืนยันการเผยแพร่หรือซ่อนโปรไฟล์" : "คลิกเพื่อสลับสถานะ"}
                           >
                             <StatusBadge status={row.status as string} />
                           </button>}
