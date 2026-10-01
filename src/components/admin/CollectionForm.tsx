@@ -40,6 +40,7 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
   const [values, setValues] = useState<Row>(() => ({ ...(initial ?? {}), ...(scope ?? {}) }));
   const [savedSnapshot, setSavedSnapshot] = useState(() => JSON.stringify({ ...(initial ?? {}), ...(scope ?? {}) }));
   const [savedAt, setSavedAt] = useState<string>(String(initial?.updated_at ?? ""));
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [step, setStep] = useState(0);
   const [editLocale, setEditLocale] = useState<"th" | "en">("th");
   const [leaveHref, setLeaveHref] = useState<string | null>(null);
@@ -91,6 +92,7 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
   }
 
   function save(status?: "draft" | "published") {
+    setSaveError(null);
     const next = status ? { ...values, status } : values;
     if (guided && !String(next.title_th ?? "").trim() && !String(next.title_en ?? "").trim()) {
       toast.error("กรุณาใส่หัวข้อก่อนบันทึก"); setStep(0); return;
@@ -100,10 +102,11 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
         ? createRow(config.key, next)
         : updateRow(config.key, String(initial!.id), next)).catch(() => ({ ok: false as const, error: "เชื่อมต่อไม่สำเร็จ ข้อความยังอยู่ในหน้านี้ กรุณาลองบันทึกอีกครั้ง" }));
       if (!res.ok) {
+        setSaveError(res.error);
         toast.error(res.error);
         return;
       }
-      toast.success("บันทึกแล้ว");
+      toast.success(next.status === "published" ? "บันทึกและเผยแพร่แล้ว / Saved and published" : "บันทึกฉบับร่างแล้ว ยังไม่แสดงบนเว็บไซต์ / Draft saved; not public");
       bypassGuard.current = true;
       setValues(next);
       setSavedSnapshot(JSON.stringify(next));
@@ -317,6 +320,7 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
 
   return (
     <form onSubmit={onSubmit} inert={pending} className="space-y-5 pb-16">
+      {saveError && <p role="alert" className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">{saveError}</p>}
       {guided && <>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <button type="button" className="text-sm text-accent" onClick={() => dirty ? setLeaveHref(backHref) : router.push(backHref)}>← กลับรายการ{config.singular}</button>

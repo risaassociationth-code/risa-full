@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createSession, destroySession, verifyLogin } from "@/lib/auth";
+import { safeLoginReturn } from "@/lib/login-return";
 
 const LoginSchema = z.object({
   username: z.string().trim().toLowerCase().regex(/^[a-z0-9][a-z0-9_-]{2,31}$/, "ชื่อผู้ใช้ไม่ถูกต้อง"),
@@ -25,8 +26,7 @@ export async function loginAction(_prev: LoginState, formData: FormData): Promis
   if (!user) return { error: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง" };
 
   await createSession(user);
-  const next = String(formData.get("next") || "/admin");
-  redirect(next.startsWith("/") ? next : "/admin");
+  redirect(safeLoginReturn(formData.get("next")));
 }
 
 export async function logoutAction() {

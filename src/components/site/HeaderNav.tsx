@@ -6,12 +6,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, Home, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { Locale } from "@/lib/i18n";
 
 export type NavNode = { label: string; href: string; newTab: boolean; children: NavNode[] };
 
-type Props = { items: NavNode[]; ctaLabel: string; ctaHref: string; menuLabel: string };
+type Props = { items: NavNode[]; ctaLabel: string; ctaHref: string; menuLabel: string; locale: Locale };
 
-export function HeaderNav({ items, ctaLabel, ctaHref, menuLabel }: Props) {
+export function HeaderNav({ items, ctaLabel, ctaHref, menuLabel, locale }: Props) {
+  const navigationLabel = locale === "th" ? "เมนูหลัก" : "Main navigation";
+  const closeLabel = locale === "th" ? "ปิดเมนู" : "Close menu";
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -37,7 +40,7 @@ export function HeaderNav({ items, ctaLabel, ctaHref, menuLabel }: Props) {
 
   return (
     <>
-      <nav aria-label="เมนูหลัก" className="hidden lg:block">
+      <nav aria-label={navigationLabel} className="hidden lg:block">
         <ul className="flex items-center gap-0.5">
           {items.map((item) => (
             <li key={item.label} className="group relative">
@@ -111,7 +114,7 @@ export function HeaderNav({ items, ctaLabel, ctaHref, menuLabel }: Props) {
       {open && createPortal(
         <div className="fixed inset-0 z-[70] lg:hidden">
           <button
-            aria-label="ปิดเมนู"
+            aria-label={closeLabel}
             onClick={() => setOpen(false)}
             className="absolute inset-0 bg-ink/40 backdrop-blur-[2px]"
           />
@@ -121,13 +124,13 @@ export function HeaderNav({ items, ctaLabel, ctaHref, menuLabel }: Props) {
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                aria-label="ปิดเมนู"
+                aria-label={closeLabel}
                 className="-mr-2 inline-flex size-10 items-center justify-center rounded-lg hover:bg-surface"
               >
                 <X className="size-5" />
               </button>
             </div>
-            <nav className="min-h-0 flex-1 overflow-y-auto px-3 py-4" aria-label="เมนูหลัก">
+            <nav className="min-h-0 flex-1 overflow-y-auto px-3 py-4" aria-label={navigationLabel}>
               <ul className="space-y-0.5">
                 {items.map((item) => (
                   <li key={item.label}>

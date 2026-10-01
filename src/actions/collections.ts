@@ -36,9 +36,9 @@ function message(e: unknown): string {
   if (e instanceof Error) {
     if (e.message === "UNAUTHORISED") return "กรุณาเข้าสู่ระบบอีกครั้ง";
     if (e.message === "FORBIDDEN") return "บัญชีนี้ไม่มีสิทธิ์ดำเนินการ";
-    return e.message;
+    if ("code" in e && e.code === "23505") return "มีรายการที่ใช้ที่อยู่นี้แล้ว กรุณาเปิดรายการเดิมหรือตั้งที่อยู่ใหม่ / This address is already in use. Open the existing item or choose another address.";
   }
-  return "ดำเนินการไม่สำเร็จ";
+  return "ยังยืนยันการบันทึกไม่ได้ กรุณาเปิดรายการในแท็บใหม่เพื่อตรวจสอบก่อนลองอีกครั้ง ข้อความที่กำลังแก้ไขยังอยู่ในหน้านี้ / Save could not be confirmed. Check the list in a new tab before retrying; your edits are still here.";
 }
 
 // ── coercion ────────────────────────────────────────────────────────────────
@@ -166,10 +166,12 @@ export async function createRow(
     const columns = Object.keys(payload);
     if (columns.length === 0) return { ok: false, error: "ไม่มีข้อมูลให้บันทึก" };
 
-    const [row] = await sql<{ id: string }[]>`
-      insert into ${sql(config.table)} ${sql(payload, columns)} returning id`;
-
-    await audit(user.username, "create", config.table, row.id, null, payload);
+    const row = await sql.begin(async (tx) => {
+      const [created] = await tx<{ id: string }[]>`
+        insert into ${tx(config.table)} ${tx(payload, columns)} returning id`;
+      await audit(user.username, "create", config.table, created.id, null, payload, tx);
+      return created;
+    });
     revalidate(config);
     return { ok: true, data: { id: row.id } };
   } catch (e) {
@@ -208,10 +210,10 @@ export async function updateRow(
     const columns = Object.keys(payload);
     if (columns.length === 0) return { ok: false, error: "ไม่มีข้อมูลให้บันทึก" };
 
-    await sql`
-      update ${sql(config.table)} set ${sql(payload, columns)} where id = ${id}`;
-
-    await audit(user.username, "update", config.table, id, before, payload);
+    await sql.begin(async (tx) => {
+      await tx`update ${tx(config.table)} set ${tx(payload, columns)} where id = ${id}`;
+      await audit(user.username, "update", config.table, id, before, payload, tx);
+    });
     revalidate(config);
     return { ok: true, data: { id } };
   } catch (e) {
@@ -232,8 +234,10 @@ export async function deleteRow(key: string, id: string): Promise<ActionResult> 
       return { ok: false, error: "เนื้อหาจาก MMS Hub ต้องใช้สถานะฉบับร่างเพื่อซ่อนจากหน้าเว็บ" };
     }
 
-    await sql`delete from ${sql(config.table)} where id = ${id}`;
-    await audit(user.username, "delete", config.table, id, before, null);
+    await sql.begin(async (tx) => {
+      await tx`delete from ${tx(config.table)} where id = ${id}`;
+      await audit(user.username, "delete", config.table, id, before, null, tx);
+    });
     revalidate(config);
     return { ok: true };
   } catch (e) {
@@ -282,10 +286,12 @@ export async function duplicateRow(
     }
 
     const columns = Object.keys(payload);
-    const [row] = await sql<{ id: string }[]>`
-      insert into ${sql(config.table)} ${sql(payload, columns)} returning id`;
-
-    await audit(user.username, "duplicate", config.table, row.id, source, payload);
+    const row = await sql.begin(async (tx) => {
+      const [created] = await tx<{ id: string }[]>`
+        insert into ${tx(config.table)} ${tx(payload, columns)} returning id`;
+      await audit(user.username, "duplicate", config.table, created.id, source, payload, tx);
+      return created;
+    });
     revalidate(config);
     return { ok: true, data: { id: row.id } };
   } catch (e) {
@@ -332,9 +338,8 @@ export async function reorderRow(
       for (let i = 0; i < order.length; i++) {
         await tx`update ${tx(config.table)} set sort = ${i} where id = ${order[i]}`;
       }
+      await audit(user.username, "reorder", config.table, id, null, { direction }, tx);
     });
-
-    await audit(user.username, "reorder", config.table, id, null, { direction });
     revalidate(config);
     return { ok: true };
   } catch (e) {
@@ -359,8 +364,10 @@ export async function setStatus(
       select * from ${sql(config.table)} where id = ${id} limit 1`;
     if (!before) return { ok: false, error: "ไม่พบรายการ" };
 
-    await sql`update ${sql(config.table)} set status = ${status} where id = ${id}`;
-    await audit(user.username, "status", config.table, id, { status: before.status }, { status });
+    await sql.begin(async (tx) => {
+      await tx`update ${tx(config.table)} set status = ${status} where id = ${id}`;
+      await audit(user.username, "status", config.table, id, { status: before.status }, { status }, tx);
+    });
     revalidate(config);
     return { ok: true };
   } catch (e) {

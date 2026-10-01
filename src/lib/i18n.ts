@@ -1,3 +1,5 @@
+import { formatCalendarDate } from "./calendar-date";
+
 export const LOCALES = ["th", "en"] as const;
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = "th";
@@ -16,6 +18,14 @@ export function pick<T extends Record<string, unknown>>(
   if (typeof primary === "string" && primary.trim() !== "") return primary;
   const fallback = row[`${base}_${locale === "th" ? "en" : "th"}`];
   return typeof fallback === "string" ? fallback : "";
+}
+
+/** Mark untranslated Thai fields correctly without changing source content. */
+export function contentLanguage<T extends Record<string, unknown>>(row: T, base: string, locale: Locale): Locale {
+  const value = pick(row, base, locale);
+  if (locale === "en" && value === row[`${base}_th`] && /[\u0e00-\u0e7f]/.test(value)) return "th";
+  const primary = row[`${base}_${locale}`];
+  return typeof primary === "string" && primary.trim() ? locale : locale === "th" ? "en" : "th";
 }
 
 /** UI chrome strings that are not part of editable page content. */
@@ -108,15 +118,7 @@ export function t(locale: Locale, key: UiKey): string {
 const DATE_LOCALE = { th: "th-TH", en: "en-GB" } as const;
 
 export function formatDate(d: Date | string | null | undefined, locale: Locale): string {
-  if (!d) return "";
-  const date = typeof d === "string" ? new Date(d) : d;
-  if (Number.isNaN(date.getTime())) return "";
-  return new Intl.DateTimeFormat(DATE_LOCALE[locale], {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    calendar: locale === "th" ? "buddhist" : "gregory",
-  }).format(date);
+  return formatCalendarDate(d, DATE_LOCALE[locale]);
 }
 
 export function localePath(locale: Locale, href: string): string {

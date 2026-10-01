@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import { switchLocaleHref } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 import { LOCALES, type Locale } from "@/lib/i18n";
 
@@ -9,7 +10,7 @@ const SHORT: Record<Locale, string> = { th: "ไทย", en: "EN" };
 
 export function LocaleSwitch({ current }: { current: Locale }) {
   const pathname = usePathname();
-  const rest = pathname.replace(/^\/(th|en)/, "") || "";
+  const search = useSearchParams().toString();
 
   return (
     <div
@@ -20,7 +21,8 @@ export function LocaleSwitch({ current }: { current: Locale }) {
       {LOCALES.map((l) => (
         <Link
           key={l}
-          href={`/${l}${rest}`}
+          href={switchLocaleHref(pathname, search, l)}
+          lang={l}
           hrefLang={l}
           aria-current={l === current ? "true" : undefined}
           onClick={() => {

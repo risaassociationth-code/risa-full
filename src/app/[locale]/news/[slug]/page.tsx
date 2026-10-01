@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { getLocale } from "@/lib/request";
-import { formatDate, localePath, pick, t } from "@/lib/i18n";
+import { contentLanguage, formatDate, localePath, pick, t } from "@/lib/i18n";
 import { getNews, getNewsBySlug } from "@/lib/queries";
 import { sanitizeHtml } from "@/lib/utils";
 import { Section } from "@/components/site/Section";
@@ -49,11 +49,11 @@ export default async function NewsDetailPage({ params }: PageProps<"/[locale]/ne
             >
               {formatDate(item.published_at, locale)}
             </time>
-            <h1 className="mt-3 max-w-3xl text-[1.9rem] font-semibold leading-tight md:text-[2.5rem]">
+            <h1 lang={contentLanguage(item, "title", locale)} className="mt-3 max-w-3xl text-[1.9rem] font-semibold leading-tight md:text-[2.5rem]">
               {pick(item, "title", locale)}
             </h1>
             {pick(item, "excerpt", locale) && (
-              <p className="mt-4 max-w-2xl text-[17px] leading-relaxed text-muted">
+              <p lang={contentLanguage(item, "excerpt", locale)} className="mt-4 max-w-2xl text-[17px] leading-relaxed text-muted">
                 {pick(item, "excerpt", locale)}
               </p>
             )}
@@ -83,6 +83,7 @@ export default async function NewsDetailPage({ params }: PageProps<"/[locale]/ne
               )}
             </div>
             <div
+              lang={contentLanguage(item, "body", locale)}
               className="prose-risa"
               dangerouslySetInnerHTML={{ __html: sanitizeHtml(pick(item, "body", locale)) }}
             />

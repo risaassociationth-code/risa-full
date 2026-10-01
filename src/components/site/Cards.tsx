@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
 import type { Activity, News } from "@/lib/queries";
-import { formatDate, localePath, pick, t, type Locale } from "@/lib/i18n";
+import { contentLanguage, formatDate, localePath, pick, t, type Locale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { Placeholder } from "./Placeholder";
 
@@ -27,16 +27,16 @@ export function NewsCard({ item, locale }: { item: News; locale: Locale }) {
   const href = localePath(locale, `/news/${item.slug}`);
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-paper transition-colors hover:border-ink/25">
-      <Link href={href} className="flex h-full flex-col" aria-label={pick(item, "title", locale)}>
+      <Link href={href} className="flex h-full flex-col">
         <Cover url={item.cover_url} seed={item.slug} className="aspect-[16/10]" />
         <div className="flex flex-1 flex-col p-5">
           <time dateTime={item.published_at} className="text-xs font-medium uppercase tracking-wide text-faint">
             {formatDate(item.published_at, locale)}
           </time>
-          <h3 className="mt-2 line-clamp-2 text-[17px] font-semibold leading-snug">
+          <h3 lang={contentLanguage(item, "title", locale)} className="mt-2 line-clamp-2 text-[17px] font-semibold leading-snug">
             {pick(item, "title", locale)}
           </h3>
-          <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted">
+          <p lang={contentLanguage(item, "excerpt", locale)} className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted">
             {pick(item, "excerpt", locale)}
           </p>
           <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-accent">
@@ -64,10 +64,10 @@ export function ActivityCard({ item, locale }: { item: Activity; locale: Locale 
           )}
         </div>
         <div className="flex flex-1 flex-col p-5">
-          <h3 className="line-clamp-2 text-[17px] font-semibold leading-snug">
+          <h3 lang={contentLanguage(item, "title", locale)} className="line-clamp-2 text-[17px] font-semibold leading-snug">
             {pick(item, "title", locale)}
           </h3>
-          <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted">
+          <p lang={contentLanguage(item, "excerpt", locale)} className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted">
             {pick(item, "excerpt", locale)}
           </p>
           <dl className="mt-4 space-y-1.5 border-t border-line-soft pt-3 text-[13px] text-muted">

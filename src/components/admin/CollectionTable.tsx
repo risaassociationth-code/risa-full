@@ -58,6 +58,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
   const [pending, startTransition] = useTransition();
   const [busyId, setBusyId] = useState<string | null>(null);
   const [confirm, setConfirm] = useState<{ id: string; title: string } | null>(null);
+  const [visibilityChange, setVisibilityChange] = useState<Row | null>(null);
   const router = useRouter();
 
   const search = searchableColumns(config);
@@ -99,7 +100,11 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
     refresh();
   }
 
-  async function onToggleStatus(row: Row) {
+  async function onToggleStatus(row: Row, confirmed = false) {
+    if (config.key === "team" && !confirmed) {
+      setVisibilityChange(row);
+      return;
+    }
     const id = String(row.id);
     const next = row.status === "published" ? "draft" : "published";
     setBusyId(id);
@@ -107,6 +112,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
     setBusyId(null);
     if (!res.ok) return toast.error(res.error);
     setRows((prev) => prev.map((r) => (r.id === id ? { ...r, status: next } : r)));
+    setVisibilityChange(null);
     toast.success(next === "published" ? "เผยแพร่แล้ว" : "เปลี่ยนเป็นฉบับร่างแล้ว");
     refresh();
   }
@@ -339,6 +345,16 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
           </div>
         )}
       </Card>
+
+      <ConfirmDialog
+        open={visibilityChange !== null}
+        onOpenChange={(open) => !open && !pending && setVisibilityChange(null)}
+        title={visibilityChange?.status === "published" ? "ซ่อนโปรไฟล์จากเว็บไซต์? / Hide this profile?" : "เผยแพร่โปรไฟล์นี้? / Publish this profile?"}
+        description={visibilityChange ? `${cellText(visibilityChange, "name", true)} — ${visibilityChange.status === "published" ? "บุคคลทั่วไปจะไม่เห็นโปรไฟล์นี้ ข้อมูลยังเก็บไว้แก้ไขได้ / The profile will be hidden; its information remains saved." : "ทุกคนจะเห็นรูป ประวัติ และข้อมูลติดต่อที่กรอกไว้บนเว็บไซต์ โปรดตรวจสอบว่าอนุญาตให้เผยแพร่ / The photo, biography and entered contact details will be public. Confirm they may be shared."}` : ""}
+        confirmLabel={visibilityChange?.status === "published" ? "ยืนยันซ่อน / Hide profile" : "ยืนยันเผยแพร่ / Publish profile"}
+        pending={pending}
+        onConfirm={() => { if (visibilityChange) startTransition(async () => { await onToggleStatus(visibilityChange, true); }); }}
+      />
 
       <ConfirmDialog
         open={!!confirm}

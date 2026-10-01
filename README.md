@@ -58,6 +58,17 @@ user already exists the seed leaves it alone.
 
 ## Scripts
 
+Run `pnpm test` for the offline regression suite. It exercises HTML sanitization,
+login return paths, language links, calendar dates and collection transactions.
+The transaction tests execute the real actions with a rollback-capable mock;
+they never load environment files or connect to a database. For route types and
+type checking, run `pnpm exec next typegen` then `pnpm exec tsc --noEmit`.
+
+Additional offline checks: `pnpm exec tsx scripts/check-site-scope.ts`,
+`pnpm exec tsx scripts/check-content-status.ts`, and
+`pnpm exec tsx scripts/check-staff.ts`. Database migration, reset, seed and
+content-key checks require a separately approved development database.
+
 | Command | What it does |
 | --- | --- |
 | `pnpm dev` | Development server |

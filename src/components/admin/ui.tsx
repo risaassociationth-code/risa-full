@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { formatCalendarDate } from "@/lib/calendar-date";
 
 /** Small presentational pieces shared by every admin screen. */
 
@@ -127,12 +128,5 @@ export function formatThaiDateTime(value: string | Date | null | undefined): str
 }
 
 export function formatThaiDate(value: string | Date | null | undefined): string {
-  if (!value) return "—";
-  const date = typeof value === "string" ? new Date(value) : value;
-  if (Number.isNaN(date.getTime())) return "—";
-  return new Intl.DateTimeFormat("th-TH", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(date);
+  return formatCalendarDate(value, "th-TH", "short") || "—";
 }

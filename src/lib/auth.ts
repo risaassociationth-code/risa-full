@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 import { sql } from "./db";
+import type { TransactionSql } from "postgres";
 
 const SESSION_COOKIE = "risa_session";
 const EDIT_COOKIE = "risa_edit";
@@ -115,8 +116,9 @@ export async function audit(
   entityId: string,
   before: unknown,
   after: unknown,
+  transaction?: TransactionSql,
 ) {
-  await sql.begin(async (tx) => {
+  const write = async (tx: TransactionSql) => {
     // Older imported audit rows may have explicit IDs beyond the sequence's
     // current value. Serialize admin history writes while bringing it forward.
     await tx`select pg_advisory_xact_lock(734029, 1)`;
@@ -134,5 +136,8 @@ export async function audit(
       values (${actorEmail}, ${action}, ${entity}, ${entityId},
               ${before ? tx.json(before as never) : null},
               ${after ? tx.json(after as never) : null})`;
-  });
+  };
+  // Content writes pass their transaction so history failure rolls back both.
+  if (transaction) await write(transaction);
+  else await sql.begin(write);
 }

@@ -11,3 +11,9 @@ export function singleHomeLink<T extends { href: string; children: unknown[] }>(
     return true;
   });
 }
+
+/** Preserve filters and pagination when changing only the language. */
+export function switchLocaleHref(pathname: string, search: string, locale: "th" | "en") {
+  const rest = pathname.replace(/^\/(th|en)(?=\/|$)/, "");
+  return `/${locale}${rest}${search ? `?${search.replace(/^\?/, "")}` : ""}`;
+}

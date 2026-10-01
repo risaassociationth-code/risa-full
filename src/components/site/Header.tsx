@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { RisingLineEntrance } from "./RisingLineEntrance";
 import { getSettings } from "@/lib/content";
 import { getLocale } from "@/lib/request";
@@ -40,12 +41,13 @@ export async function Header() {
 
         <div className="ml-auto flex items-center gap-2 lg:gap-3">
           <HeaderNav
+            locale={locale}
             items={items}
             ctaLabel=""
             ctaHref=""
             menuLabel={t(locale, "menu")}
           />
-          <LocaleSwitch current={locale} />
+          <Suspense><LocaleSwitch current={locale} /></Suspense>
         </div>
       </div>
     </header>

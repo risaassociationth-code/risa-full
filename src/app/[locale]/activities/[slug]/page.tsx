@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, CalendarDays, ExternalLink, MapPin } from "lucide-react";
 import { getLocale } from "@/lib/request";
-import { formatDate, localePath, pick, t } from "@/lib/i18n";
+import { contentLanguage, formatDate, localePath, pick, t } from "@/lib/i18n";
 import { getActivityBySlug } from "@/lib/queries";
 import { sanitizeHtml } from "@/lib/utils";
 import { Placeholder } from "@/components/site/Placeholder";
@@ -42,11 +42,11 @@ export default async function ActivityDetailPage({
             <ArrowLeft className="size-3.5" />
             {t(locale, "back")}
           </Link>
-          <h1 className="max-w-3xl text-[1.9rem] font-semibold leading-tight md:text-[2.5rem]">
+          <h1 lang={contentLanguage(item, "title", locale)} className="max-w-3xl text-[1.9rem] font-semibold leading-tight md:text-[2.5rem]">
             {pick(item, "title", locale)}
           </h1>
           {pick(item, "excerpt", locale) && (
-            <p className="mt-4 max-w-2xl text-[17px] leading-relaxed text-muted">
+            <p lang={contentLanguage(item, "excerpt", locale)} className="mt-4 max-w-2xl text-[17px] leading-relaxed text-muted">
               {pick(item, "excerpt", locale)}
             </p>
           )}
@@ -64,6 +64,7 @@ export default async function ActivityDetailPage({
             )}
           </div>
           <div
+            lang={contentLanguage(item, "body", locale)}
             className="prose-risa"
             dangerouslySetInnerHTML={{ __html: sanitizeHtml(pick(item, "body", locale)) }}
           />

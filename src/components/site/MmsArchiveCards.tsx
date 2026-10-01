@@ -8,7 +8,7 @@ export function MmsArchiveCards({locale, categories, excludedIds = []}: {locale:
   <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">{mmsRecords.filter(r=>categories.includes(r.category) && !excludedIds.includes(r.id)).map(r=><Link key={r.id} href={`/${locale}/mms-hub/${r.id}`} className="block border-b border-line pb-6">
    {/* eslint-disable-next-line @next/next/no-img-element */}
    {r.cover&&<img src={r.cover} alt={r.title} loading="lazy" className="mb-4 h-52 w-full object-contain"/>}
-   <h3 className="text-lg">{r.title}</h3><span className="mt-3 block text-sm text-muted">{locale==='th'?'อ่านต้นฉบับที่นำเข้า':'Read imported source'} ↗</span>
+   <h3 lang="th" className="text-lg">{r.title}</h3><span className="mt-3 block text-sm text-muted">{locale==='th'?'อ่านต้นฉบับที่นำเข้า':'Read imported source'} ↗</span>
   </Link>)}</div>
  </section>;
 }
