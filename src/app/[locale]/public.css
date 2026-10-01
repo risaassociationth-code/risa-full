@@ -26,10 +26,8 @@ body .risa-public {
 .risa-public .risa-site-header nav a[aria-current="page"] { color: #ead6af; background: rgb(198 222 250 / 9%); }
 .risa-public .risa-site-header nav a:hover { background: rgb(198 222 250 / 12%); }
 .risa-public-menu-panel { background: #101c2e; border-left: 1px solid var(--color-line); }
-.risa-public .risa-logo-plate { display: inline-flex; flex-shrink: 0; align-items: center; padding: 6px 10px; background: #eef1f5; border: 1px solid #fff; border-radius: 12px; }
-.risa-public .risa-logo-plate img { filter: none; }
-.risa-public .risa-site-header .risa-logo-plate { padding: 6px 0; background: transparent; border: 0; border-radius: 0; }
-.risa-public .risa-site-header .risa-logo-plate img { filter: brightness(0) invert(1); }
+.risa-public .risa-logo-plate { display: inline-flex; flex-shrink: 0; align-items: center; padding: 6px 0; background: transparent; border: 0; border-radius: 0; }
+.risa-public .risa-logo-plate img { filter: brightness(0) invert(1); }
 .risa-public .bg-ink, .risa-public-menu .bg-ink { background-color: #c6defa; color: #0b1628; }
 .risa-public .risa-site-header > a:first-child:focus-visible { background: #c6defa; color: #0b1628; }
 .risa-public a:focus-visible, .risa-public button:focus-visible,
