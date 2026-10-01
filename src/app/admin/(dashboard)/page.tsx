@@ -4,9 +4,9 @@ import { ArrowRight, CalendarDays, Newspaper, UsersRound } from "lucide-react";
 export const metadata = { title: "หน้าหลักผู้ดูแล · RISA Admin" };
 
 const actions = [
-  { href: "/admin/news", title: "จัดการข่าวสาร", english: "News", description: "เพิ่มข่าวใหม่ แก้ไขข่าวเดิม และเลือกข่าวที่พร้อมเผยแพร่", icon: Newspaper },
-  { href: "/admin/activities", title: "จัดการกิจกรรม", english: "Activities", description: "เพิ่มกิจกรรม อัปเดตรายละเอียด และเผยแพร่ให้ผู้เข้าชมทราบ", icon: CalendarDays },
-  { href: "/admin/team", title: "จัดการบุคลากร", english: "Personnel", description: "เพิ่มหรือแก้ไขประวัติ รูปภาพ และเลือกบุคลากรที่แสดงบนเว็บไซต์", icon: UsersRound },
+  { href: "/admin/news", title: "ข่าวสาร", english: "News", tone: "bg-[#173f85] hover:bg-[#12346e]", icon: Newspaper },
+  { href: "/admin/activities", title: "กิจกรรม", english: "Activities", tone: "bg-[#0e625a] hover:bg-[#0a504a]", icon: CalendarDays },
+  { href: "/admin/team", title: "บุคลากร", english: "Personnel", tone: "bg-[#624186] hover:bg-[#50346e]", icon: UsersRound },
 ];
 
 export default function DashboardPage() {
@@ -18,27 +18,27 @@ export default function DashboardPage() {
         <p className="mt-4 text-base leading-relaxed text-muted">เลือกหัวข้อด้านล่างเพื่อเริ่มต้นจัดการเว็บไซต์</p>
       </header>
       <nav aria-label="งานหลักของผู้ดูแล" className="grid gap-5 xl:grid-cols-3">
-        {actions.map(({ href, title, english, description, icon: Icon }) => (
+        {actions.map(({ href, title, english, tone, icon: Icon }) => (
           <Link
             key={href}
             href={href}
-            className="group flex min-h-64 flex-col rounded-2xl border border-line bg-paper p-7 shadow-sm transition-colors hover:border-accent hover:bg-accent-soft focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-accent sm:p-8 xl:min-h-96"
+            className={`group flex min-h-80 min-w-0 flex-col rounded-3xl p-7 text-white shadow-md transition-colors focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-ink sm:p-8 xl:min-h-[26rem] ${tone}`}
           >
-            <div className="mb-7 flex items-center justify-between">
-              <span className="flex size-16 items-center justify-center rounded-2xl bg-ink text-[#dcc99c]">
+            <div className="mb-8 flex items-center justify-between gap-3">
+              <span className="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-white/15">
                 <Icon aria-hidden="true" className="size-8" strokeWidth={1.5} />
               </span>
-              <span lang="en" className="text-xs font-medium uppercase tracking-widest text-muted">{english}</span>
+              <span lang="en" className="text-sm font-semibold uppercase tracking-widest">{english}</span>
             </div>
-            <h2 className="text-2xl font-semibold leading-snug text-ink">{title}</h2>
-            <p className="mt-3 text-base leading-relaxed text-muted">{description}</p>
-            <span className="mt-auto flex items-center justify-between gap-3 pt-7 font-medium text-ink">
-              เปิดรายการ <ArrowRight aria-hidden="true" className="size-5 text-accent" />
+            <h2 className="text-[clamp(2.5rem,4vw,3.5rem)] font-bold leading-[1.4]">
+              <span className="block">จัดการ</span><span className="block">{title}</span>
+            </h2>
+            <span aria-hidden="true" className="mt-auto flex justify-end pt-6">
+              <span className="flex size-12 items-center justify-center rounded-full border border-white/40 group-hover:bg-white/15"><ArrowRight className="size-6" /></span>
             </span>
           </Link>
         ))}
       </nav>
-      <p className="mt-7 text-sm leading-relaxed text-muted">เริ่มจากเปิดรายการ แล้วเลือกเพิ่มใหม่หรือแก้ไขรายการที่มีอยู่</p>
     </div>
   );
 }
