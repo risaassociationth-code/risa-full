@@ -4,14 +4,14 @@ import { ArrowRight, CalendarDays, Newspaper, UsersRound } from "lucide-react";
 export const metadata = { title: "หน้าหลักผู้ดูแล · RISA Admin" };
 
 const actions = [
-  { href: "/admin/news", title: "ข่าวสาร", english: "News", tone: "bg-[#173f85] hover:bg-[#12346e]", icon: Newspaper },
-  { href: "/admin/activities", title: "กิจกรรม", english: "Activities", tone: "bg-[#0e625a] hover:bg-[#0a504a]", icon: CalendarDays },
-  { href: "/admin/team", title: "บุคลากร", english: "Personnel", tone: "bg-[#624186] hover:bg-[#50346e]", icon: UsersRound },
+  { href: "/admin/news", title: "ข่าวสาร", english: "News", tone: "admin-glass-blue", icon: Newspaper },
+  { href: "/admin/activities", title: "กิจกรรม", english: "Activities", tone: "admin-glass-teal", icon: CalendarDays },
+  { href: "/admin/team", title: "บุคลากร", english: "Personnel", tone: "admin-glass-violet", icon: UsersRound },
 ];
 
 export default function DashboardPage() {
   return (
-    <div className="mx-auto max-w-6xl py-3 lg:py-8">
+    <div className="admin-home mx-auto max-w-6xl py-3 lg:py-8">
       <header className="mb-8 max-w-2xl lg:mb-12">
         <p className="admin-kicker mb-4">RISA / CONTENT STUDIO</p>
         <h1 className="text-3xl font-semibold leading-tight text-ink sm:text-4xl">วันนี้ต้องการจัดการอะไร?</h1>
@@ -22,10 +22,10 @@ export default function DashboardPage() {
           <Link
             key={href}
             href={href}
-            className={`group flex min-h-80 min-w-0 flex-col rounded-3xl p-7 text-white shadow-md transition-colors focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-ink sm:p-8 xl:min-h-[26rem] ${tone}`}
+            className={`admin-glass-action flex min-h-80 min-w-0 flex-col rounded-3xl p-7 sm:p-8 xl:min-h-[26rem] ${tone}`}
           >
             <div className="mb-8 flex items-center justify-between gap-3">
-              <span className="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-white/15">
+              <span className="admin-glass-icon flex size-16 shrink-0 items-center justify-center rounded-2xl">
                 <Icon aria-hidden="true" className="size-8" strokeWidth={1.5} />
               </span>
               <span lang="en" className="text-sm font-semibold uppercase tracking-widest">{english}</span>
@@ -34,7 +34,7 @@ export default function DashboardPage() {
               <span className="block">จัดการ</span><span className="block">{title}</span>
             </h2>
             <span aria-hidden="true" className="mt-auto flex justify-end pt-6">
-              <span className="flex size-12 items-center justify-center rounded-full border border-white/40 group-hover:bg-white/15"><ArrowRight className="size-6" /></span>
+              <span className="admin-glass-arrow flex size-12 items-center justify-center rounded-full"><ArrowRight className="size-6" /></span>
             </span>
           </Link>
         ))}
