@@ -26,7 +26,7 @@ function Cover({ url, seed, className }: { url: string; seed: string; className?
 export function NewsCard({ item, locale }: { item: News; locale: Locale }) {
   const href = localePath(locale, `/news/${item.slug}`);
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-paper transition-colors hover:border-ink/25">
+    <article className="risa-content-card group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-paper transition-colors hover:border-ink/25">
       <Link href={href} className="flex h-full flex-col">
         <Cover url={item.cover_url} seed={item.slug} className="aspect-[16/10]" />
         <div className="flex flex-1 flex-col p-5">
@@ -53,7 +53,7 @@ export function ActivityCard({ item, locale }: { item: Activity; locale: Locale 
   const href = localePath(locale, `/activities/${item.slug}`);
   const upcoming = item.end_date ? new Date(item.end_date) >= new Date() : false;
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-paper transition-colors hover:border-ink/25">
+    <article className="risa-content-card group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-paper transition-colors hover:border-ink/25">
       <Link href={href} className="flex h-full flex-col">
         <div className="relative">
           <Cover url={item.cover_url} seed={item.slug} className="aspect-[16/10]" />

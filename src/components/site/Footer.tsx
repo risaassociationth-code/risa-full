@@ -30,8 +30,10 @@ export async function Footer() {
     <footer className="mt-auto border-t border-line bg-surface">
       <div className="container-page grid gap-10 py-14 md:grid-cols-12 md:gap-8">
         <div className="md:col-span-4">
+          <span className="risa-logo-plate">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/risa-lockup.png" alt="RISA" className="h-11 w-auto" />
+          </span>
           <Editable
             k="global.footer.about_title"
             as="h2"

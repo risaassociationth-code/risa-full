@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -18,6 +18,8 @@ export function HeaderNav({ items, ctaLabel, ctaHref, menuLabel, locale }: Props
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const mobilePanel = useRef<HTMLDivElement>(null);
+  const menuButton = useRef<HTMLButtonElement>(null);
 
   // Close the mobile sheet on navigation. Adjusting state during render
   // (rather than in an effect) avoids the extra post-navigation render pass.
@@ -28,8 +30,26 @@ export function HeaderNav({ items, ctaLabel, ctaHref, menuLabel, locale }: Props
   }
 
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    const trigger = menuButton.current;
+    document.body.style.overflow = "hidden";
+    const panel = mobilePanel.current;
+    panel?.querySelector<HTMLButtonElement>("button")?.focus();
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") { event.preventDefault(); setOpen(false); }
+      if (event.key !== "Tab" || !panel) return;
+      const items = Array.from(panel.querySelectorAll<HTMLElement>("a[href], button:not([disabled])"));
+      const first = items[0], last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", onKeyDown);
+      trigger?.focus({ preventScroll: true });
+    };
   }, [open]);
 
   const isHome = (href: string) => /^\/(?:th|en)\/?$/.test(href) || href === "/";
@@ -47,6 +67,7 @@ export function HeaderNav({ items, ctaLabel, ctaHref, menuLabel, locale }: Props
               {item.children.length === 0 ? (
                 <Link
                   href={item.href || "#"}
+                  aria-current={activeBranch(item) ? "page" : undefined}
                   aria-label={isHome(item.href) ? item.label : undefined}
                   title={isHome(item.href) ? item.label : undefined}
                   className={cn(
@@ -102,6 +123,7 @@ export function HeaderNav({ items, ctaLabel, ctaHref, menuLabel, locale }: Props
       </Link>}
 
       <button
+        ref={menuButton}
         type="button"
         onClick={() => setOpen(true)}
         aria-label={menuLabel}
@@ -112,13 +134,13 @@ export function HeaderNav({ items, ctaLabel, ctaHref, menuLabel, locale }: Props
       </button>
 
       {open && createPortal(
-        <div className="fixed inset-0 z-[70] lg:hidden">
+        <div className="risa-public-menu fixed inset-0 z-[70] lg:hidden" lang={locale}>
           <button
             aria-label={closeLabel}
             onClick={() => setOpen(false)}
-            className="absolute inset-0 bg-ink/40 backdrop-blur-[2px]"
+            className="absolute inset-0 bg-black/65 backdrop-blur-[2px]"
           />
-          <div className="absolute inset-y-0 right-0 flex w-[min(22rem,88vw)] flex-col bg-paper shadow-2xl">
+          <div ref={mobilePanel} role="dialog" aria-modal="true" aria-label={navigationLabel} className="risa-public-menu-panel absolute inset-y-0 right-0 flex w-[min(22rem,88vw)] flex-col bg-paper shadow-2xl">
             <div className="flex h-16 shrink-0 items-center justify-between border-b border-line px-5">
               <span className="text-sm font-semibold">{menuLabel}</span>
               <button
@@ -137,6 +159,7 @@ export function HeaderNav({ items, ctaLabel, ctaHref, menuLabel, locale }: Props
                     {item.children.length === 0 ? (
                       <Link
                         href={item.href || "#"}
+                        aria-current={activeBranch(item) ? "page" : undefined}
                   aria-label={isHome(item.href) ? item.label : undefined}
                   title={isHome(item.href) ? item.label : undefined}
                         className={cn(

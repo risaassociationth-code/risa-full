@@ -19,7 +19,7 @@ export async function Header() {
 
   return (
     <RisingLineEntrance locale={locale}>
-    <header className="sticky top-0 z-[60] border-b border-line bg-paper/92 backdrop-blur-md">
+    <header className="risa-site-header sticky top-0 z-[60] border-b border-line bg-paper/92 backdrop-blur-md">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-10 focus:rounded-lg focus:bg-ink focus:px-3 focus:py-2 focus:text-sm focus:text-white"
@@ -28,12 +28,14 @@ export async function Header() {
       </a>
       <div className="container-page flex h-16 items-center gap-3">
         <Link href={L("/")} scroll={false} className="flex min-w-0 shrink-0 items-center gap-3" aria-label={orgName}>
+          <span className="risa-logo-plate">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={settings.logo_url || "/risa-wordmark.png"}
             alt="RISA"
             className="h-10 w-auto max-w-[140px] shrink-0 object-contain md:h-14 md:max-w-[180px]"
           />
+          </span>
           <span className="hidden min-w-0 border-l border-line pl-3 text-[11px] leading-tight text-muted min-[1440px]:block">
             <span className="line-clamp-2 max-w-[15rem]">{orgName}</span>
           </span>

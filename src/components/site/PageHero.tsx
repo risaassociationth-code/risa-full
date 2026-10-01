@@ -10,7 +10,7 @@ export function PageHero({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="relative overflow-hidden border-b border-line bg-surface">
+    <div className="risa-page-hero relative overflow-hidden border-b border-line bg-surface">
       <div
         aria-hidden
         className="pointer-events-none absolute -right-24 -top-24 hidden size-[26rem] rounded-full opacity-[0.07] blur-3xl md:block"

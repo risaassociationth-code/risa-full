@@ -4,6 +4,7 @@ import { getContentMap, blockValue, getSettings } from "@/lib/content";
 import { isLocale } from "@/lib/i18n";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
+import "./public.css";
 
 export async function generateStaticParams() {
   return [{ locale: "th" }, { locale: "en" }];
@@ -33,17 +34,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
     <div
       lang={locale}
       className="risa-public flex min-h-full flex-col"
-      style={
-        {
-          "--color-accent": "#796332",
-          "--color-ink": "#102b3c",
-          "--color-ink-2": "#344b58",
-          "--color-paper": "#faf9f6",
-          "--color-surface": "#f0efeb",
-          "--color-muted": "#616a70",
-          "--color-line": "#dadbd7",
-        } as React.CSSProperties
-      }
     >
       <Header />
       <main id="main" tabIndex={-1} className="flex-1 scroll-mt-20">

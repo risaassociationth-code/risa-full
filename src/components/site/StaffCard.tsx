@@ -10,7 +10,7 @@ export function StaffCard({ member, locale, preview = false }: { member: StaffPr
   const email = member.email.trim();
   const phone = member.phone.trim();
   return (
-    <article className="min-w-0 overflow-hidden rounded-2xl border border-line bg-paper shadow-sm">
+    <article className="risa-profile-card min-w-0 overflow-hidden rounded-2xl border border-line bg-paper shadow-sm">
       <div className="border-b border-line bg-surface p-3">
         <div className="overflow-hidden rounded-xl">
           <div className="aspect-[4/5] overflow-hidden bg-[#e8edf2]">

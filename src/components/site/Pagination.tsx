@@ -15,7 +15,7 @@ export function Pagination({
   const linkCls = "inline-flex h-9 min-w-9 items-center justify-center rounded-lg border border-line px-3 text-sm transition-colors hover:border-ink";
 
   return (
-    <nav className="mt-10 flex flex-wrap items-center justify-center gap-1.5" aria-label={t(locale, "page")}>
+    <nav className="risa-pagination mt-10 flex flex-wrap items-center justify-center gap-1.5" aria-label={t(locale, "page")}>
       {page > 1 && (
         <Link href={href(page - 1)} className={linkCls} rel="prev">
           <ChevronLeft className="size-4" />
