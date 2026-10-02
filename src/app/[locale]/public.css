@@ -1,35 +1,40 @@
 /* Public-only styling: admin tokens and staff previews remain independent. */
 .risa-public, .risa-public-menu {
-  color-scheme: light;
-  --color-ink: #173530;
-  --color-ink-2: #304640;
-  --color-paper: #f8f7f3;
-  --color-surface: #efeee7;
-  --color-surface-2: #e5e6de;
-  --color-muted: #58645c;
-  --color-faint: #657167;
-  --color-line: #d2d7cc;
-  --color-line-soft: #e2e5db;
-  --color-accent: #356247;
-  --color-accent-ink: #fff;
-  --color-accent-soft: #e5ecdf;
-  --color-accent-line: #acbda5;
+  color-scheme: dark;
+  --color-ink: #f0f3f7;
+  --color-ink-2: #d1d9e4;
+  --color-paper: #0b1422;
+  --color-surface: #121f31;
+  --color-surface-2: #1b2b40;
+  --color-muted: #b2bdcc;
+  --color-faint: #a1adbe;
+  --color-line: #334359;
+  --color-line-soft: #253449;
+  --color-accent: #d6bf91;
+  --color-accent-ink: #101925;
+  --color-accent-soft: #2a2c30;
+  --color-accent-line: #897957;
   --radius-card: 3px;
   color: var(--color-ink);
   background: var(--color-paper);
 }
-body:has(.risa-public) { background: #f8f7f3; }
+body:has(.risa-public) { background: #0b1422; }
 .risa-public .container-page { max-width: 1240px; padding-inline: clamp(24px, 4vw, 48px); }
-.risa-public .risa-site-header { background: #f8f7f3; border-color: var(--color-line); box-shadow: none; backdrop-filter: none; }
+.risa-public .risa-site-header { background: #0e1929; border-color: var(--color-line); box-shadow: none; backdrop-filter: none; }
 .risa-public .risa-site-header > .container-page { min-height: 88px; }
 .risa-public .risa-logo-plate { display: inline-flex; align-items: center; padding: 0; background: none; border: 0; }
-.risa-public .risa-site-header .risa-logo-plate img { height: 44px; max-width: 155px; filter: none; }
+.risa-public .risa-site-header .risa-logo-plate img { height: 44px; max-width: 155px; filter: brightness(0) invert(1); }
 .risa-public .risa-site-header nav > ul > li > a { height: 44px; border-radius: 0; border-bottom: 2px solid transparent; }
 .risa-public .risa-site-header nav a[aria-current="page"] { border-bottom-color: var(--color-accent); color: var(--color-ink); }
 .risa-public .risa-site-header nav a:hover { color: var(--color-accent); }
 .risa-public-menu-panel { background: var(--color-paper); border-left: 1px solid var(--color-line); }
 .risa-public a:focus-visible, .risa-public button:focus-visible,
-.risa-public-menu a:focus-visible, .risa-public-menu button:focus-visible { outline: 3px solid #356247; outline-offset: 5px; }
+.risa-public-menu a:focus-visible, .risa-public-menu button:focus-visible { outline: 3px solid #d6bf91; outline-offset: 5px; }
+.risa-public .bg-ink { background: var(--color-surface-2); color: var(--color-ink); }
+.risa-public :is(a, button).bg-ink, .risa-public-menu :is(a, button).bg-ink { background: var(--color-ink); color: #101925; }
+.risa-public .risa-site-header > a:first-child:focus-visible { background: var(--color-ink); color: #101925; }
+.risa-public :is(input, textarea, select) { border-color: #64748b; }
+.risa-public :is(input, textarea, select):focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
 .risa-public a { text-underline-offset: .25em; }
 
 /* Association identity and mission precede the event photograph. */
@@ -108,6 +113,8 @@ body:has(.risa-public) { background: #f8f7f3; }
 .risa-public .risa-content-card img { transform: none; border-radius: 2px; }
 .risa-public .risa-profile-card > div:first-child { padding: 0; border: 0; background: none; }
 .risa-public .risa-profile-card > div:first-child > div { border-radius: 2px; }
+.risa-public .risa-profile-card > div:first-child > div > div { background: var(--color-surface); }
+.risa-public .risa-profile-card > div:first-child > div > div > div { color: var(--color-faint); }
 .risa-public .risa-profile-card > .p-5 { padding: 22px 0 28px; }
 .risa-public .risa-archive-card { padding: 20px 0; }
 .risa-public .risa-archive-card img { border-radius: 2px; }
@@ -121,12 +128,11 @@ body:has(.risa-public) { background: #f8f7f3; }
 .risa-public .risa-cta-band p { color: var(--color-muted); }
 .risa-public .risa-cta-band a { border-radius: 2px; box-shadow: none; }
 .risa-public > footer {
-  background: #173530; color: #f8f7f3; border: 0;
-  --color-ink: #f8f7f3; --color-ink-2: #e2e8df; --color-muted: #c0cec3;
-  --color-faint: #b7c8ba; --color-line: #496255; --color-paper: #203f36; --color-accent: #d6dfc9;
+  background: #08111e; color: var(--color-ink); border-top: 1px solid var(--color-line);
+  --color-paper: #0e1929;
 }
 .risa-public > footer .risa-logo-plate img { filter: brightness(0) invert(1); }
-.risa-public > footer :is(a, button):focus-visible { outline-color: #d6dfc9; }
+.risa-public > footer :is(a, button):focus-visible { outline-color: var(--color-accent); }
 .risa-public > footer a:hover { text-decoration: underline; }
 @media (max-width: 800px) {
   .risa-public .risa-introduction { grid-template-columns: 1fr; gap: 24px; padding-block: 40px; }
