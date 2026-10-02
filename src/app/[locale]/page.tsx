@@ -10,10 +10,11 @@ import { Editable, EditableRich } from "@/components/editable/Editable";
 
 export default async function HomePage() {
   const [locale, news, activities, settings] = await Promise.all([
-    getLocale(), getNews(3), getUpcomingActivities(2), getSettings(),
+    getLocale(), getNews(4), getUpcomingActivities(2), getSettings(),
   ]);
   const L = (href: string) => href.startsWith("/") ? localePath(locale, href) : href;
   const featured = news[0];
+  const latestNews = news.slice(1);
   const th = locale === "th";
   return (
     <div className="minimal-home">
@@ -26,7 +27,7 @@ export default async function HomePage() {
         <div className="minimal-hero-copy">
           <p className="minimal-eyebrow">{featured?.slug.startsWith("mms-hub-") ? (th ? "จากเครือข่าย · MMS Hub" : "PARTNER ARCHIVE · MMS Hub") : (th ? "ข่าวสารล่าสุด · RISA" : "LATEST NEWS · RISA")}</p>
           <h2 lang={featured ? contentLanguage(featured, "title", locale) : locale}>{featured ? pick(featured, "title", locale) : th ? "ข่าวสารจาก RISA" : "News from RISA"}</h2>
-          <p className="minimal-intro">{featured ? pick(featured, "excerpt", locale) : th ? "ติดตามข่าวสารและความเคลื่อนไหวของสมาคมได้เร็ว ๆ นี้" : "Association news and updates are coming soon."}</p>
+          <p className="minimal-intro" lang={featured ? contentLanguage(featured, "excerpt", locale) : locale}>{featured ? pick(featured, "excerpt", locale) : th ? "ติดตามข่าวสารและความเคลื่อนไหวของสมาคมได้เร็ว ๆ นี้" : "Association news and updates are coming soon."}</p>
           {featured?.published_at && <p className="minimal-news-date mt-5"><time dateTime={featured.published_at}>{formatCalendarDate(featured.published_at, th ? "th-TH" : "en-GB")}</time></p>}
           <Link href={L(featured ? `/news/${featured.slug}` : "/news")} className="minimal-hero-link">
             <span className="minimal-circle"><ArrowRight size={22} aria-hidden /></span>
@@ -45,7 +46,7 @@ export default async function HomePage() {
       </section>
       <section className="container-page minimal-updates">
         <div className="minimal-updates-heading"><Editable k="home.news.title" as="h2" /><Link href={L("/news")}><Editable k="home.news.link_label" /> <ArrowRight size={16} aria-hidden /></Link></div>
-        {news.length ? <div className="minimal-news-list">{news.map(item => <Link key={item.id} href={L(`/news/${item.slug}`)} className="minimal-news-item"><span className="minimal-news-date">{item.published_at ? formatCalendarDate(item.published_at, th ? "th-TH" : "en-GB", "short") : ""}</span><h3 lang={contentLanguage(item, "title", locale)}>{pick(item, "title", locale)}</h3><ArrowRight size={18} aria-hidden /></Link>)}</div> : <p className="text-muted">{locale === "th" ? "ติดตามข่าวสารจาก RISA ได้เร็ว ๆ นี้" : "Updates from RISA are coming soon."}</p>}
+        {latestNews.length ? <div className="minimal-news-list">{latestNews.map(item => <Link key={item.id} href={L(`/news/${item.slug}`)} className="minimal-news-item"><span className="minimal-news-date">{item.published_at ? formatCalendarDate(item.published_at, th ? "th-TH" : "en-GB", "short") : ""}</span><h3 lang={contentLanguage(item, "title", locale)}>{pick(item, "title", locale)}</h3><ArrowRight size={18} aria-hidden /></Link>)}</div> : !featured && <p className="text-muted">{locale === "th" ? "ติดตามข่าวสารจาก RISA ได้เร็ว ๆ นี้" : "Updates from RISA are coming soon."}</p>}
         {activities.length > 0 && <div className="minimal-activities"><Link href={L("/activities")} className="minimal-activity-label"><Editable k="home.activities.title" /></Link>{activities.map(item => <Link key={item.id} href={L(`/activities/${item.slug}`)}>{pick(item, "title", locale)} <ArrowRight size={16} aria-hidden /></Link>)}</div>}
       </section>
     </div>
