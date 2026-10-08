@@ -15,7 +15,7 @@ export type ConstellationData = Record<MapCollection, { records: MapRecord[]; to
 const branches = [
   { key: "news", th: "ข่าวสาร", en: "News", icon: FileText },
   { key: "activities", th: "กิจกรรม", en: "Activities", icon: CalendarDays },
-  { key: "team", th: "บุคลากร", en: "People", icon: UsersRound },
+  { key: "team", th: "บุคลากร", en: "Personnel", icon: UsersRound },
   { key: "overview", th: "ภาพรวม", en: "Overview", icon: LayoutList },
 ] as const;
 const stars = [[42,74],[115,256],[232,102],[360,198],[488,45],[668,164],[884,64],[978,284],[847,510],[654,576],[437,489],[295,588],[105,501],[72,361],[970,604],[768,330],[385,346],[585,212]];
