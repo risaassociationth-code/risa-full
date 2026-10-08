@@ -150,3 +150,13 @@ body:has(.risa-admin) ::selection { color: #17112d; background: #b8a4ff; }
 .constellation-attached-panel { z-index: 6; cursor: auto; animation: constellation-panel-in .35s ease-out; }
 @keyframes constellation-panel-in { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .constellation-attached-panel { animation: none; } .constellation-scene { transition: none !important; } }
+
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.15; transform: scale(0.9); }
+  50% { opacity: 0.9; transform: scale(1.1); }
+}
+.constellation-star {
+  animation: star-twinkle 4s infinite ease-in-out;
+  transform-origin: center;
+  transform-box: fill-box;
+}
