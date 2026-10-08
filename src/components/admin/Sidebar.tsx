@@ -89,16 +89,7 @@ export function Sidebar({ collapsed = false, setCollapsed }: { collapsed?: boole
     <>
       {/* desktop rail */}
       <aside className={cn("admin-rail fixed inset-y-0 left-0 z-30 hidden flex-col border-r border-line lg:flex transition-all duration-300", collapsed ? "w-16" : "w-60")}>
-        {setCollapsed && (
-          <button
-            type="button"
-            onClick={() => setCollapsed(!collapsed)}
-            className="absolute -right-3.5 top-8 z-40 flex size-7 items-center justify-center rounded-full border border-line bg-paper text-muted shadow-sm transition-colors hover:text-ink hover:border-accent"
-            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            {collapsed ? <ChevronRight className="size-4" /> : <ChevronLeft className="size-4" />}
-          </button>
-        )}
+        
         {lockup}
         {nav}
       </aside>

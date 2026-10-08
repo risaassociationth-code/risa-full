@@ -133,12 +133,7 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
   return <section lang={locale} className="constellation-workspace">
     <div className="constellation-toolbar">
       <div className="constellation-search"><Search size={17} aria-hidden /><input type="search" value={query} onChange={event => setQuery(event.target.value)} aria-label={th ? "ค้นหารายการในแผนที่" : "Search map records"} placeholder={th ? "ค้นหารายการ…" : "Search records…"} /></div>
-      <div className="constellation-view-switch" role="group" aria-label={th ? "รูปแบบการแสดง" : "Display mode"}>
-        <button type="button" aria-pressed={mode === "map" && !searching} onClick={() => {setMode("map");setQuery("");}}><Map size={16} aria-hidden />{th ? "แผนที่" : "Map"}</button>
-        <button type="button" aria-pressed={list} onClick={() => setMode("list")}><LayoutList size={16} aria-hidden />{th ? "รายการ" : "List"}</button>
-        <button type="button" onClick={resetLayout}><RotateCcw size={16} aria-hidden />{th ? "คืนตำแหน่ง" : "Reset layout"}</button>
       </div>
-    </div>
     
     <div className={`constellation-body ${list ? "constellation-list-mode" : ""}`}>
       <div ref={viewport} className="constellation-viewport" tabIndex={list ? -1 : 0} role="region" aria-label={th ? "แผนที่งาน ใช้ปุ่มลูกศรเลื่อน เครื่องหมายบวกหรือลบซูม และเลขศูนย์คืนมุมมอง" : "Task map. Arrow keys pan, plus or minus zoom, and zero resets the view."}
@@ -172,8 +167,5 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
         </div>
       </div>
       {list?<aside id="constellation-panel" className="constellation-list-panel"><h1 className="constellation-list-title">{th ? "เลือกงานหรือค้นหารายการ" : "Choose a task or find a record"}</h1>{collections.map(branch=>records(branch.key))}</aside>:!active?<aside id="constellation-panel" className="sr-only">{th?"เลือกหมวดเพื่อแสดงรายการ":"Choose a category to see records"}</aside>:null}
-    </div>
-    <p className="constellation-instructions">{th ? "ลากพื้นที่ว่างเพื่อเลื่อน · ใช้ปุ่มซูม หรือเปิดแบบรายการ" : "Drag empty space to pan · Use zoom controls or switch to List"}</p>
-    <p className="workspace-storage-status">{stored?(th?"ตำแหน่งบันทึกในเบราว์เซอร์นี้สำหรับบัญชีของคุณ":"Layout saved in this browser for your account"):(th?"ตำแหน่งยังไม่บันทึกในเบราว์เซอร์":"Layout is not saved in this browser")}</p>
-  </section>;
+    </div>  </section>;
 }
