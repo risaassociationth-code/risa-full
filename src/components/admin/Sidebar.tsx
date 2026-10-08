@@ -18,7 +18,7 @@ function isActive(pathname: string, href: string): boolean {
 export function Sidebar({ collapsed = false, setCollapsed }: { collapsed?: boolean; setCollapsed?: (v: boolean) => void }) {
   const pathname = usePathname();
   const { locale } = useAdminLanguage();
-  const englishLabels: Record<string, string> = { "/admin": "Task map", "/admin/news": "News", "/admin/activities": "Activities", "/admin/team": "People" };
+  const englishLabels: Record<string, string> = { "/admin": "Task map", "/admin/news": "News", "/admin/activities": "Activities", "/admin/team": "Personnel" };
   const [open, setOpen] = useState(false);
 
   // Close the mobile drawer on navigation. Adjusting state during render
