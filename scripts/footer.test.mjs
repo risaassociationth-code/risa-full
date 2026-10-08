@@ -1,4 +1,5 @@
 import test from 'node:test';
+import './release-footer.test.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
