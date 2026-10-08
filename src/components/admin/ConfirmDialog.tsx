@@ -3,6 +3,7 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAdminLanguage } from "./AdminLanguage";
 
 type Props = {
   open: boolean;
@@ -18,8 +19,10 @@ type Props = {
 /** A blocking confirmation dialog — used instead of window.confirm, which the
  * browser's own dialog-suppression rules can silently swallow. */
 export function ConfirmDialog({
-  open, onOpenChange, title, description, confirmLabel = "ยืนยัน", destructive, pending, onConfirm,
+  open, onOpenChange, title, description, confirmLabel, destructive, pending, onConfirm,
 }: Props) {
+  const { locale } = useAdminLanguage();
+  const th = locale === "th";
   return (
     <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
       <AlertDialog.Portal>
@@ -36,7 +39,7 @@ export function ConfirmDialog({
               disabled={pending}
               className="rounded-lg px-3.5 py-2 text-sm text-muted hover:bg-surface disabled:opacity-50"
             >
-              ยกเลิก
+              {th ? "ยกเลิก" : "Cancel"}
             </AlertDialog.Cancel>
             <button
               type="button"
@@ -48,7 +51,7 @@ export function ConfirmDialog({
               )}
             >
               {pending && <Loader2 className="size-3.5 animate-spin" />}
-              {confirmLabel}
+              {confirmLabel || (th ? "ยืนยัน" : "Confirm")}
             </button>
           </div>
         </AlertDialog.Content>

@@ -18,6 +18,7 @@ import { Card, EmptyState, Mono, PageHeader, StatusBadge, formatThaiDate } from 
 import { Icon } from "@/components/site/Icon";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { ManageImportedNewsButton } from "./ManageImportedNewsButton";
+import { useAdminLanguage } from "./AdminLanguage";
 
 type Props = {
   config: CollectionConfig;
@@ -41,6 +42,8 @@ function cellText(row: Row, name: string, bilingual: boolean): string {
 }
 
 export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor, newHref, hideNew }: Props) {
+  const { locale } = useAdminLanguage();
+  const th = locale === "th";
   const [rows, setRows] = useState(initialRows);
 
   // Resync when the server sends fresh rows (e.g. after router.refresh()
@@ -113,7 +116,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
     if (!res.ok) return toast.error(res.error);
     setRows((prev) => prev.map((r) => (r.id === id ? { ...r, status: next } : r)));
     setVisibilityChange(null);
-    toast.success(next === "published" ? "เผยแพร่แล้ว" : "เปลี่ยนเป็นฉบับร่างแล้ว");
+    toast.success(next === "published" ? (th ? "เผยแพร่แล้ว" : "Published") : (th ? "เปลี่ยนเป็นฉบับร่างแล้ว" : "Changed to draft"));
     refresh();
   }
 
@@ -122,13 +125,13 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
     const res = await duplicateRow(config.key, id);
     setBusyId(null);
     if (!res.ok) return toast.error(res.error);
-    toast.success("ทำสำเนาแล้ว");
+    toast.success(th ? "ทำสำเนาแล้ว" : "Duplicated");
     refresh();
   }
 
   async function askDelete(id: string) {
     const res = await describeRow(config.key, id);
-    setConfirm({ id, title: res.ok ? res.data.title : "รายการนี้" });
+    setConfirm({ id, title: res.ok ? res.data.title : (th ? "รายการนี้" : "this record") });
   }
 
   function onConfirmDelete() {
@@ -140,7 +143,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
         toast.error(res.error);
       } else {
         setRows((prev) => prev.filter((r) => r.id !== id));
-        toast.success("ลบแล้ว");
+        toast.success(th ? "ลบแล้ว" : "Deleted");
         refresh();
       }
       setConfirm(null);
@@ -155,8 +158,8 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="ค้นหา…"
-            aria-label={`ค้นหา${config.label}`}
+            placeholder={th ? "ค้นหา…" : "Search..."}
+            aria-label={th ? `ค้นหา${config.label}` : `Search ${config.label}`}
             className="h-9 w-56 rounded-lg border border-line bg-paper pl-9 pr-3 text-sm outline-none focus:border-accent"
           />
         </div>
@@ -172,7 +175,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                   statusFilter === s ? "bg-ink text-white" : "text-muted hover:bg-surface",
                 )}
               >
-                {s === "all" ? "ทั้งหมด" : STATUS_LABEL[s]}
+                {s === "all" ? (th ? "ทั้งหมด" : "All") : (th ? STATUS_LABEL[s] : s === "published" ? "Published" : "Draft")}
               </button>
             ))}
           </div>
@@ -183,31 +186,31 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
             className="ml-auto inline-flex h-9 items-center gap-1.5 rounded-lg bg-accent px-3.5 text-sm font-medium text-accent-ink hover:brightness-110"
           >
             <Plus className="size-4" />
-            เพิ่ม{config.singular}
+            {th ? `เพิ่ม${config.singular}` : `Add ${config.singular}`}
           </Link>
         )}
       </div>
 
-      {guided && <p className="mb-3 text-sm text-muted">เปลี่ยนสถานะ: เปิดตัวแก้ไข → ขั้นตอนเผยแพร่ → เลือกสถานะ → บันทึก</p>}
+      {guided && <p className="mb-3 text-sm text-muted">{th ? "เปลี่ยนสถานะ: เปิดตัวแก้ไข → ขั้นตอนเผยแพร่ → เลือกสถานะ → บันทึก" : "To change status: open editor → publish step → select status → save"}</p>}
       <Card className="overflow-hidden">
         {filtered.length === 0 ? (
           <EmptyState
-            title={rows.length === 0 ? `ยังไม่มี${config.singular}` : "ไม่พบรายการที่ค้นหา"}
-            hint={rows.length === 0 ? `เริ่มต้นด้วยการเพิ่ม${config.singular}รายการแรก` : undefined}
+            title={rows.length === 0 ? (th ? `ยังไม่มี${config.singular}` : `No ${config.singular} yet`) : (th ? "ไม่พบรายการที่ค้นหา" : "No records found")}
+            hint={rows.length === 0 ? (th ? `เริ่มต้นด้วยการเพิ่ม${config.singular}รายการแรก` : `Get started by adding your first ${config.singular}`) : undefined}
           />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[36rem] text-sm">
               <thead>
                 <tr className="border-b border-line-soft text-left text-xs font-semibold uppercase tracking-wide text-faint">
-                  {config.hasSort && <th className="w-16 px-4 py-2.5">ลำดับ</th>}
+                  {config.hasSort && <th className="w-16 px-4 py-2.5">{th ? "ลำดับ" : "Sort"}</th>}
                   {config.columns.map((col) => (
                     <th key={col.name} className={cn("px-4 py-2.5", col.className)}>
                       {col.label}
                     </th>
                   ))}
-                  {config.hasStatus && <th className="px-4 py-2.5">สถานะ</th>}
-                  <th className="px-4 py-2.5 text-right">จัดการ</th>
+                  {config.hasStatus && <th className="px-4 py-2.5">{th ? "สถานะ" : "Status"}</th>}
+                  <th className="px-4 py-2.5 text-right">{th ? "จัดการ" : "Manage"}</th>
                 </tr>
               </thead>
               <tbody>
@@ -224,7 +227,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                               type="button"
                               disabled={busy || i === 0}
                               onClick={() => onMove(id, "up")}
-                              aria-label="เลื่อนขึ้น"
+                              aria-label={th ? "เลื่อนขึ้น" : "Move up"}
                               className="rounded p-1 text-muted hover:bg-surface-2 disabled:opacity-30"
                             >
                               <ArrowUp className="size-3.5" />
@@ -233,7 +236,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                               type="button"
                               disabled={busy || i === filtered.length - 1}
                               onClick={() => onMove(id, "down")}
-                              aria-label="เลื่อนลง"
+                              aria-label={th ? "เลื่อนลง" : "Move down"}
                               className="rounded p-1 text-muted hover:bg-surface-2 disabled:opacity-30"
                             >
                               <ArrowDown className="size-3.5" />
@@ -287,10 +290,10 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                               )}
                             </div>
                           ) : imported ? (
-                            col.name === config.titleField ? <ManageImportedNewsButton kind={config.key === "activities" ? "activities" : "news"} slug={String(row.slug)} label={cellText(row, col.name, !!col.bilingual) || "(ไม่มีชื่อ)"} /> : <span>{cellText(row, col.name, !!col.bilingual) || "—"}</span>
+                            col.name === config.titleField ? <ManageImportedNewsButton kind={config.key === "activities" ? "activities" : "news"} slug={String(row.slug)} label={cellText(row, col.name, !!col.bilingual) || (th ? "(ไม่มีชื่อ)" : "(Untitled)")} /> : <span>{cellText(row, col.name, !!col.bilingual) || "—"}</span>
                           ) : (
                             <Link href={linkFor(id)} className="line-clamp-2 font-medium text-ink hover:text-accent">
-                              {cellText(row, col.name, !!col.bilingual) || <span className="text-faint">(ไม่มีชื่อ)</span>}
+                              {cellText(row, col.name, !!col.bilingual) || <span className="text-faint">{th ? "(ไม่มีชื่อ)" : "(Untitled)"}</span>}
                             </Link>
                           )}
                         </td>
@@ -302,7 +305,7 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                             disabled={busy}
                             onClick={() => onToggleStatus(row)}
                             className="disabled:opacity-50"
-                            title={config.key === "team" ? "เปิดหน้าต่างยืนยันการเผยแพร่หรือซ่อนโปรไฟล์" : "คลิกเพื่อสลับสถานะ"}
+                            title={config.key === "team" ? (th ? "เปิดหน้าต่างยืนยันการเผยแพร่หรือซ่อนโปรไฟล์" : "Toggle profile visibility") : (th ? "คลิกเพื่อสลับสถานะ" : "Click to toggle status")}
                           >
                             <StatusBadge status={row.status as string} />
                           </button>}
@@ -312,15 +315,15 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                         <div className="flex items-center justify-end gap-1">
                           {busy && <Loader2 className="size-3.5 animate-spin text-faint" />}
                           {guided && !imported && <>
-                            <Link href={linkFor(id)} className="rounded-lg border border-line px-2 py-1 text-xs text-accent">แก้ไข</Link>
-                            {row.status === "published" && <Link href={`/th/${config.key}/${String(row.slug)}`} target="_blank" rel="noreferrer" className="px-2 text-xs text-accent underline">ดูบนเว็บไซต์ ↗</Link>}
+                            <Link href={linkFor(id)} className="rounded-lg border border-line px-2 py-1 text-xs text-accent">{th ? "แก้ไข" : "Edit"}</Link>
+                            {row.status === "published" && <Link href={`/${th ? "th" : "en"}/${config.key}/${String(row.slug)}`} target="_blank" rel="noreferrer" className="px-2 text-xs text-accent underline">{th ? "ดูบนเว็บไซต์ ↗" : "View site ↗"}</Link>}
                           </>}
-                          {imported ? <Link href={config.key === "activities" ? `/th/mms-hub/${id.slice(4)}` : `/th/news/${String(row.slug)}`} className="text-xs text-accent hover:underline">ดูหน้าเว็บ ↗</Link> : <button
+                          {imported ? <Link href={config.key === "activities" ? `/${th ? "th" : "en"}/mms-hub/${id.slice(4)}` : `/${th ? "th" : "en"}/news/${String(row.slug)}`} className="text-xs text-accent hover:underline">{th ? "ดูหน้าเว็บ ↗" : "View site ↗"}</Link> : <button
                             type="button"
                             onClick={() => onDuplicate(id)}
                             disabled={busy}
-                            title="ทำสำเนา"
-                            aria-label="ทำสำเนา"
+                            title={th ? "ทำสำเนา" : "Duplicate"}
+                            aria-label={th ? "ทำสำเนา" : "Duplicate"}
                             className="rounded-lg p-1.5 text-muted hover:bg-surface-2 hover:text-ink disabled:opacity-40"
                           >
                             <Copy className="size-3.5" />
@@ -329,8 +332,8 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                             type="button"
                             onClick={() => askDelete(id)}
                             disabled={busy}
-                            title="ลบ"
-                            aria-label="ลบ"
+                            title={th ? "ลบ" : "Delete"}
+                            aria-label={th ? "ลบ" : "Delete"}
                             className="rounded-lg p-1.5 text-muted hover:bg-red-50 hover:text-red-600 disabled:opacity-40"
                           >
                             <Trash2 className="size-3.5" />
@@ -349,9 +352,9 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
       <ConfirmDialog
         open={visibilityChange !== null}
         onOpenChange={(open) => !open && !pending && setVisibilityChange(null)}
-        title={visibilityChange?.status === "published" ? "ซ่อนโปรไฟล์จากเว็บไซต์? / Hide this profile?" : "เผยแพร่โปรไฟล์นี้? / Publish this profile?"}
-        description={visibilityChange ? `${cellText(visibilityChange, "name", true)} — ${visibilityChange.status === "published" ? "บุคคลทั่วไปจะไม่เห็นโปรไฟล์นี้ ข้อมูลยังเก็บไว้แก้ไขได้ / The profile will be hidden; its information remains saved." : "ทุกคนจะเห็นรูป ประวัติ และข้อมูลติดต่อที่กรอกไว้บนเว็บไซต์ โปรดตรวจสอบว่าอนุญาตให้เผยแพร่ / The photo, biography and entered contact details will be public. Confirm they may be shared."}` : ""}
-        confirmLabel={visibilityChange?.status === "published" ? "ยืนยันซ่อน / Hide profile" : "ยืนยันเผยแพร่ / Publish profile"}
+        title={visibilityChange?.status === "published" ? (th ? "ซ่อนโปรไฟล์จากเว็บไซต์?" : "Hide this profile?") : (th ? "เผยแพร่โปรไฟล์นี้?" : "Publish this profile?")}
+        description={visibilityChange ? `${cellText(visibilityChange, "name", true)} — ${visibilityChange.status === "published" ? (th ? "บุคคลทั่วไปจะไม่เห็นโปรไฟล์นี้ ข้อมูลยังเก็บไว้แก้ไขได้" : "The profile will be hidden; its information remains saved.") : (th ? "ทุกคนจะเห็นรูป ประวัติ และข้อมูลติดต่อที่กรอกไว้บนเว็บไซต์ โปรดตรวจสอบว่าอนุญาตให้เผยแพร่" : "The photo, biography and entered contact details will be public. Confirm they may be shared.")}` : ""}
+        confirmLabel={visibilityChange?.status === "published" ? (th ? "ยืนยันซ่อน" : "Hide profile") : (th ? "ยืนยันเผยแพร่" : "Publish profile")}
         pending={pending}
         onConfirm={() => { if (visibilityChange) startTransition(async () => { await onToggleStatus(visibilityChange, true); }); }}
       />
@@ -359,9 +362,9 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
       <ConfirmDialog
         open={!!confirm}
         onOpenChange={(v) => !v && setConfirm(null)}
-        title={`ลบ${config.singular}นี้?`}
-        description={confirm ? `"${confirm.title}" จะถูกลบอย่างถาวรและกู้คืนไม่ได้` : ""}
-        confirmLabel="ลบ"
+        title={th ? `ลบ${config.singular}นี้?` : `Delete this ${config.singular}?`}
+        description={confirm ? (th ? `"${confirm.title}" จะถูกลบอย่างถาวรและกู้คืนไม่ได้` : `"${confirm.title}" will be permanently deleted.`) : ""}
+        confirmLabel={th ? "ลบ" : "Delete"}
         destructive
         pending={pending}
         onConfirm={onConfirmDelete}

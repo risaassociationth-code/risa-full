@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { cn, formatBytes } from "@/lib/utils";
 import { Button } from "./button";
 import { UPLOAD_SIZE_HINT, validateUploadSize } from "@/lib/upload-limits";
+import { useAdminLanguage } from "@/components/admin/AdminLanguage";
 
 export type MediaItem = {
   id: string; url: string; filename: string; mime: string; size_bytes: number | null;
@@ -20,6 +21,8 @@ type Props = {
 };
 
 export function MediaPickerDialog({ open, onOpenChange, onSelect, kind = "image" }: Props) {
+  const { locale } = useAdminLanguage();
+  const th = locale === "th";
   const [items, setItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -56,12 +59,12 @@ export function MediaPickerDialog({ open, onOpenChange, onSelect, kind = "image"
         body.append("kind", kind);
         const res = await fetch("/api/media/upload", { method: "POST", body });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error ?? "อัปโหลดไม่สำเร็จ");
+        if (!res.ok) throw new Error(data.error ?? (th ? "อัปโหลดไม่สำเร็จ" : "Upload failed"));
       }
-      toast.success("อัปโหลดแล้ว");
+      toast.success(th ? "อัปโหลดแล้ว" : "Uploaded");
       await load(q);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "อัปโหลดไม่สำเร็จ");
+      toast.error(e instanceof Error ? e.message : (th ? "อัปโหลดไม่สำเร็จ" : "Upload failed"));
     } finally {
       setUploading(false);
       if (inputRef.current) inputRef.current.value = "";
@@ -80,20 +83,20 @@ export function MediaPickerDialog({ open, onOpenChange, onSelect, kind = "image"
         <Dialog.Content className="fixed left-1/2 top-1/2 z-[91] flex max-h-[85vh] w-[min(56rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-line bg-paper shadow-2xl">
           <header className="flex flex-wrap items-center gap-3 border-b border-line px-5 py-3.5">
             <Dialog.Title className="text-sm font-semibold">คลังไฟล์ / Media library</Dialog.Title>
-            <Dialog.Description className="sr-only">เลือกรูปภาพหรือเอกสาร · {UPLOAD_SIZE_HINT}</Dialog.Description>
+            <Dialog.Description className="sr-only">{th ? "เลือกรูปภาพหรือเอกสาร · " : "Select image or document · "}{UPLOAD_SIZE_HINT}</Dialog.Description>
             <div className="relative ml-auto">
               <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-faint" />
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && load(q)}
-                placeholder="ค้นหาชื่อไฟล์"
+                placeholder={th ? "ค้นหาชื่อไฟล์" : "Search files"}
                 className="h-8 w-44 rounded-lg border border-line bg-surface pl-8 pr-2 text-xs outline-none focus:border-accent focus:bg-paper"
               />
             </div>
             <Button size="sm" variant="accent" onClick={() => inputRef.current?.click()} disabled={uploading}>
               {uploading ? <Loader2 className="size-3.5 animate-spin" /> : <Upload className="size-3.5" />}
-              อัปโหลด
+              {th ? "อัปโหลด" : "Upload"}
             </Button>
             <input
               ref={inputRef}
@@ -103,7 +106,7 @@ export function MediaPickerDialog({ open, onOpenChange, onSelect, kind = "image"
               accept={kind === "document" ? undefined : "image/*"}
               onChange={(e) => upload(e.target.files)}
             />
-            <Dialog.Close className="rounded p-1.5 text-muted hover:bg-surface" aria-label="ปิด">
+            <Dialog.Close className="rounded p-1.5 text-muted hover:bg-surface" aria-label={th ? "ปิด" : "Close"}>
               <X className="size-4" />
             </Dialog.Close>
           </header>
@@ -119,9 +122,9 @@ export function MediaPickerDialog({ open, onOpenChange, onSelect, kind = "image"
             ) : items.length === 0 ? (
               <div className="flex flex-col items-center gap-3 py-14 text-center">
                 <ImagePlus className="size-8 text-faint" />
-                <p className="text-sm text-muted">ยังไม่มีไฟล์ในคลัง — อัปโหลดไฟล์แรกได้เลย</p>
+                <p className="text-sm text-muted">{th ? "ยังไม่มีไฟล์ในคลัง — อัปโหลดไฟล์แรกได้เลย" : "No files in library yet — upload your first file"}</p>
                 <Button size="sm" variant="outline" onClick={() => inputRef.current?.click()}>
-                  เลือกไฟล์
+                  {th ? "เลือกไฟล์" : "Select file"}
                 </Button>
               </div>
             ) : (
@@ -158,7 +161,7 @@ export function MediaPickerDialog({ open, onOpenChange, onSelect, kind = "image"
                       <button
                         type="button"
                         onClick={() => remove(item.id)}
-                        aria-label="ลบไฟล์"
+                        aria-label={th ? "ลบไฟล์" : "Delete file"}
                         className="absolute right-1.5 top-1.5 rounded-md bg-paper/90 p-1 text-muted opacity-0 shadow-sm transition-opacity hover:text-red-600 group-hover:opacity-100"
                       >
                         <Trash2 className="size-3.5" />

@@ -11,7 +11,7 @@ const {boundRect,defaultWorkspaceLayout,parseWorkspaceLayout}=exports;
 
 test('workspace preferences round-trip and reject corrupt or unsupported records',()=>{
   const original=defaultWorkspaceLayout();
-  assert.equal(JSON.stringify(parseWorkspaceLayout(JSON.stringify(original))),JSON.stringify(original));
+  assert.deepEqual(parseWorkspaceLayout(JSON.stringify(original)),original);
   for(const raw of [null,'{','{}','{"version":2}',JSON.stringify({...original,panels:{}})])assert.equal(parseWorkspaceLayout(raw),null);
   const invalid=defaultWorkspaceLayout();invalid.nodes.news.x='12px';assert.equal(parseWorkspaceLayout(JSON.stringify(invalid)),null);
   invalid.nodes.news.x=Infinity;assert.equal(parseWorkspaceLayout(JSON.stringify(invalid)),null);

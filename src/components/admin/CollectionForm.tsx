@@ -15,6 +15,7 @@ import { Card, CardHead } from "./ui";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { StaffCard } from "@/components/site/StaffCard";
 import type { StaffProfile } from "@/lib/staff";
+import { useAdminLanguage } from "./AdminLanguage";
 
 type Props = {
   config: CollectionConfig;
@@ -34,6 +35,8 @@ function labelFor(field: FieldDef, lang: "th" | "en") {
 }
 
 export function CollectionForm({ config, initial, scope, backHref, createdHref }: Props) {
+  const { locale } = useAdminLanguage();
+  const th = locale === "th";
   const isNew = initial === null;
   const guided = config.key === "news" || config.key === "activities";
   const importedNews = guided && /^mms-hub-\d+$/.test(String(initial?.slug ?? ""));
@@ -323,15 +326,15 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
       {saveError && <p role="alert" className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">{saveError}</p>}
       {guided && <>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <button type="button" className="text-sm text-accent" onClick={() => dirty ? setLeaveHref(backHref) : router.push(backHref)}>← กลับรายการ{config.singular}</button>
-          <p role="status" className="text-xs text-muted">{pending ? "กำลังบันทึก…" : dirty ? "มีการแก้ไขที่ยังไม่บันทึก" : savedAt ? `บันทึกแล้ว · ${new Date(savedAt).toLocaleString("th-TH", { timeZone: "Asia/Bangkok" })}` : isNew ? "รายการใหม่ — ยังไม่บันทึก" : "ฉบับที่บันทึกไว้ — ยังไม่มีการแก้ไข"}</p>
+          <button type="button" className="text-sm text-accent" onClick={() => dirty ? setLeaveHref(backHref) : router.push(backHref)}>← {th ? "กลับรายการ" : "Back to "}{config.singular}</button>
+          <p role="status" className="text-xs text-muted">{pending ? (th ? "กำลังบันทึก…" : "Saving...") : dirty ? (th ? "มีการแก้ไขที่ยังไม่บันทึก" : "Unsaved changes") : savedAt ? `${th ? "บันทึกแล้ว" : "Saved"} · ${new Date(savedAt).toLocaleString(th ? "th-TH" : "en-US", { timeZone: "Asia/Bangkok" })}` : isNew ? (th ? "รายการใหม่ — ยังไม่บันทึก" : "New record — unsaved") : (th ? "ฉบับที่บันทึกไว้ — ยังไม่มีการแก้ไข" : "Saved version — no edits")}</p>
         </div>
-        <nav aria-label="ขั้นตอนการแก้ไข" className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {["เนื้อหา", "รูปภาพ", "ดูตัวอย่าง", "เผยแพร่"].map((label, index) => <button type="button" key={label} aria-current={step === index ? "step" : undefined} onClick={() => setStep(index)} className={`rounded-xl border p-3 text-left text-sm ${step === index ? "border-accent bg-accent-soft font-semibold text-accent" : "border-line bg-paper text-muted"}`}>{index + 1}. {label}</button>)}
+        <nav aria-label={th ? "ขั้นตอนการแก้ไข" : "Editing steps"} className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {(th ? ["เนื้อหา", "รูปภาพ", "ดูตัวอย่าง", "เผยแพร่"] : ["Content", "Media", "Preview", "Publish"]).map((label, index) => <button type="button" key={label} aria-current={step === index ? "step" : undefined} onClick={() => setStep(index)} className={`rounded-xl border p-3 text-left text-sm ${step === index ? "border-accent bg-accent-soft font-semibold text-accent" : "border-line bg-paper text-muted"}`}>{index + 1}. {label}</button>)}
         </nav>
-        {(step === 0 || step === 2) && <div className="flex gap-2" aria-label="ภาษาที่กำลังแก้ไข">
+        {(step === 0 || step === 2) && <div className="flex gap-2" aria-label={th ? "ภาษาที่กำลังแก้ไข" : "Editing language"}>
           {(["th", "en"] as const).map(lang => <button key={lang} type="button" aria-pressed={editLocale === lang} onClick={() => setEditLocale(lang)} className="rounded-lg border border-line px-4 py-2 text-sm aria-pressed:bg-ink aria-pressed:text-white">{lang === "th" ? "ภาษาไทย" : "English"}</button>)}
-          <span className="self-center text-xs text-muted">เก็บข้อความทั้งสองภาษาแยกกัน</span>
+          <span className="self-center text-xs text-muted">{th ? "เก็บข้อความทั้งสองภาษาแยกกัน" : "Text is stored separately for each language"}</span>
         </div>}
       </>}
       {config.key === "team" && <Card>
@@ -344,31 +347,31 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
           {values.photo_url ? <button type="button" onClick={() => set("photo_url", "")} className="mt-3 text-sm text-muted underline">เอารูปออกจากโปรไฟล์ (ไฟล์ยังอยู่ในคลัง)</button> : null}
         </div>
       </Card>}
-      {importedNews && <p className="rounded-lg border border-line bg-surface p-4 text-sm text-muted">MMS Hub · เนื้อหาจากเครือข่าย — โปรดคงเครดิตต้นฉบับและตรวจวันจัดกิจกรรม ชื่อบุคคล และบทบาทองค์กรก่อนเผยแพร่ สถานะฉบับร่างซ่อนรายการจากหน้า{config.singular}ของ RISA</p>}
+      {importedNews && <p className="rounded-lg border border-line bg-surface p-4 text-sm text-muted">{th ? "MMS Hub · เนื้อหาจากเครือข่าย — โปรดคงเครดิตต้นฉบับและตรวจวันจัดกิจกรรม ชื่อบุคคล และบทบาทองค์กรก่อนเผยแพร่ สถานะฉบับร่างซ่อนรายการจากหน้า" : "MMS Hub · Network content — please preserve original credits and check event dates, names, and roles before publishing. Draft status hides the record from the "}{config.singular}{th ? "ของ RISA" : " page"}</p>}
       {guided && step === 3 && <Card>
-        <CardHead title="4. เลือกว่าจะให้คนทั่วไปเห็นหรือไม่" />
+        <CardHead title={th ? "4. เลือกว่าจะให้คนทั่วไปเห็นหรือไม่" : "4. Visibility and publish"} />
         <div className="p-5">
-          <Field label="การแสดงบนเว็บไซต์">
-            <Select aria-label="การแสดงบนเว็บไซต์" value={String(values.status ?? "draft")} onChange={(e) => set("status", e.target.value)}>
-              <option value="draft">ฉบับร่าง — เก็บไว้เขียนต่อ ยังไม่แสดงบนหน้าเว็บ</option>
-              <option value="published">เผยแพร่ — ทุกคนเห็นบนเว็บไซต์หลังบันทึก</option>
+          <Field label={th ? "การแสดงบนเว็บไซต์" : "Website visibility"}>
+            <Select aria-label={th ? "การแสดงบนเว็บไซต์" : "Website visibility"} value={String(values.status ?? "draft")} onChange={(e) => set("status", e.target.value)}>
+              <option value="draft">{th ? "ฉบับร่าง — เก็บไว้เขียนต่อ ยังไม่แสดงบนหน้าเว็บ" : "Draft — kept for editing, not visible to public"}</option>
+              <option value="published">{th ? "เผยแพร่ — ทุกคนเห็นบนเว็บไซต์หลังบันทึก" : "Published — visible on the website after saving"}</option>
             </Select>
           </Field>
-          <p className="mt-4 text-sm text-muted">ตรวจหัวข้อ รูปภาพ และรายละเอียดแล้วกดบันทึกด้านล่าง การเลือกสถานะอย่างเดียวยังไม่เปลี่ยนหน้าเว็บ</p>
-          <details className="mt-5 border-t border-line pt-4"><summary className="cursor-pointer text-sm text-muted">ตัวเลือกเพิ่มเติม: ที่อยู่หน้าเว็บ</summary><div className="mt-3">{config.fields.filter(field => field.type === "slug").map(renderField)}</div></details>
-          {!isNew && initial?.status === "published" && <a className="mt-4 inline-block text-sm text-accent underline" target="_blank" rel="noreferrer" href={`/th/${config.key}/${initial.slug}`}>ดูฉบับที่บันทึกอยู่บนเว็บไซต์ ↗</a>}
+          <p className="mt-4 text-sm text-muted">{th ? "ตรวจหัวข้อ รูปภาพ และรายละเอียดแล้วกดบันทึกด้านล่าง การเลือกสถานะอย่างเดียวยังไม่เปลี่ยนหน้าเว็บ" : "Review the title, media, and details before saving. Changing status alone doesn't update the site."}</p>
+          <details className="mt-5 border-t border-line pt-4"><summary className="cursor-pointer text-sm text-muted">{th ? "ตัวเลือกเพิ่มเติม: ที่อยู่หน้าเว็บ" : "Advanced: URL slug"}</summary><div className="mt-3">{config.fields.filter(field => field.type === "slug").map(renderField)}</div></details>
+          {!isNew && initial?.status === "published" && <a className="mt-4 inline-block text-sm text-accent underline" target="_blank" rel="noreferrer" href={`/${th ? "th" : "en"}/${config.key}/${initial.slug}`}>{th ? "ดูฉบับที่บันทึกอยู่บนเว็บไซต์ ↗" : "View published version ↗"}</a>}
         </div>
       </Card>}
       {guided && step === 2 && <Card>
-        <CardHead title="3. ตรวจตัวอย่างเนื้อหา" />
-        <div className="p-5"><p className="mb-4 text-sm text-muted">ตัวอย่างจากสิ่งที่กำลังแก้ไข ยังไม่เผยแพร่ การจัดหน้าจริงอาจต่างเล็กน้อย</p><DraftPreview values={values} locale={editLocale} /></div>
+        <CardHead title={th ? "3. ตรวจตัวอย่างเนื้อหา" : "3. Review content preview"} />
+        <div className="p-5"><p className="mb-4 text-sm text-muted">{th ? "ตัวอย่างจากสิ่งที่กำลังแก้ไข ยังไม่เผยแพร่ การจัดหน้าจริงอาจต่างเล็กน้อย" : "Preview of your unsaved edits. Final rendering may vary slightly."}</p><DraftPreview values={values} locale={editLocale} /></div>
       </Card>}
       {(!guided || step < 2) && <Card>
-        <CardHead title={guided ? step === 0 ? "1. เขียนเนื้อหาและรายละเอียด" : "2. เลือกภาพหน้าปก" : "รายละเอียด"} />
+        <CardHead title={guided ? step === 0 ? (th ? "1. เขียนเนื้อหาและรายละเอียด" : "1. Write content and details") : (th ? "2. เลือกภาพหน้าปก" : "2. Select cover media") : (th ? "รายละเอียด" : "Details")} />
         <div className="grid gap-5 p-5">
-          {guided && step === 1 && <p className="text-sm text-muted">ภาพนี้จะแสดงบนการ์ดและด้านบนของเรื่อง คลิกปุ่มเพื่ออัปโหลดหรือเลือกภาพที่เคยใช้</p>}
+          {guided && step === 1 && <p className="text-sm text-muted">{th ? "ภาพนี้จะแสดงบนการ์ดและด้านบนของเรื่อง คลิกปุ่มเพื่ออัปโหลดหรือเลือกภาพที่เคยใช้" : "This media is shown on cards and at the top of the post. Click to upload or pick from the library."}</p>}
           {config.fields.filter(field => !guided || (step === 1 ? field.type === "image" : field.type !== "image" && field.type !== "slug")).map(renderField)}
-          {guided && step === 1 && !!values.cover_url && <button type="button" className="w-fit text-sm text-muted underline" onClick={() => set("cover_url", "")}>นำภาพหน้าปกออก (ยังเก็บไฟล์ไว้ในคลัง)</button>}
+          {guided && step === 1 && !!values.cover_url && <button type="button" className="w-fit text-sm text-muted underline" onClick={() => set("cover_url", "")}>{th ? "นำภาพหน้าปกออก (ยังเก็บไฟล์ไว้ในคลัง)" : "Remove cover image (keeps file in library)"}</button>}
         </div>
       </Card>}
 
@@ -381,7 +384,7 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
               className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-red-600 hover:bg-red-50"
             >
               <Trash2 className="size-4" />
-              ลบ{config.singular}นี้
+              {th ? `ลบ${config.singular}นี้` : `Delete ${config.singular}`}
             </button>
           )}
         </div>
@@ -391,9 +394,9 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
             onClick={() => guided && step > 0 ? setStep(step - 1) : dirty ? setLeaveHref(backHref) : router.push(backHref)}
             className="rounded-lg px-4 py-2.5 text-sm text-muted hover:bg-surface"
           >
-            {guided && step > 0 ? "ย้อนกลับ" : "กลับรายการ"}
+            {guided && step > 0 ? (th ? "ย้อนกลับ" : "Back") : (th ? "กลับรายการ" : "Back to list")}
           </button>
-          {guided && step < 3 && initial?.status !== "published" && <button type="button" onClick={() => save("draft")} disabled={pending} className="rounded-lg border border-line px-4 py-2.5 text-sm">บันทึกฉบับร่าง</button>}
+          {guided && step < 3 && initial?.status !== "published" && <button type="button" onClick={() => save("draft")} disabled={pending} className="rounded-lg border border-line px-4 py-2.5 text-sm">{th ? "บันทึกฉบับร่าง" : "Save draft"}</button>}
           <button
             type="submit"
             disabled={pending}
@@ -401,7 +404,7 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
             className={`inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-accent-ink hover:brightness-110 disabled:opacity-60 ${((guided && step === 3) || config.key === "team") && values.status === "published" ? "admin-publish-button" : ""}`}
           >
             {pending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
-            {guided ? step < 3 ? "ถัดไป → / Next →" : values.status === "published" ? "บันทึกและเผยแพร่ / Save and publish" : "บันทึกฉบับร่าง / Save draft" : config.key === "team" ? (values.status === "published" ? "บันทึกและเผยแพร่ / Save and publish" : "บันทึกฉบับร่าง / Save draft") : "บันทึก"}
+            {guided ? step < 3 ? (th ? "ถัดไป →" : "Next →") : values.status === "published" ? (th ? "บันทึกและเผยแพร่" : "Save and publish") : (th ? "บันทึกฉบับร่าง" : "Save draft") : config.key === "team" ? (values.status === "published" ? (th ? "บันทึกและเผยแพร่" : "Save and publish") : (th ? "บันทึกฉบับร่าง" : "Save draft")) : (th ? "บันทึก" : "Save")}
           </button>
         </div>
       </div>
@@ -423,18 +426,18 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
       <ConfirmDialog
         open={leaveHref !== null}
         onOpenChange={(open) => !open && setLeaveHref(null)}
-        title="ยังมีการแก้ไขที่ไม่บันทึก"
-        description="ถ้าออกจากหน้านี้ การแก้ไขล่าสุดจะหายไป กดยกเลิกเพื่อกลับไปบันทึกก่อน"
-        confirmLabel="ออกโดยไม่บันทึก"
+        title={th ? "ยังมีการแก้ไขที่ไม่บันทึก" : "Unsaved changes"}
+        description={th ? "ถ้าออกจากหน้านี้ การแก้ไขล่าสุดจะหายไป กดยกเลิกเพื่อกลับไปบันทึกก่อน" : "If you leave, your recent edits will be lost. Cancel to go back and save."}
+        confirmLabel={th ? "ออกโดยไม่บันทึก" : "Leave without saving"}
         onConfirm={leave}
       />
 
       <ConfirmDialog
         open={confirmDelete}
         onOpenChange={setConfirmDelete}
-        title={`ลบ${config.singular}นี้?`}
-        description="การลบไม่สามารถย้อนกลับได้"
-        confirmLabel="ลบ"
+        title={th ? `ลบ${config.singular}นี้?` : `Delete this ${config.singular}?`}
+        description={th ? "การลบไม่สามารถย้อนกลับได้" : "This cannot be undone."}
+        confirmLabel={th ? "ลบ" : "Delete"}
         destructive
         pending={pending}
         onConfirm={onDelete}

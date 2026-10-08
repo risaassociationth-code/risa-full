@@ -39,3 +39,77 @@ export function parseWorkspaceLayout(raw: string | null): WorkspaceLayout | null
     return out;
   } catch { return null; }
 }
+
+export function resolveCollisions(
+  nodes: Record<LayoutBranch, PanelRect>, 
+  active: LayoutBranch | null, 
+  panels: Record<LayoutBranch, PanelRect>,
+  nodeBounds: PanelBounds,
+  primaryNode: LayoutBranch | null
+): Record<LayoutBranch, PanelRect> {
+  const nextNodes = { ...nodes } as Record<LayoutBranch, PanelRect>;
+  for (const k of BRANCH_KEYS) nextNodes[k] = { ...nodes[k] };
+  const center = {x: 408, y: 234, width: 224, height: 224};
+  
+  const getAttached = (k: LayoutBranch) => {
+    const n = nextNodes[k];
+    const w = Math.max(300, panels[k].width);
+    const h = Math.max(260, panels[k].height);
+    const left = n.x + n.width/2 < 460;
+    return {x: left ? n.x - 72 - w : n.x + n.width + 72, y: n.y + n.height/2 - h/2, width: w, height: h};
+  };
+
+  const push = (a: PanelRect, b: PanelRect, weightA: number, weightB: number) => {
+    if (!intersects(a, b)) return;
+    const pad = 16;
+    const cxA = a.x + a.width/2, cyA = a.y + a.height/2;
+    const cxB = b.x + b.width/2, cyB = b.y + b.height/2;
+    const hw = (a.width + b.width) / 2 + pad;
+    const hh = (a.height + b.height) / 2 + pad;
+    const dx = cxB - cxA;
+    const dy = cyB - cyA;
+    const ox = hw - Math.abs(dx);
+    const oy = hh - Math.abs(dy);
+    
+    if (ox > 0 && oy > 0) {
+      let px = 0, py = 0;
+      if (ox < oy) px = dx > 0 ? ox : -ox;
+      else py = dy > 0 ? oy : -oy;
+      
+      const tw = weightA + weightB;
+      if (tw > 0) {
+        if (weightA > 0) { a.x -= px * (weightA / tw); a.y -= py * (weightA / tw); }
+        if (weightB > 0) { b.x += px * (weightB / tw); b.y += py * (weightB / tw); }
+      }
+    }
+  };
+
+  for (let iter = 0; iter < 12; iter++) {
+    let changed = false;
+    const snap = JSON.stringify(nextNodes);
+    
+    if (active) {
+      const p = getAttached(active);
+      for (const k of BRANCH_KEYS) {
+        if (k === active) continue;
+        push(p, nextNodes[k], 0, k === primaryNode ? 0 : 1);
+      }
+    }
+    
+    for (const k of BRANCH_KEYS) push(center, nextNodes[k], 0, k === primaryNode ? 0 : 1);
+    
+    for (let i = 0; i < BRANCH_KEYS.length; i++) {
+      for (let j = i + 1; j < BRANCH_KEYS.length; j++) {
+        const ki = BRANCH_KEYS[i];
+        const kj = BRANCH_KEYS[j];
+        push(nextNodes[ki], nextNodes[kj], ki === primaryNode ? 0 : 1, kj === primaryNode ? 0 : 1);
+      }
+    }
+    
+    for (const k of BRANCH_KEYS) nextNodes[k] = boundRect(nextNodes[k], nodeBounds);
+    
+    if (snap === JSON.stringify(nextNodes)) break;
+  }
+  
+  return nextNodes;
+}
