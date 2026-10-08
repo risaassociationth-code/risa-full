@@ -160,3 +160,6 @@ body:has(.risa-admin) ::selection { color: #17112d; background: #b8a4ff; }
   transform-origin: center;
   transform-box: fill-box;
 }
+
+/* Viewport-pinned sky: covers the full board at every zoom level. */
+.constellation-starfield { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
