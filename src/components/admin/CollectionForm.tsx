@@ -397,10 +397,11 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
           <button
             type="submit"
             disabled={pending}
-            className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-accent-ink hover:brightness-110 disabled:opacity-60"
+            aria-busy={pending}
+            className={`inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-accent-ink hover:brightness-110 disabled:opacity-60 ${((guided && step === 3) || config.key === "team") && values.status === "published" ? "admin-publish-button" : ""}`}
           >
             {pending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
-            {guided ? step < 3 ? "ถัดไป →" : values.status === "published" ? "บันทึกและเผยแพร่" : "บันทึกฉบับร่าง" : config.key === "team" ? (values.status === "published" ? "บันทึกและเผยแพร่ / Save and publish" : "บันทึกฉบับร่าง / Save draft") : "บันทึก"}
+            {guided ? step < 3 ? "ถัดไป → / Next →" : values.status === "published" ? "บันทึกและเผยแพร่ / Save and publish" : "บันทึกฉบับร่าง / Save draft" : config.key === "team" ? (values.status === "published" ? "บันทึกและเผยแพร่ / Save and publish" : "บันทึกฉบับร่าง / Save draft") : "บันทึก"}
           </button>
         </div>
       </div>

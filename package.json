@@ -7,7 +7,7 @@
     "build": "tsx scripts/release-footer-contact.ts && next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test scripts/navigation.test.mjs scripts/safety.test.mjs scripts/footer.test.mjs",
+    "test": "node --test scripts/navigation.test.mjs scripts/safety.test.mjs scripts/footer.test.mjs scripts/constellation-layout.test.mjs",
     "db:migrate": "tsx scripts/migrate.ts",
     "db:seed": "tsx scripts/seed.ts",
     "db:reset": "tsx scripts/reset.ts && pnpm db:migrate && pnpm db:seed",

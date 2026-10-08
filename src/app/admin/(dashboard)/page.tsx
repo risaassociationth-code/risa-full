@@ -1,44 +1,19 @@
-import Link from "next/link";
-import { ArrowRight, CalendarDays, Newspaper, UsersRound } from "lucide-react";
+import { requireUser } from "@/lib/auth";
+import { listRows } from "@/components/admin/collection-data";
+import { ConstellationMap, type ConstellationData, type MapCollection } from "@/components/admin/ConstellationMap";
 
 export const metadata = { title: "หน้าหลักผู้ดูแล · RISA Admin" };
 
-const actions = [
-  { href: "/admin/news", title: "ข่าวสาร", english: "News", tone: "admin-glass-blue", icon: Newspaper },
-  { href: "/admin/activities", title: "กิจกรรม", english: "Activities", tone: "admin-glass-teal", icon: CalendarDays },
-  { href: "/admin/team", title: "บุคลากร", english: "Personnel", tone: "admin-glass-violet", icon: UsersRound },
-];
-
-export default function DashboardPage() {
-  return (
-    <div className="admin-home mx-auto max-w-6xl py-3 lg:py-8">
-      <header className="mb-8 max-w-2xl lg:mb-12">
-        <p className="admin-kicker mb-4">RISA / CONTENT STUDIO</p>
-        <h1 className="text-3xl font-semibold leading-tight text-ink sm:text-4xl">วันนี้ต้องการจัดการอะไร?</h1>
-        <p className="mt-4 text-base leading-relaxed text-muted">เลือกหัวข้อด้านล่างเพื่อเริ่มต้นจัดการเว็บไซต์</p>
-      </header>
-      <nav aria-label="งานหลักของผู้ดูแล" className="grid gap-5 xl:grid-cols-3">
-        {actions.map(({ href, title, english, tone, icon: Icon }) => (
-          <Link
-            key={href}
-            href={href}
-            className={`admin-glass-action flex min-h-80 min-w-0 flex-col rounded-3xl p-7 sm:p-8 xl:min-h-[26rem] ${tone}`}
-          >
-            <div className="mb-8 flex items-center justify-between gap-3">
-              <span className="admin-glass-icon flex size-16 shrink-0 items-center justify-center rounded-2xl">
-                <Icon aria-hidden="true" className="size-8" strokeWidth={1.5} />
-              </span>
-              <span lang="en" className="text-sm font-semibold uppercase tracking-widest">{english}</span>
-            </div>
-            <h2 className="text-[clamp(2.5rem,4vw,3.5rem)] font-bold leading-[1.4]">
-              <span className="block">จัดการ</span><span className="block">{title}</span>
-            </h2>
-            <span aria-hidden="true" className="mt-auto flex justify-end pt-6">
-              <span className="admin-glass-arrow flex size-12 items-center justify-center rounded-full"><ArrowRight className="size-6" /></span>
-            </span>
-          </Link>
-        ))}
-      </nav>
-    </div>
-  );
+export default async function DashboardPage() {
+  const user = await requireUser();
+  const keys: MapCollection[] = ["news", "activities", "team"];
+  const entries = await Promise.all(keys.map(async key => {
+    const rows = await listRows(key);
+    const title = key === "team" ? "name" : "title";
+    return [key, { total: rows.length, records: rows.map(row => ({
+      id: String(row.id), title_th: String(row[`${title}_th`] ?? ""), title_en: String(row[`${title}_en`] ?? ""),
+      slug: String(row.slug ?? ""), status: String(row.status ?? "draft"),
+    })) }] as const;
+  }));
+  return <ConstellationMap workspaceKey={user.id} data={Object.fromEntries(entries) as ConstellationData} />;
 }

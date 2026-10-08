@@ -1,121 +1,148 @@
-/* Include body-hosted editor dialogs in the same theme while an admin route is mounted. */
+/* Admin-only tokens also reach body-hosted editor dialogs. */
 body:has(.risa-admin) {
   color-scheme: dark;
-  --color-ink: #f3f7ff;
-  --color-ink-2: #d3deed;
-  --color-paper: #0b1220;
-  --color-surface: #142033;
-  --color-surface-2: #1d2c43;
-  --color-muted: #afbed2;
-  --color-faint: #99abc4;
-  --color-line: #35445c;
-  --color-line-soft: #26354a;
-  --color-accent: #c6defa;
-  --color-accent-ink: #0b1628;
-  --color-accent-soft: #22344e;
-  --color-accent-line: #6e91ba;
+  --color-ink: #f4f6ff; --color-ink-2: #dce5f9;
+  --color-paper: #0b1528; --color-surface: #142139; --color-surface-2: #1c2d48;
+  --color-muted: #b5c4df; --color-faint: #a7bbdb;
+  --color-line: #415477; --color-line-soft: #293d5c;
+  --color-accent: #b8a4ff; --color-accent-ink: #17112d;
+  --color-accent-soft: #2a2450; --color-accent-line: #8273c6;
 }
-.risa-admin { background: radial-gradient(ellipse at 70% 0, #182039 0, transparent 55%), #0b1220; }
-.risa-admin .admin-page-header { border-bottom: 1px solid var(--color-line); padding-bottom: 28px; margin-bottom: 32px; }
-.risa-admin .admin-page-header h1 { font-size: clamp(1.65rem, 3vw, 2.25rem); font-weight: 400; }
-.risa-admin .admin-card { border-radius: 16px; background: #101b2c; }
-.risa-admin .admin-rail { background: #0d1727; color: var(--color-ink); --color-accent: #e4d2ac; }
-.risa-admin .admin-rail img { filter: grayscale(1) brightness(0) invert(1); }
-.admin-kicker { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--color-accent); }
-.admin-quick-link { display: flex; align-items: center; gap: 18px; padding: 25px 22px; border: 1px solid var(--color-line); background: var(--color-paper); transition: border-color .2s, background .2s; }
-.admin-quick-link:hover { border-color: var(--color-accent); background: var(--color-surface); }
-.admin-quick-link > svg:first-child { color: var(--color-accent); flex-shrink: 0; }
-.admin-quick-link > svg:last-child { margin-left: auto; flex-shrink: 0; }
-.admin-quick-link p { color: var(--color-muted); font-size: 13px; margin-top: 3px; }
-.admin-metric { border-top: 1px solid var(--color-line); padding: 22px 0; }
-.admin-metric:hover { border-color: var(--color-accent); }
-.admin-metric strong { font-size: 32px; font-weight: 400; }
-.admin-login { min-height: 100svh; display: grid; grid-template-columns: 1fr 1fr; }
-.admin-login-intro { display: flex; flex-direction: column; justify-content: space-between; padding: clamp(32px, 6vw, 88px); background: radial-gradient(ellipse at top left, #263e5f, transparent 75%), #101b2c; color: #f3f7ff; }
-.admin-login-intro h2 { max-width: 440px; font-size: clamp(30px, 3.4vw, 48px); font-weight: 300; margin-block: 28px; }
-.admin-login-intro p { color: #b9c6cd; max-width: 380px; }
-.admin-login-form { display: flex; align-items: center; justify-content: center; padding: 48px 28px; }
-@media (max-width: 767px) {
-  .admin-login { grid-template-columns: 1fr; }
-  .admin-login-intro { padding: 28px; gap: 36px; }
-  .admin-login-intro h2 { font-size: 28px; margin-block: 12px; }
-  .admin-login-intro > p:last-child { display: none; }
-  .admin-login-form { padding: 36px 24px 48px; }
-  .risa-admin .admin-page-header { padding-bottom: 20px; margin-bottom: 24px; }
-}
-
-/* Existing inverse buttons and selected tabs need dark text on their light fill.
-   Scope to the mounted admin, including Radix portals, never the public site. */
-body:has(.risa-admin) .bg-ink,
-body:has(.risa-admin) [class~="aria-pressed:bg-ink"][aria-pressed="true"] {
-  background-color: #c6defa;
-  color: #0b1628;
-}
-body:has(.risa-admin) .bg-ink:hover { background-color: #e0edff; color: #0b1628; }
+.risa-admin { background: #070f20; color: var(--color-ink); }
+.risa-admin .admin-page-header { border-bottom: 1px solid var(--color-line); padding-bottom: 24px; margin-bottom: 28px; }
+.risa-admin .admin-page-header h1 { font-size: 2rem; font-weight: 600; }
+.risa-admin .admin-card { border-radius: 10px; background: #101c30; }
+.admin-rail { background: #0a1427; color: var(--color-ink); }
+.admin-rail img { filter: grayscale(1) brightness(0) invert(1); }
+.admin-rail nav a { min-height: 44px; display: flex; align-items: center; }
+.admin-rail nav a[aria-current="page"] { background: #28234b; color: #d0c4ff; }
+.admin-brand-caption { color: #a7bbdb; font-size: 12px; }
+.admin-language-switch { display: flex; gap: 4px; }
+.admin-language-switch button { min-width: 40px; min-height: 40px; padding: 6px; font-size: 12px; color: #a7bbdb; border-bottom: 2px solid transparent; }
+.admin-language-switch button[aria-pressed="true"] { color: #d0c4ff; border-color: #b8a4ff; }
+.admin-mobile-overlay { position: fixed; inset: 0; z-index: 50; background: rgb(0 4 12 / 72%); }
+.admin-mobile-drawer { position: fixed; inset-block: 0; left: 0; z-index: 51; width: min(18rem, calc(100vw - 48px)); display: flex; flex-direction: column; border-right: 1px solid var(--color-line); }
+body:has(.risa-admin) .bg-ink, body:has(.risa-admin) [class~="aria-pressed:bg-ink"][aria-pressed="true"] { background-color: #b8a4ff; color: #17112d; }
+body:has(.risa-admin) .bg-ink:hover { background-color: #d0c4ff; color: #17112d; }
 body:has(.risa-admin) [class~="bg-ink/40"] { background-color: rgb(0 4 12 / 72%); }
 body:has(.risa-admin) .bg-green-50 { background-color: #12382d; color: #9ee8bc; }
 body:has(.risa-admin) .bg-red-50 { background-color: #3b1c2b; color: #ffbbc8; border-color: #754150; }
 body:has(.risa-admin) .text-red-600 { color: #ffabbc; }
 body:has(.risa-admin) [class~="hover:bg-red-50"]:hover { background-color: #3b1c2b; color: #ffbbc8; }
-body:has(.risa-admin) [role="dialog"],
-body:has(.risa-admin) [role="alertdialog"] { color: var(--color-ink); }
-body:has(.risa-admin) [data-sonner-toaster] { --normal-bg: #142033; --normal-text: #f3f7ff; --normal-border: #35445c; }
-
-/* Static light pools sit behind the three translucent cards. No moving blur. */
-.admin-home { isolation: isolate; position: relative; }
-.admin-home::before {
-  content: ""; position: absolute; z-index: -1; inset: 100px -12px -30px; pointer-events: none;
-  background: radial-gradient(ellipse at 12% 60%, rgb(44 106 219 / 28%), transparent 45%),
-    radial-gradient(ellipse at 51% 75%, rgb(20 179 160 / 20%), transparent 40%),
-    radial-gradient(ellipse at 92% 50%, rgb(156 86 223 / 24%), transparent 45%);
+body:has(.risa-admin) :is([role="dialog"], [role="alertdialog"]) { color: var(--color-ink); }
+body:has(.risa-admin) [data-sonner-toaster] { --normal-bg: #142139; --normal-text: #f4f6ff; --normal-border: #415477; }
+.risa-admin :is(a,button,input,select,textarea):focus-visible, .admin-rail :focus-visible { outline: 3px solid #9fddff; outline-offset: 3px; }
+.risa-admin :is(input,textarea,select) { caret-color: #b8a4ff; }
+.risa-admin table { font-variant-numeric: tabular-nums; }
+body:has(.risa-admin) ::selection { color: #17112d; background: #b8a4ff; }
+.constellation-workspace { overflow: hidden; border: 1px solid #415477; border-radius: 14px; background: #081326; }
+.constellation-toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #293d5c; background: #0c182c; }
+.constellation-search { display: flex; gap: 10px; align-items: center; color: #a7bbdb; flex: 1; max-width: 360px; }
+.constellation-search input { width: 100%; min-width: 0; min-height: 44px; background: #101f36; border: 1px solid #415477; border-radius: 7px; padding: 8px 12px; font: inherit; font-size: 14px; color: #f4f6ff; }
+.constellation-search input::placeholder { color: #a7bbdb; }
+.constellation-view-switch { display: flex; gap: 4px; }
+.constellation-view-switch button, .constellation-zoom button { display: inline-flex; gap: 8px; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; padding: 8px 12px; font-size: 13px; color: #c1cfe7; border-radius: 7px; }
+.constellation-view-switch button[aria-pressed="true"] { background: #28234b; color: #e4dcff; }
+.constellation-view-switch button:hover, .constellation-zoom button:hover { background: #1c2d48; }
+.constellation-body { position: relative; background: radial-gradient(ellipse at 15% 36%, #17295a80, transparent 44%), radial-gradient(ellipse at 80% 75%, #29185665, transparent 45%), #071226; }
+.constellation-viewport { position: relative; height: 480px; overflow: hidden; touch-action: none; cursor: grab; }
+.constellation-viewport:active { cursor: grabbing; }
+.constellation-viewport:focus-visible { outline: 3px solid #9fddff; outline-offset: -4px; }
+.constellation-scene { position: absolute; width: 1040px; height: 660px; left: 50%; top: 50%; transform-origin: center; }
+.constellation-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.constellation-violet-line { stroke: #a58bff; }
+.constellation-cyan-line { stroke: #70cfff; }
+.constellation-center { position: absolute; left: 408px; top: 234px; width: 224px; height: 224px; border: 2px solid #8d9fff; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px; text-align: center; background: #0f193e; box-shadow: 0 0 40px #677aff33; }
+.constellation-center > svg { color: #b8a4ff; }
+.constellation-center h1 { font-size: 28px; font-weight: 600; line-height: 1.4; }
+.constellation-center p { font-size: 16px; color: #b5c4df; }
+.constellation-node { position: absolute; width: 220px; min-height: 88px; display: flex; align-items: center; gap: 16px; padding: 20px; border: 1px solid #82d6ff; border-radius: 12px; background: #101f37; font-size: 24px; font-weight: 600; cursor: pointer; box-shadow: 0 6px 28px #267acf18; }
+.constellation-node > svg:first-child { color: #8bdeff; flex-shrink: 0; }
+.constellation-node > svg:last-child { margin-left: auto; flex-shrink: 0; }
+.constellation-node:hover { background: #182b49; }
+.constellation-node[aria-expanded="true"] { background: #213b60; border-width: 2px; }
+.constellation-node-news { top: 58px; left: 410px; }
+.constellation-node-activities { top: 296px; left: 92px; }
+.constellation-node-team { top: 296px; left: 729px; }
+.constellation-node-overview { top: 526px; left: 410px; }
+.constellation-node-news, .constellation-node-overview { border-color: #af91ff; background: #211b43; }
+.constellation-node-news > svg:first-child, .constellation-node-overview > svg:first-child { color: #d0baff; }
+.constellation-node-news:hover, .constellation-node-overview:hover { background: #302555; }
+.constellation-node-news[aria-expanded="true"], .constellation-node-overview[aria-expanded="true"] { background: #392e66; }
+.constellation-zoom { position: absolute; bottom: 12px; right: 12px; display: flex; align-items: center; border: 1px solid #415477; border-radius: 8px; background: #0c182c; }
+.constellation-zoom span { width: 48px; font-size: 12px; text-align: center; font-variant-numeric: tabular-nums; color: #b5c4df; }
+.constellation-zoom button:disabled { opacity: .45; cursor: not-allowed; }
+.constellation-panel { display: none; }
+.constellation-body:has(.constellation-panel-open) { display: grid; grid-template-columns: minmax(0,1fr) minmax(300px,38%); }
+.constellation-panel-open { display: block; position: relative; padding: 24px 20px; border-left: 1px solid #415477; background: #0e1a2d; max-height: 480px; overflow-y: auto; }
+.constellation-close { position: absolute; right: 8px; top: 8px; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 6px; }
+.constellation-close:hover { background: #1c2d48; }
+.constellation-records-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding-block: 12px 16px; }
+.constellation-records-heading h2, .constellation-overview h2 { font-size: 18px; font-weight: 600; }
+.constellation-add { display: inline-flex; align-items: center; gap: 6px; background: #b8a4ff; color: #17112d; padding: 8px 12px; min-height: 40px; border-radius: 6px; font-size: 13px; font-weight: 600; }
+.constellation-records ul { padding: 0; list-style: none; }
+.constellation-records li { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 12px; padding-block: 16px; border-top: 1px solid #293d5c; }
+.constellation-records li > svg { color: #b5c4df; margin-top: 4px; flex-shrink: 0; }
+.constellation-record-copy { min-width: 0; flex: 1; flex-basis: 120px; }
+.constellation-record-copy h3 { font-size: 14px; font-weight: 500; line-height: 1.7; overflow-wrap: anywhere; }
+.constellation-status { display: inline-block; border-radius: 20px; padding: 2px 8px; margin-top: 7px; background: #24334f; color: #dce5f9; font-size: 11px; }
+.constellation-edit, .constellation-preview { display: inline-flex; gap: 8px; align-items: center; min-height: 40px; padding: 8px 10px; font-size: 12px; border: 1px solid #415477; border-radius: 6px; }
+.constellation-preview { margin-left: 32px; }
+.constellation-edit:hover, .constellation-preview:hover { background: #1c2d48; }
+.constellation-all { display: inline-flex; gap: 12px; align-items: center; min-height: 44px; font-size: 13px; color: #b8a4ff; }
+.constellation-empty, .constellation-overview p { font-size: 14px; color: #b5c4df; padding-block: 16px; }
+.constellation-overview { padding-top: 20px; }
+.constellation-overview ul { list-style: none; padding: 0; }
+.constellation-overview a { display: flex; align-items: center; gap: 12px; min-height: 52px; border-top: 1px solid #293d5c; font-size: 14px; }
+.constellation-overview a span { margin-left: auto; font-variant-numeric: tabular-nums; }
+.constellation-instructions { padding: 12px 20px; border-top: 1px solid #293d5c; text-align: center; color: #a7bbdb; font-size: 12px; }
+.constellation-list-mode .constellation-viewport { display: none; }
+.constellation-body.constellation-list-mode { display: block; }
+.constellation-list-mode .constellation-panel { max-height: none; border-left: 0; }
+.constellation-list-title { font-size: 20px; font-weight: 600; margin-bottom: 24px; }
+.constellation-list-mode .constellation-records + .constellation-records { margin-top: 32px; }
+.admin-login { min-height: 100svh; display: grid; grid-template-columns: 1fr 1fr; }
+.admin-login-intro { display: flex; flex-direction: column; justify-content: space-between; padding: 64px; background: #101b2c; color: #f3f7ff; }
+.admin-login-intro h2 { max-width: 440px; font-size: 2.5rem; font-weight: 500; margin-block: 28px; }
+.admin-login-intro p { color: #b5c4df; max-width: 380px; }
+.admin-login-form { display: flex; align-items: center; justify-content: center; padding: 48px 28px; }
+@media (max-width: 767px) {
+  .constellation-toolbar { padding: 12px; }
+  .constellation-search { flex-basis: 100%; max-width: none; }
+  .constellation-body:has(.constellation-panel-open) { display: block; }
+  .constellation-panel-open { max-height: none; border-left: 0; border-top: 1px solid #415477; padding: 24px 16px; }
+  .constellation-viewport { height: 380px; }
+  .constellation-close { min-width: 44px; min-height: 44px; }
+  .constellation-records-heading { padding-right: 24px; }
+  .constellation-add, .constellation-edit, .constellation-preview { min-height: 44px; }
+  .admin-login { grid-template-columns: 1fr; }
+  .admin-login-intro { padding: 28px; gap: 36px; }
+  .admin-login-intro h2 { font-size: 1.75rem; margin-block: 12px; }
+  .admin-login-intro > p:last-child { display: none; }
+  .admin-login-form { padding: 36px 24px 48px; }
+  .risa-admin .admin-page-header { padding-bottom: 20px; margin-bottom: 24px; }
 }
-.admin-glass-action {
-  --glass-rgb: 66 125 220; --glass-solid: #152d51;
-  position: relative; isolation: isolate; overflow: hidden;
-  color: #f8fbff; background: var(--glass-solid);
-  border: 1px solid rgb(202 227 255 / 28%);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 26%), inset 0 -1px 0 rgb(255 255 255 / 7%), 0 18px 45px rgb(0 3 12 / 28%);
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
-}
-.admin-glass-teal { --glass-rgb: 25 160 145; --glass-solid: #103832; }
-.admin-glass-violet { --glass-rgb: 156 100 215; --glass-solid: #302346; }
-@supports ((backdrop-filter: blur(18px)) or (-webkit-backdrop-filter: blur(18px))) {
-  .admin-glass-action {
-    background: linear-gradient(145deg, rgb(var(--glass-rgb) / 30%), rgb(13 23 39 / 72%));
-    -webkit-backdrop-filter: blur(18px) saturate(135%);
-    backdrop-filter: blur(18px) saturate(135%);
-  }
-}
-.admin-glass-action::before {
-  content: ""; position: absolute; z-index: -1; inset: 0; pointer-events: none;
-  background: linear-gradient(135deg, rgb(255 255 255 / 16%), transparent 32%, transparent 70%, rgb(var(--glass-rgb) / 14%));
-}
-.admin-glass-icon, .admin-glass-arrow {
-  background: linear-gradient(145deg, rgb(255 255 255 / 15%), rgb(255 255 255 / 4%));
-  border: 1px solid rgb(255 255 255 / 23%);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 16%);
-}
-.admin-glass-arrow { transition: transform 160ms ease, background-color 160ms ease; }
-.admin-glass-action:focus-visible {
-  outline: 3px solid #d9edff; outline-offset: 5px;
-  border-color: rgb(224 241 255 / 80%);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 40%), 0 0 34px rgb(var(--glass-rgb) / 22%), 0 20px 50px rgb(0 3 12 / 30%);
-}
-.admin-glass-action:focus-visible .admin-glass-arrow { transform: translateX(3px); background-color: rgb(255 255 255 / 13%); }
-@media (hover: hover) and (pointer: fine) {
-  .admin-glass-action:hover { transform: translateY(-4px); border-color: rgb(224 241 255 / 65%); box-shadow: inset 0 1px 0 rgb(255 255 255 / 40%), 0 0 34px rgb(var(--glass-rgb) / 22%), 0 20px 50px rgb(0 3 12 / 30%); }
-  .admin-glass-action:hover .admin-glass-arrow { transform: translateX(3px); background-color: rgb(255 255 255 / 13%); }
-}
-.admin-glass-action:active { transform: scale(.975); border-color: #e0f1ff; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 26%), 0 6px 18px rgb(0 3 12 / 30%); }
-.admin-glass-action:active .admin-glass-arrow { transform: translateX(5px); background-color: rgb(255 255 255 / 24%); }
-@media (prefers-reduced-motion: reduce) {
-  body:has(.risa-admin) *, body:has(.risa-admin) *::before, body:has(.risa-admin) *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
-  .admin-glass-action, .admin-glass-action .admin-glass-arrow { transform: none !important; }
-}
-@media (forced-colors: active) {
-  .admin-glass-action { background: Canvas; color: LinkText; border: 2px solid LinkText; backdrop-filter: none; }
-  .admin-glass-action::before, .admin-home::before { display: none; }
-  .admin-glass-action:focus-visible { outline-color: Highlight; }
-}
+@media (prefers-reduced-motion: reduce) { body:has(.risa-admin) *, body:has(.risa-admin) *::before, body:has(.risa-admin) *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+@media (forced-colors: active) { .constellation-node, .constellation-center, .constellation-add { background: Canvas; color: CanvasText; box-shadow: none; border-color: CanvasText; } .constellation-node[aria-expanded="true"] { border-color: Highlight; } }
+/* Workspace handles are separate from record editing and publication controls. */
+.workspace-panel { position: absolute; }
+.workspace-node .constellation-node { inset: 0; width: 100%; height: 100%; min-height: 0; padding-left: 30px; font-size: 23px; }
+.workspace-drag-handle, .workspace-resize-handle { position: absolute; z-index: 3; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 5px; color: #b5c4df; background: #101d35; touch-action: none; }
+.workspace-drag-handle { left: 2px; top: 2px; cursor: move; }
+.workspace-resize-handle { right: 2px; bottom: 2px; cursor: nwse-resize; }
+.workspace-drag-handle:hover, .workspace-resize-handle:hover { background: #2a3b59; color: white; }
+.constellation-body:has(.constellation-panel-open) { display: block; }
+.workspace-record-panel { z-index: 5; border: 1px solid #8c7acc; border-radius: 12px; background: #0e1a2d; box-shadow: 0 14px 32px #0005; }
+.constellation-panel-content { height: 100%; overflow: auto; padding: 28px 20px 20px; border-radius: inherit; }
+.constellation-close { z-index: 4; }
+.constellation-list-panel { padding: 24px 20px; }
+.workspace-layout-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 10px 16px; border-bottom: 1px solid #415477; background: #0c182c; }
+.workspace-layout-controls > span { font-size: 13px; color: #c1cfe7; margin-right: 8px; }
+.workspace-layout-controls button { min-width: 36px; min-height: 40px; padding: 8px; border: 1px solid #415477; border-radius: 5px; font-size: 12px; }
+.workspace-layout-controls button:hover { background: #1c2d48; }
+.workspace-storage-status { padding: 8px 20px 12px; font-size: 11px; color: #a7bbdb; text-align: center; }
+@media (max-width: 767px) { .constellation-list-panel { padding: 24px 16px; } .workspace-layout-controls button { min-width: 44px; min-height: 44px; } }
+.risa-admin .admin-publish-button { background: #a2e6be; color: #0c2b1a; min-height: 48px; padding-inline: 24px; font-weight: 600; border: 1px solid transparent; }
+.risa-admin .admin-publish-button:hover:not(:disabled) { background: #c1f2d4; }
+.risa-admin .admin-publish-button:focus-visible { outline-color: #a2e6be; outline-offset: 4px; }
+.risa-admin .admin-publish-button:disabled { background: #88b89c; color: #193624; cursor: wait; }

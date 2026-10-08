@@ -5,8 +5,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import * as Dialog from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
 import { ADMIN_NAV } from "./nav";
+import { useAdminLanguage } from "./AdminLanguage";
 
 function isActive(pathname: string, href: string): boolean {
   if (href === "/admin") return pathname === "/admin";
@@ -15,6 +17,8 @@ function isActive(pathname: string, href: string): boolean {
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { locale } = useAdminLanguage();
+  const englishLabels: Record<string, string> = { "/admin": "Task map", "/admin/news": "News", "/admin/activities": "Activities", "/admin/team": "People" };
   const [open, setOpen] = useState(false);
 
   // Close the mobile drawer on navigation. Adjusting state during render
@@ -26,11 +30,11 @@ export function Sidebar() {
   }
 
   const nav = (
-    <nav className="flex-1 overflow-y-auto px-3 pb-6" aria-label="เมนูผู้ดูแลระบบ">
+    <nav lang={locale} className="flex-1 overflow-y-auto px-3 pb-6" aria-label={locale === "th" ? "เมนูผู้ดูแลระบบ" : "Admin navigation"}>
       {ADMIN_NAV.map((group) => (
         <div key={group.label} className="mt-5 first:mt-2">
           <p className="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-faint">
-            {group.label}
+            {locale === "th" ? group.label : "Content"}
           </p>
           <ul>
             {group.links.map((link) => {
@@ -47,7 +51,7 @@ export function Sidebar() {
                         : "text-ink-2 hover:bg-surface hover:text-ink",
                     )}
                   >
-                    {link.label}
+                    {locale === "th" ? link.label : englishLabels[link.href] || link.label}
                   </Link>
                 </li>
               );
@@ -68,61 +72,42 @@ export function Sidebar() {
         className="h-7 w-auto"
         priority
       />
-      <span className="text-[10px] tracking-[.2em] text-faint">CONTENT STUDIO</span>
+      <span lang={locale} className="admin-brand-caption">{locale === "th" ? "จัดการเว็บไซต์ RISA" : "RISA content workspace"}</span>
       <span className="sr-only">ไปยังแดชบอร์ด</span>
     </Link>
   );
 
   return (
     <>
-      {/*
-        Fixed (not in-flow): the topbar uses backdrop-blur, and any ancestor
-        with a backdrop-filter/filter/transform becomes a new containing block
-        for `position: fixed` descendants — nesting this in the topbar's flow
-        would re-anchor the desktop rail below to that bar instead of the
-        viewport. Positioning by viewport coordinates sidesteps that.
-      */}
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-label="เปิดเมนู"
-        aria-expanded={open}
-        className="fixed left-4 top-2.5 z-40 rounded-lg border border-line bg-paper p-2 text-ink-2 hover:bg-surface lg:hidden"
-      >
-        <Menu className="size-4" />
-      </button>
-
       {/* desktop rail */}
       <aside className="admin-rail fixed inset-y-0 left-0 z-30 hidden w-60 flex-col border-r border-line lg:flex">
         {lockup}
         {nav}
       </aside>
 
-      {/* mobile drawer */}
-      {open && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <button
-            type="button"
-            aria-label="ปิดเมนู"
-            onClick={() => setOpen(false)}
-            className="absolute inset-0 bg-ink/40"
-          />
-          <div className="admin-rail absolute inset-y-0 left-0 flex w-64 flex-col shadow-xl">
+      {/* Radix supplies focus containment, Escape and trigger focus return. */}
+      <Dialog.Root open={open} onOpenChange={setOpen}>
+        <Dialog.Trigger asChild>
+          <button type="button" aria-label="เปิดเมนู" className="fixed left-4 top-2.5 z-40 flex size-11 items-center justify-center border border-line bg-paper text-ink-2 hover:bg-surface lg:hidden">
+            <Menu aria-hidden="true" className="size-5" />
+          </button>
+        </Dialog.Trigger>
+        <Dialog.Portal>
+          <Dialog.Overlay className="admin-mobile-overlay" />
+          <Dialog.Content className="admin-rail admin-mobile-drawer" aria-describedby={undefined}>
+            <Dialog.Title className="sr-only">เมนูผู้ดูแลระบบ</Dialog.Title>
             <div className="flex items-center justify-between border-b border-line-soft">
               {lockup}
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label="ปิดเมนู"
-                className="mr-3 rounded-lg p-2 text-muted hover:bg-surface"
-              >
-                <X className="size-4" />
-              </button>
+              <Dialog.Close asChild>
+                <button type="button" aria-label="ปิดเมนู" className="mr-3 flex size-11 shrink-0 items-center justify-center text-muted hover:bg-surface">
+                  <X aria-hidden="true" className="size-5" />
+                </button>
+              </Dialog.Close>
             </div>
             {nav}
-          </div>
-        </div>
-      )}
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </>
   );
 }
