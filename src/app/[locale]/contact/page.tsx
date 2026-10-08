@@ -25,6 +25,7 @@ export default async function ContactPage() {
   const lat = Number(settings.map_lat);
   const lng = Number(settings.map_lng);
   const address = pick(settings, "address", locale);
+  const hasOfficeMap = address && settings.map_lat != null && settings.map_lng != null;
   const office = {
     id: "office",
     name: pick(settings, "org_name", locale),
@@ -96,7 +97,7 @@ export default async function ContactPage() {
       </Section>
 
       {/* ── map ───────────────────────────────────────────────────────────── */}
-      <Section tone="surface">
+      {hasOfficeMap && <Section tone="surface">
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl">
             <Editable
@@ -128,7 +129,7 @@ export default async function ContactPage() {
           zoom={settings.map_zoom}
           className="h-[420px] w-full overflow-hidden rounded-2xl border border-line md:h-[480px]"
         />
-      </Section>
+      </Section>}
 
       <CtaBand />
     </>

@@ -85,12 +85,12 @@ export default async function MapPage() {
           </ul>
         </div>
 
-        <MapView
+        {settings.map_lat != null && settings.map_lng != null && <MapView
           points={points}
           center={{ lat: settings.map_lat, lng: settings.map_lng }}
           zoom={settings.map_zoom}
           className="h-[26rem] md:h-[34rem]"
-        />
+        />}
       </Section>
 
       {/* ── the same information as text, for readers without the map ─────── */}

@@ -24,11 +24,10 @@ async function main() {
       'RISA',
       'ยกระดับอุตสาหกรรมไทยด้วยงานวิจัยและมาตรฐาน',
       'Raising Thai industry through research and standards',
-      'เลขที่ 99 อาคารวิจัยและมาตรฐาน ชั้น 8 ถนนพระรามที่ 6 แขวงทุ่งพญาไท เขตราชเทวี กรุงเทพมหานคร 10400',
-      '99 Research & Standards Building, 8th Floor, Rama VI Road, Thung Phaya Thai, Ratchathewi, Bangkok 10400',
-      '02-123-4567', 'info@risa.or.th', '@risa',
-      'https://facebook.com/', 'https://youtube.com/', 'https://linkedin.com/',
-      13.7658, 100.5354, 16)
+      '', '',
+      '082-793-4431', 'risa.association.th@gmail.com', '',
+      '', '', '',
+      null, null, 16)
     on conflict (id) do nothing`;
 
   // ───────────────────────────────────────────────────────── content blocks
@@ -163,10 +162,8 @@ async function main() {
       ["membership.steps", "CreditCard", "ชำระค่าบำรุง", "Pay the annual fee", "ชำระผ่านบัญชีสมาคมตามอัตราของประเภทสมาชิกที่เลือก", "Transfer the fee for your chosen membership tier."],
       ["membership.steps", "BadgeCheck", "รับสถานะสมาชิก", "You are in", "รับบัตรสมาชิกและสิทธิ์เข้าถึงคลังความรู้ทันที", "Receive your card and immediate access to the repository."],
 
-      ["contact.channels", "Mail", "อีเมล", "Email", "info@risa.or.th", "info@risa.or.th"],
-      ["contact.channels", "Phone", "โทรศัพท์", "Phone", "02-123-4567", "+66 2 123 4567"],
-      ["contact.channels", "MessageCircle", "LINE Official", "LINE Official", "@risa", "@risa"],
-      ["contact.channels", "MapPin", "สำนักงาน", "Office", "เลขที่ 99 อาคารวิจัยและมาตรฐาน ชั้น 8 ถนนพระรามที่ 6 เขตราชเทวี กรุงเทพฯ 10400", "99 Research & Standards Building, 8th Floor, Rama VI Road, Ratchathewi, Bangkok 10400"],
+      ["contact.channels", "Mail", "อีเมล", "Email", "risa.association.th@gmail.com", "risa.association.th@gmail.com"],
+      ["contact.channels", "Phone", "โทรศัพท์", "Phone", "082-793-4431", "+66 82 793 4431"],
     ];
     const counters: Record<string, number> = {};
     for (const [lk, icon, tth, ten, bth, ben] of lists) {
@@ -350,7 +347,6 @@ async function seedContent() {
   // ────────────────────────────────────────────────────────────── locations
   if ((await sql`select count(*)::int as n from locations`)[0].n === 0) {
     const rows: [string, string, string, string, number, number, string][] = [
-      ["สำนักงานสมาคม RISA", "RISA head office", "ถนนพระรามที่ 6 เขตราชเทวี กรุงเทพมหานคร", "Rama VI Road, Ratchathewi, Bangkok", 13.7658, 100.5354, "office"],
       ["ศูนย์ภูมิภาคภาคเหนือ", "Northern regional centre", "มหาวิทยาลัยเชียงใหม่ จังหวัดเชียงใหม่", "Chiang Mai University, Chiang Mai", 18.8008, 98.9527, "branch"],
       ["ศูนย์ภูมิภาคภาคตะวันออก", "Eastern regional centre", "นิคมอุตสาหกรรมมาบตาพุด จังหวัดระยอง", "Map Ta Phut Industrial Estate, Rayong", 12.7018, 101.1543, "branch"],
       ["สถาบันมาตรวิทยาแห่งชาติ", "National Institute of Metrology", "คลองห้า จังหวัดปทุมธานี", "Khlong Ha, Pathum Thani", 14.0742, 100.6188, "partner"],

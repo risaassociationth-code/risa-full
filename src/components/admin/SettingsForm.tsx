@@ -148,10 +148,10 @@ export function SettingsForm({ initial }: { initial: SiteSettings }) {
         <CardHead title="แผนที่" hint="ใช้กำหนดจุดสำนักงานบนหน้าติดต่อเราและแผนที่เครือข่าย" />
         <div className="grid gap-4 p-5 sm:grid-cols-3">
           <Field label="ละติจูด (lat)">
-            <Input type="number" step="any" value={values.map_lat} onChange={(e) => set("map_lat", Number(e.target.value))} />
+            <Input type="number" step="any" value={values.map_lat ?? ""} onChange={(e) => set("map_lat", e.target.value === "" ? null : Number(e.target.value))} />
           </Field>
           <Field label="ลองจิจูด (lng)">
-            <Input type="number" step="any" value={values.map_lng} onChange={(e) => set("map_lng", Number(e.target.value))} />
+            <Input type="number" step="any" value={values.map_lng ?? ""} onChange={(e) => set("map_lng", e.target.value === "" ? null : Number(e.target.value))} />
           </Field>
           <Field label="ระดับซูม (zoom)">
             <Input type="number" value={values.map_zoom} onChange={(e) => set("map_zoom", Number(e.target.value))} />

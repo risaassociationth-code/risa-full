@@ -35,7 +35,7 @@ const SettingsSchema = z.object({
   address_th: z.string(), address_en: z.string(),
   phone: z.string(), email: z.string(), line_id: z.string(),
   facebook_url: z.string(), x_url: z.string(), youtube_url: z.string(), linkedin_url: z.string(),
-  map_lat: z.coerce.number(), map_lng: z.coerce.number(), map_zoom: z.coerce.number().int(),
+  map_lat: z.coerce.number().nullable(), map_lng: z.coerce.number().nullable(), map_zoom: z.coerce.number().int(),
   ga_id: z.string(),
 });
 

@@ -46,14 +46,14 @@ export type SiteSettings = {
   address_th: string; address_en: string;
   phone: string; email: string; line_id: string;
   facebook_url: string; x_url: string; youtube_url: string; linkedin_url: string;
-  map_lat: number; map_lng: number; map_zoom: number;
+  map_lat: number | null; map_lng: number | null; map_zoom: number;
   ga_id: string;
 };
 
 const loadSettings = unstable_cache(async (): Promise<SiteSettings> => {
   const rows = await sql<SiteSettings[]>`select * from settings where id = true limit 1`;
   return rows[0];
-}, ["settings"], { tags: [PUBLIC_DATA_CACHE_TAG], revalidate: 3600 });
+}, ["settings-footer-contact-2026-10-08"], { tags: [PUBLIC_DATA_CACHE_TAG], revalidate: 3600 });
 
 export const getSettings = cache(loadSettings);
 

@@ -13,7 +13,11 @@ export async function Footer() {
   ]);
   const links = publicTabs(locale).map((item) => ({ id: item.href, href: item.href, label_th: item.label, label_en: item.label, new_tab: false, column_key: "menu" }));
   const address = pick(settings, "address", locale);
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${settings.map_lat},${settings.map_lng}`;
+  const mapsUrl = address && settings.map_lat != null && settings.map_lng != null
+    ? `https://www.google.com/maps/search/?api=1&query=${settings.map_lat},${settings.map_lng}`
+    : null;
+  const phoneDigits = settings.phone.replace(/[^\d+]/g, "");
+  const phoneHref = phoneDigits.startsWith("0") ? `+66${phoneDigits.slice(1)}` : phoneDigits;
 
   const columns = [
     { key: "menu", titleKey: "global.footer.menu_title" },
@@ -93,19 +97,19 @@ export async function Footer() {
 
         <div className="md:col-span-4">
           <Editable
-            k="global.footer.address_title"
+            k="global.footer.contact_title"
             as="h2"
             className="mb-3 text-[13px] font-semibold uppercase tracking-wider text-ink"
           />
           <address className="space-y-2.5 text-sm not-italic text-muted">
-            <p className="flex gap-2.5">
+            {address && <p className="flex gap-2.5">
               <MapPin className="mt-0.5 size-4 shrink-0 text-faint" strokeWidth={1.7} />
               <span>{address}</span>
-            </p>
+            </p>}
             {settings.phone && (
               <p className="flex gap-2.5">
                 <Phone className="mt-0.5 size-4 shrink-0 text-faint" strokeWidth={1.7} />
-                <a href={`tel:${settings.phone.replace(/[^\d+]/g, "")}`} className="hover:text-accent">
+                <a href={`tel:${phoneHref}`} className="hover:text-accent">
                   {settings.phone}
                 </a>
               </p>
@@ -119,14 +123,14 @@ export async function Footer() {
               </p>
             )}
           </address>
-          <a
+          {mapsUrl && <a
             href={mapsUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-3 inline-block text-sm font-medium text-accent underline underline-offset-4"
           >
             <Editable k="global.footer.map_label" />
-          </a>
+          </a>}
         </div>
       </div>
 
