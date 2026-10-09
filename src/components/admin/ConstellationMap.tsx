@@ -43,7 +43,7 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
   const [layoutTarget,setLayoutTarget] = useState<{kind:"nodes"|"panels";key:Branch}|null>(null);
   const viewport = useRef<HTMLDivElement>(null);
   const nodeButtons = useRef<Partial<Record<Branch,HTMLButtonElement|null>>>({});
-  const drag = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null);
+  const zoomRef = useRef(zoom); const fitRef = useRef(fit); const drag = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null);
   const hasFramed = useRef(false);
   const storageKey=`risa-constellation-layout:${workspaceKey}`;
   useEffect(()=>{
@@ -86,7 +86,21 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
     resize();
     const observer = new ResizeObserver(resize);
     observer.observe(element);
-    return () => observer.disconnect();
+    
+    const handleWheel = (event: WheelEvent) => {
+      event.preventDefault();
+      if (event.ctrlKey || event.metaKey) {
+        setZoom(value => Math.min(2, Math.max(.3, value - event.deltaY * 0.002)));
+      } else {
+        setPan(value => ({ x: value.x - event.deltaX / (fitRef.current * zoomRef.current), y: value.y - event.deltaY / (fitRef.current * zoomRef.current) }));
+      }
+    };
+    element.addEventListener("wheel", handleWheel, { passive: false });
+    
+    return () => {
+      observer.disconnect();
+      element.removeEventListener("wheel", handleWheel);
+    };
   }, []);
   function reset() { setPan({ x: 0, y: 0 }); setZoom(1); }
   const nodeBounds=NODE_BOUNDS;
@@ -98,7 +112,7 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
   const velocity=useRef<Record<string,Vec>>({});
   const held=useRef<{id:string;rect:PanelRect;t:number}|null>(null);
   const frame=useRef<number|null>(null);
-  useLayoutEffect(()=>{layoutRef.current=layout;activeRef.current=active;listRef.current=list;});
+  useLayoutEffect(()=>{layoutRef.current=layout;activeRef.current=active;listRef.current=list;zoomRef.current=zoom;fitRef.current=fit;});
   function kick(){
     if(frame.current!==null||typeof window==="undefined")return;
     let last=performance.now();
@@ -212,7 +226,7 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
       <div ref={viewport} className="constellation-viewport" tabIndex={list ? -1 : 0} role="region" aria-label={th ? "แผนที่งาน ใช้ปุ่มลูกศรเลื่อน เครื่องหมายบวกหรือลบซูม และเลขศูนย์คืนมุมมอง" : "Task map. Arrow keys pan, plus or minus zoom, and zero resets the view."}
         onKeyDown={event => { if(event.target !== event.currentTarget)return; const key=event.key; if(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","+","=","-","0"].includes(key))event.preventDefault(); if(key === "+" || key === "=")changeZoom(.15);if(key === "-")changeZoom(-.15);if(key === "0")reset();if(key === "Escape")closeRecords();if(key.startsWith("Arrow"))setPan(value => ({x:value.x+(key === "ArrowLeft" ? 30 : key === "ArrowRight" ? -30 : 0),y:value.y+(key === "ArrowUp" ? 30 : key === "ArrowDown" ? -30 : 0)})); }}
         onPointerDown={event => {if((event.target as HTMLElement).closest("button,a,input,.constellation-attached-panel"))return;drag.current={x:event.clientX,y:event.clientY,panX:pan.x,panY:pan.y};event.currentTarget.setPointerCapture(event.pointerId);}}
-        onPointerMove={event => {if(drag.current)setPan({x:drag.current.panX+event.clientX-drag.current.x,y:drag.current.panY+event.clientY-drag.current.y});}}
+        onPointerMove={event => {if(drag.current)setPan({x:drag.current.panX+(event.clientX-drag.current.x)/(fit*zoom),y:drag.current.panY+(event.clientY-drag.current.y)/(fit*zoom)});}}
         onPointerUp={() => {drag.current=null;}} onPointerCancel={() => {drag.current=null;}}>
         <svg className="constellation-starfield" aria-hidden="true"><g fill="#c7dfff">{stars.map(([x,y],index)=><circle key={index} cx={`${x}%`} cy={`${y}%`} r={index%3===0?1.6:0.9} className="constellation-star" style={{animationDelay:`-${(index*0.37)%6}s`,animationDuration:`${3+(index%5)}s`}}/>)}</g></svg>
         <div className="constellation-scene" style={{transform:`translate(-50%, -50%) translate(${pan.x}px, ${pan.y}px) scale(${fit*zoom})`,transition:easing?"transform .5s cubic-bezier(.22,.8,.25,1)":undefined}}>
