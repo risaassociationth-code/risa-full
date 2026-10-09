@@ -43,6 +43,7 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
   const [loaded,setLoaded] = useState(false);
   const [stored,setStored] = useState(false);
   const [layoutTarget,setLayoutTarget] = useState<{kind:"nodes"|"panels"|"notes";key:string}|null>(null);
+  const [pickingNoteColor, setPickingNoteColor] = useState(false);
   const viewport = useRef<HTMLDivElement>(null);
   const nodeButtons = useRef<Partial<Record<Branch,HTMLButtonElement|null>>>({});
   const zoomRef = useRef(zoom); const fitRef = useRef(fit); const drag = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null);
@@ -184,12 +185,13 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
   useEffect(()=>{if(loaded&&!list)kick();},[active,list,loaded]); // eslint-disable-line react-hooks/exhaustive-deps
   function adjustLayout(dx:number,dy:number,resize=false){if(!layoutTarget)return;const {kind,key}=layoutTarget;const rect=boundRect(kind==="notes"?(layout.notes?.find(n=>n.id===key)||{x:0,y:0,width:200,height:200}):layout[kind][key as Branch],kind==="panels"?PANEL_BOUNDS:NODE_BOUNDS);movePanel(kind,key,resize?{...rect,width:rect.width+dx,height:rect.height+dy}:{...rect,x:rect.x+dx,y:rect.y+dy});}
   function resetLayout(){setLayout(defaultWorkspaceLayout());setLayoutTarget(null);reset();}
-  function addNote() {
+  function addNote(color: string) {
     setLayout(prev => {
       const notes = prev.notes ? [...prev.notes] : [];
-      notes.push({ id: Math.random().toString(36).substring(2, 9), text: "", x: ANCHOR.x - 240 + Math.random()*50, y: ANCHOR.y + 180 + Math.random()*50, width: 220, height: 220 });
+      notes.push({ id: Math.random().toString(36).substring(2, 9), text: "", x: ANCHOR.x - 240 + Math.random()*50, y: ANCHOR.y + 180 + Math.random()*50, width: 220, height: 220, color });
       return { ...prev, notes };
     });
+    setPickingNoteColor(false);
     setTimeout(kick, 50);
   }
   function updateNoteText(id: string, text: string) {
@@ -322,18 +324,24 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
             </aside>
           </WorkspacePanel>;})()}
           {layout.notes?.map(note => {
-            const pScale = Math.min(note.width / 220, note.height / 220);
-            return <WorkspacePanel key={`note-${note.id}`} className="workspace-note-panel workspace-floating-panel" rect={note} bounds={nodeBounds} scale={fit*zoom} name={th?"บันทึกย่อ":"Note"} th={th} onChange={rect=>movePanel("notes",note.id,rect)} onSelect={()=>setLayoutTarget({kind:"notes",key:note.id})} onGrab={()=>grab(`note-${note.id}`)} onRelease={()=>release(`note-${note.id}`)}>
-              <div className="constellation-note-content" style={{ width: `${note.width / pScale}px`, height: `${note.height / pScale}px`, transform: `scale(${pScale})`, transformOrigin: 'top left' }}>
+            return <WorkspacePanel key={`note-${note.id}`} className={`workspace-note-panel workspace-note-panel-${note.color || 'yellow'} workspace-floating-panel`} rect={note} bounds={nodeBounds} scale={fit*zoom} name={th?"บันทึกละอองดาว":"Stardust Note"} th={th} onChange={rect=>movePanel("notes",note.id,rect)} onSelect={()=>setLayoutTarget({kind:"notes",key:note.id})} onGrab={()=>grab(`note-${note.id}`)} onRelease={()=>release(`note-${note.id}`)}>
+              <div className="constellation-note-content" style={{ width: '100%', height: '100%' }}>
                 <button type="button" className="constellation-note-close" aria-label={th?"ลบบันทึก":"Delete note"} onClick={() => deleteNote(note.id)}><X size={16} aria-hidden /></button>
-                <textarea className="constellation-note-textarea" placeholder={th?"พิมพ์บันทึกย่อ...":"Type a note..."} value={note.text} onChange={e => updateNoteText(note.id, e.target.value)} onPointerDown={e=>e.stopPropagation()} onKeyDown={e=>e.stopPropagation()} />
+                <textarea className="constellation-note-textarea" placeholder={th?"พิมพ์บันทึกละอองดาว...":"Type a stardust note..."} value={note.text} onChange={e => updateNoteText(note.id, e.target.value)} onPointerDown={e=>e.stopPropagation()} onKeyDown={e=>e.stopPropagation()} />
               </div>
             </WorkspacePanel>
           })}
         </div>
         <div className="constellation-notes-control">
-          <button type="button" aria-label={th ? "เพิ่มบันทึกย่อ" : "Add cosmic note"} onClick={addNote} className="constellation-add-note">
-            <Plus size={16} aria-hidden />{th ? "บันทึกย่อ" : "Add Note"}
+          {pickingNoteColor && <div className="constellation-note-palette">
+            <button type="button" aria-label="Solar Flare" onClick={()=>addNote('yellow')} className="note-swatch note-swatch-yellow"></button>
+            <button type="button" aria-label="Cosmic Cobalt" onClick={()=>addNote('blue')} className="note-swatch note-swatch-blue"></button>
+            <button type="button" aria-label="Nebula Pink" onClick={()=>addNote('pink')} className="note-swatch note-swatch-pink"></button>
+            <button type="button" aria-label="Aurora Green" onClick={()=>addNote('green')} className="note-swatch note-swatch-green"></button>
+            <button type="button" aria-label="Void Purple" onClick={()=>addNote('purple')} className="note-swatch note-swatch-purple"></button>
+          </div>}
+          <button type="button" aria-label={th ? "เพิ่มบันทึกละอองดาว" : "Add Stardust Note"} onClick={() => setPickingNoteColor(!pickingNoteColor)} className="constellation-add-note">
+            <Plus size={16} aria-hidden style={{transform: pickingNoteColor ? 'rotate(45deg)' : 'none', transition: '0.2s'}} />{th ? "บันทึกละอองดาว" : "Stardust Note"}
           </button>
         </div>
         <div className="constellation-zoom" role="group" aria-label={th ? "มุมมองแผนที่" : "Map view"}>

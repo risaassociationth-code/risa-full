@@ -251,13 +251,61 @@ body:has(.risa-admin) ::selection { color: #17112d; background: #b8a4ff; }
 .constellation-notes-control { position: absolute; bottom: 12px; left: 12px; }
 .constellation-add-note { display: flex; align-items: center; gap: 8px; border: 1px solid #78dcff; border-radius: 8px; background: rgba(16, 29, 53, .8); color: #8cdeff; padding: 6px 14px; font-size: 13px; font-weight: 500; cursor: pointer; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: background .2s, border-color .2s; }
 .constellation-add-note:hover { background: rgba(30, 50, 90, .8); border-color: #a0e6ff; }
-.workspace-note-panel { z-index: 4; border-radius: 12px; background: linear-gradient(135deg, rgba(255, 230, 140, .2) 0%, rgba(255, 200, 100, .05) 100%), rgba(28, 22, 10, .7); border: 1px solid rgba(255, 215, 120, .4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 8px 32px rgba(255, 210, 100, .15); }
-.workspace-note-panel > .workspace-drag-handle { background: rgba(255, 215, 120, .15); color: #ffd685; }
-.workspace-note-panel > .workspace-drag-handle:hover { background: rgba(255, 215, 120, .3); color: #fff; }
-.workspace-note-panel > .workspace-resize-handle { background: rgba(255, 215, 120, .15); color: #ffd685; }
-.workspace-note-panel > .workspace-resize-handle:hover { background: rgba(255, 215, 120, .3); color: #fff; }
 .constellation-note-content { position: relative; padding: 36px 16px 16px; height: 100%; display: flex; flex-direction: column; }
 .constellation-note-close { position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 6px; color: rgba(255, 255, 255, .5); cursor: pointer; z-index: 5; }
 .constellation-note-close:hover { background: rgba(255, 255, 255, .1); color: #fff; }
 .constellation-note-textarea { flex: 1; width: 100%; background: transparent; border: none; color: #ffebc2; font-size: 16px; line-height: 1.5; resize: none; outline: none; font-family: inherit; }
 .constellation-note-textarea::placeholder { color: rgba(255, 235, 194, .4); }
+
+/* Stardust Notes Color Palette */
+.constellation-note-palette { position: absolute; bottom: 100%; left: 0; margin-bottom: 8px; display: flex; gap: 8px; padding: 10px; border-radius: 12px; background: rgba(16, 29, 53, .8); border: 1px solid #415477; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); animation: constellation-fade-in 0.2s ease-out; }
+.note-swatch { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255, 255, 255, .3); transition: transform 0.2s, border-color 0.2s; }
+.note-swatch:hover { transform: scale(1.15); border-color: #fff; }
+
+.note-swatch-yellow { background: linear-gradient(135deg, #ffea8c, #ffb84d); }
+.note-swatch-blue { background: linear-gradient(135deg, #8ce6ff, #4da6ff); }
+.note-swatch-pink { background: linear-gradient(135deg, #ff8ce6, #ff4d94); }
+.note-swatch-green { background: linear-gradient(135deg, #a6ff8c, #4dff88); }
+.note-swatch-purple { background: linear-gradient(135deg, #c48cff, #8c4dff); }
+
+/* Note Variations */
+
+/* Yellow (Solar Flare) */
+.workspace-note-panel-yellow { background: linear-gradient(135deg, rgba(255, 230, 140, .2) 0%, rgba(255, 200, 100, .05) 100%), rgba(28, 22, 10, .7); border: 1px solid rgba(255, 215, 120, .4); box-shadow: 0 8px 32px rgba(255, 210, 100, .15); }
+.workspace-note-panel-yellow > .workspace-drag-handle, .workspace-note-panel-yellow > .workspace-resize-handle { background: rgba(255, 215, 120, .15); color: #ffd685; }
+.workspace-note-panel-yellow .constellation-note-textarea { color: #ffebc2; }
+.workspace-note-panel-yellow .constellation-note-textarea::placeholder { color: rgba(255, 235, 194, .4); }
+
+/* Blue (Cosmic Cobalt) */
+.workspace-note-panel-blue { background: linear-gradient(135deg, rgba(140, 230, 255, .2) 0%, rgba(100, 166, 255, .05) 100%), rgba(10, 22, 28, .7); border: 1px solid rgba(120, 215, 255, .4); box-shadow: 0 8px 32px rgba(100, 210, 255, .15); }
+.workspace-note-panel-blue > .workspace-drag-handle, .workspace-note-panel-blue > .workspace-resize-handle { background: rgba(120, 215, 255, .15); color: #85d6ff; }
+.workspace-note-panel-blue .constellation-note-textarea { color: #c2ebff; }
+.workspace-note-panel-blue .constellation-note-textarea::placeholder { color: rgba(194, 235, 255, .4); }
+
+/* Pink (Nebula Pink) */
+.workspace-note-panel-pink { background: linear-gradient(135deg, rgba(255, 140, 230, .2) 0%, rgba(255, 77, 148, .05) 100%), rgba(28, 10, 22, .7); border: 1px solid rgba(255, 120, 215, .4); box-shadow: 0 8px 32px rgba(255, 100, 210, .15); }
+.workspace-note-panel-pink > .workspace-drag-handle, .workspace-note-panel-pink > .workspace-resize-handle { background: rgba(255, 120, 215, .15); color: #ff85d6; }
+.workspace-note-panel-pink .constellation-note-textarea { color: #ffc2eb; }
+.workspace-note-panel-pink .constellation-note-textarea::placeholder { color: rgba(255, 194, 235, .4); }
+
+/* Green (Aurora Green) */
+.workspace-note-panel-green { background: linear-gradient(135deg, rgba(166, 255, 140, .2) 0%, rgba(77, 255, 136, .05) 100%), rgba(10, 28, 16, .7); border: 1px solid rgba(136, 255, 120, .4); box-shadow: 0 8px 32px rgba(100, 255, 148, .15); }
+.workspace-note-panel-green > .workspace-drag-handle, .workspace-note-panel-green > .workspace-resize-handle { background: rgba(136, 255, 120, .15); color: #85ff9c; }
+.workspace-note-panel-green .constellation-note-textarea { color: #c2ffce; }
+.workspace-note-panel-green .constellation-note-textarea::placeholder { color: rgba(194, 255, 206, .4); }
+
+/* Purple (Void Purple) */
+.workspace-note-panel-purple { background: linear-gradient(135deg, rgba(196, 140, 255, .2) 0%, rgba(140, 77, 255, .05) 100%), rgba(18, 10, 28, .7); border: 1px solid rgba(175, 120, 255, .4); box-shadow: 0 8px 32px rgba(148, 100, 255, .15); }
+.workspace-note-panel-purple > .workspace-drag-handle, .workspace-note-panel-purple > .workspace-resize-handle { background: rgba(175, 120, 255, .15); color: #c485ff; }
+.workspace-note-panel-purple .constellation-note-textarea { color: #e1c2ff; }
+.workspace-note-panel-purple .constellation-note-textarea::placeholder { color: rgba(225, 194, 255, .4); }
+
+/* Unified Hover Handle State */
+
+/* Font Scaling via Container Queries */
+.constellation-note-textarea { font-size: max(16px, 8cqmin); padding-top: max(0px, 2cqmin); }
+@keyframes constellation-fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Note Variations */
+.workspace-note-panel { container-type: size; z-index: 4; border-radius: 12px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.workspace-note-panel > .workspace-drag-handle:hover, .workspace-note-panel > .workspace-resize-handle:hover { background: rgba(255, 255, 255, .25); color: #fff; }
