@@ -2,7 +2,9 @@ export const BRANCH_KEYS = ["news", "activities", "team", "overview"] as const;
 export type LayoutBranch = typeof BRANCH_KEYS[number];
 export type PanelRect = { x: number; y: number; width: number; height: number };
 export type WorkspaceLayout = { version: 1; nodes: Record<LayoutBranch, PanelRect>; panels: Record<LayoutBranch, PanelRect> };
-export type PanelBounds = { width: number; height: number; minWidth: number; minHeight: number; maxWidth?: number; maxHeight?: number };
+export type PanelBounds = { width: number; height: number; minWidth: number; minHeight: number; maxWidth?: number; maxHeight?: number; minX?: number; minY?: number };
+/** Nodes may float well outside the starting board; their tether keeps them in reach. */
+export const NODE_BOUNDS: PanelBounds = { minX: -900, minY: -900, width: 1940, height: 1560, minWidth: 180, minHeight: 80, maxWidth: 320, maxHeight: 160 };
 
 export function defaultWorkspaceLayout(): WorkspaceLayout {
   return { version: 1, nodes: {
@@ -14,7 +16,7 @@ export function defaultWorkspaceLayout(): WorkspaceLayout {
 export function boundRect(rect: PanelRect, bounds: PanelBounds): PanelRect {
   const width=Math.min(bounds.width, bounds.maxWidth??bounds.width, Math.max(Math.min(bounds.minWidth,bounds.width),rect.width));
   const height=Math.min(bounds.height, bounds.maxHeight??bounds.height, Math.max(Math.min(bounds.minHeight,bounds.height),rect.height));
-  return {width,height,x:Math.max(0,Math.min(bounds.width-width,rect.x)),y:Math.max(0,Math.min(bounds.height-height,rect.y))};
+  return {width,height,x:Math.max(bounds.minX??0,Math.min(bounds.width-width,rect.x)),y:Math.max(bounds.minY??0,Math.min(bounds.height-height,rect.y))};
 }
 
 export function intersects(a: PanelRect, b: PanelRect) {
@@ -31,11 +33,12 @@ export function parseWorkspaceLayout(raw: string | null): WorkspaceLayout | null
     for(const kind of ["nodes","panels"] as const)for(const key of BRANCH_KEYS){
       const rect=value[kind]?.[key];
       if(!rect || !["x","y","width","height"].every(field=>typeof rect[field]==="number" && Number.isFinite(rect[field])))return null;
-      if(rect.x<0||rect.y<0||rect.width<1||rect.height<1||rect.x>2000||rect.y>2000||rect.width>2000||rect.height>2000)return null;
-      out[kind][key]=boundRect(rect,kind==="nodes"?{width:1040,height:660,minWidth:180,minHeight:80,maxWidth:320,maxHeight:160}:{width:2000,height:2000,minWidth:240,minHeight:180,maxWidth:1000,maxHeight:800});
+      if(rect.x<-1000||rect.y<-1000||rect.width<1||rect.height<1||rect.x>2000||rect.y>2000||rect.width>2000||rect.height>2000)return null;
+      out[kind][key]=boundRect(rect,kind==="nodes"?NODE_BOUNDS:{width:2000,height:2000,minWidth:240,minHeight:180,maxWidth:1000,maxHeight:800});
     }
-    const center={x:408,y:234,width:224,height:224};
-    for(const key of BRANCH_KEYS){if(intersects(out.nodes[key],center))return null;for(const other of BRANCH_KEYS)if(other!==key&&intersects(out.nodes[key],out.nodes[other]))return null;}
+    // The centre prompt is a circle (centre 520,346, radius 112).
+    const coversCore=(r:PanelRect)=>Math.hypot(Math.max(r.x,Math.min(520,r.x+r.width))-520,Math.max(r.y,Math.min(346,r.y+r.height))-346)<112;
+    for(const key of BRANCH_KEYS){if(coversCore(out.nodes[key]))return null;for(const other of BRANCH_KEYS)if(other!==key&&intersects(out.nodes[key],out.nodes[other]))return null;}
     return out;
   } catch { return null; }
 }
