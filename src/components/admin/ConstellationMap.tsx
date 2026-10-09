@@ -218,7 +218,7 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
               const mx=(start.x+end.x)/2-uy*bow,my=(start.y+end.y)/2+ux*bow;
               return <g className={`${active==="news"||active==="overview"?"constellation-violet-line":"constellation-cyan-line"}${taut?" constellation-taut":""}`} fill="none" filter="url(#constellation-glow)"><path className={taut?"constellation-taut":undefined} d={`M${start.x} ${start.y} Q ${mx} ${my} ${end.x} ${end.y}`}/><circle cx={start.x} cy={start.y} r="4" fill="currentColor" stroke="none"/><circle cx={end.x} cy={end.y} r="4" fill="currentColor" stroke="none"/></g>;
             })()}</svg>
-          <div className="constellation-center"><span className="constellation-orbit constellation-orbit-outer" aria-hidden /><span className="constellation-orbit constellation-orbit-inner" aria-hidden /><Sparkles size={32} aria-hidden /><h1>{th ? "อยากทำอะไร?" : "What would you like to do?"}</h1><p>{th ? "เลือกงานที่ต้องการ" : "Choose a task"}</p></div>
+          <div className="constellation-center"><span className="constellation-orbit constellation-orbit-outer" aria-hidden /><span className="constellation-orbit constellation-orbit-inner" aria-hidden /><Sparkles size={32} aria-hidden /><h1>{th ? "อยากทำอะไร?" : "What would you like to do?"}</h1></div>
           {branches.map(({key,th:thai,en,icon:Icon}) => {
             const rect = layout.nodes[key];
             const nodeScale = Math.min(rect.width / 220, rect.height / 88);

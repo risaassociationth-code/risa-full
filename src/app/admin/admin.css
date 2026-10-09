@@ -54,7 +54,7 @@ body:has(.risa-admin) ::selection { color: #17112d; background: #b8a4ff; }
 .constellation-cyan-line { stroke: #70cfff; }
 .constellation-center { position: absolute; left: 408px; top: 234px; width: 224px; height: 224px; border: 2px solid #8d9fff; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px; text-align: center; background: #0f193e; box-shadow: 0 0 40px #677aff33; }
 .constellation-center > svg { color: #b8a4ff; }
-.constellation-center h1 { font-size: 28px; font-weight: 600; line-height: 1.4; }
+.constellation-center h1 { font-size: 34px; font-weight: 600; line-height: 1.4; }
 .constellation-center p { font-size: 16px; color: #b5c4df; }
 .constellation-node { position: absolute; width: 220px; min-height: 88px; display: flex; align-items: center; gap: 16px; padding: 20px; border: 1px solid #82d6ff; border-radius: 12px; background: #101f37; font-size: 24px; font-weight: 600; cursor: pointer; box-shadow: 0 6px 28px #267acf18; }
 .constellation-node > svg:first-child { color: #8bdeff; flex-shrink: 0; }
