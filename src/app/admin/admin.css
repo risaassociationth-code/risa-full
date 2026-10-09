@@ -303,9 +303,8 @@ body:has(.risa-admin) ::selection { color: #17112d; background: #b8a4ff; }
 /* Unified Hover Handle State */
 
 /* Font Scaling via Container Queries */
-.constellation-note-textarea { font-size: max(16px, 8cqmin); padding-top: max(0px, 2cqmin); }
 @keyframes constellation-fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
 /* Note Variations */
-.workspace-note-panel { container-type: size; z-index: 4; border-radius: 12px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.workspace-note-panel { z-index: 4; border-radius: 12px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .workspace-note-panel > .workspace-drag-handle:hover, .workspace-note-panel > .workspace-resize-handle:hover { background: rgba(255, 255, 255, .25); color: #fff; }

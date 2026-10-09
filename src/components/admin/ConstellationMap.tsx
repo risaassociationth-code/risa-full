@@ -324,8 +324,9 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
             </aside>
           </WorkspacePanel>;})()}
           {layout.notes?.map(note => {
+            const pScale = Math.max(0.5, Math.sqrt((note.width * note.height) / (220 * 220)));
             return <WorkspacePanel key={`note-${note.id}`} className={`workspace-note-panel workspace-note-panel-${note.color || 'yellow'} workspace-floating-panel`} rect={note} bounds={nodeBounds} scale={fit*zoom} name={th?"บันทึกละอองดาว":"Stardust Note"} th={th} onChange={rect=>movePanel("notes",note.id,rect)} onSelect={()=>setLayoutTarget({kind:"notes",key:note.id})} onGrab={()=>grab(`note-${note.id}`)} onRelease={()=>release(`note-${note.id}`)}>
-              <div className="constellation-note-content" style={{ width: '100%', height: '100%' }}>
+              <div className="constellation-note-content" style={{ width: `${note.width / pScale}px`, height: `${note.height / pScale}px`, transform: `scale(${pScale})`, transformOrigin: 'top left' }}>
                 <button type="button" className="constellation-note-close" aria-label={th?"ลบบันทึก":"Delete note"} onClick={() => deleteNote(note.id)}><X size={16} aria-hidden /></button>
                 <textarea className="constellation-note-textarea" placeholder={th?"พิมพ์บันทึกละอองดาว...":"Type a stardust note..."} value={note.text} onChange={e => updateNoteText(note.id, e.target.value)} onPointerDown={e=>e.stopPropagation()} onKeyDown={e=>e.stopPropagation()} />
               </div>
