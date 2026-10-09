@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "tsx scripts/release-footer-contact.ts && next build",
+    "build": "tsx scripts/migrate.ts && tsx scripts/release-footer-contact.ts && next build",
     "start": "next start",
     "lint": "eslint",
     "test": "node --test scripts/navigation.test.mjs scripts/safety.test.mjs scripts/footer.test.mjs scripts/constellation-layout.test.mjs",
