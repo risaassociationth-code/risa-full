@@ -1,10 +1,12 @@
-import { BRANCH_KEYS, type LayoutBranch, type PanelRect } from "./constellation-layout";
+import type { PanelRect } from "./constellation-layout";
 
 /** Zero-gravity simulation for the Cosmic Board: inertia, elastic tethers and bouncing collisions. */
 export const ANCHOR = { x: 520, y: 346 };
 export const CORE_RADIUS = 112;
 /** Rope pays out freely up to this length, so a node can drift far away and still stay tethered. */
 export const TETHER_LENGTH = 470;
+/** Record tabs hang off their node on a longer rope so they can be parked well away from the map. */
+export const PANEL_TETHER_LENGTH = 560;
 const TETHER_STIFFNESS = 9;
 const TETHER_DAMPING = 2.4;
 const DAMPING = 0.5;
@@ -14,25 +16,27 @@ const MAX_SPEED = 2600;
 const LIMIT = { minX: -900, minY: -900, maxX: 1940, maxY: 1560 };
 
 export type Vec = { x: number; y: number };
-export type Velocities = Record<LayoutBranch, Vec>;
+/** A moving rectangle. `invMass` 0 = immovable (e.g. while held by the pointer). */
+export type Body = { id: string; rect: PanelRect; invMass: number };
+/** A rope between two bodies, or from the central core when `from` is null. */
+export type Tether = { from: string | null; to: string; length: number };
 
-export function zeroVelocities(): Velocities {
-  return Object.fromEntries(BRANCH_KEYS.map(key => [key, { x: 0, y: 0 }])) as Velocities;
-}
-
-export function tetherState(rect: PanelRect) {
+export function tetherState(rect: PanelRect, anchor: Vec = ANCHOR, length = TETHER_LENGTH) {
   const cx = rect.x + rect.width / 2, cy = rect.y + rect.height / 2;
-  const dx = cx - ANCHOR.x, dy = cy - ANCHOR.y;
+  const dx = cx - anchor.x, dy = cy - anchor.y;
   const d = Math.hypot(dx, dy) || 1;
-  return { cx, cy, dx, dy, d, taut: d >= TETHER_LENGTH };
+  return { cx, cy, dx, dy, d, taut: d >= length };
 }
 
-function bounce(v: Vec, nx: number, ny: number) {
-  const vn = v.x * nx + v.y * ny;
-  if (vn < 0) { v.x -= (1 + RESTITUTION) * vn * nx; v.y -= (1 + RESTITUTION) * vn * ny; }
+/** Point where the ray from the rectangle centre towards (tx,ty) leaves the rectangle. */
+export function edgePoint(rect: PanelRect, tx: number, ty: number): Vec {
+  const cx = rect.x + rect.width / 2, cy = rect.y + rect.height / 2;
+  const dx = tx - cx, dy = ty - cy;
+  if (!dx && !dy) return { x: cx, y: cy };
+  const s = Math.min(dx ? rect.width / 2 / Math.abs(dx) : Infinity, dy ? rect.height / 2 / Math.abs(dy) : Infinity, 1);
+  return { x: cx + dx * s, y: cy + dy * s };
 }
 
-/** Minimum-axis separation between two padded rectangles; null when they do not touch. */
 function overlap(a: PanelRect, b: PanelRect) {
   const dx = (b.x + b.width / 2) - (a.x + a.width / 2);
   const dy = (b.y + b.height / 2) - (a.y + a.height / 2);
@@ -42,80 +46,77 @@ function overlap(a: PanelRect, b: PanelRect) {
   return ox < oy ? { nx: dx >= 0 ? 1 : -1, ny: 0, depth: ox } : { nx: 0, ny: dy >= 0 ? 1 : -1, depth: oy };
 }
 
-export function stepPhysics(
-  input: Record<LayoutBranch, PanelRect>,
-  vel: Velocities,
-  dt: number,
-  options: { held: LayoutBranch | null; obstacles: PanelRect[] },
-) {
-  const nodes = Object.fromEntries(BRANCH_KEYS.map(key => [key, { ...input[key] }])) as Record<LayoutBranch, PanelRect>;
-  const { held, obstacles } = options;
-  let active = held !== null;
-  const decay = Math.exp(-DAMPING * dt);
+const centre = (r: PanelRect) => ({ x: r.x + r.width / 2, y: r.y + r.height / 2 });
 
-  for (const key of BRANCH_KEYS) {
-    if (key === held) continue;
-    const v = vel[key], rect = nodes[key];
-    const t = tetherState(rect);
-    if (t.d > TETHER_LENGTH) {
-      const ux = t.dx / t.d, uy = t.dy / t.d;
-      const radial = v.x * ux + v.y * uy;
-      const pull = TETHER_STIFFNESS * (t.d - TETHER_LENGTH) + TETHER_DAMPING * Math.max(0, radial);
-      v.x -= pull * ux * dt; v.y -= pull * uy * dt;
-      if (t.d - TETHER_LENGTH > 1) active = true;
-    }
-    v.x *= decay; v.y *= decay;
-    const speed = Math.hypot(v.x, v.y);
-    if (speed > MAX_SPEED) { v.x *= MAX_SPEED / speed; v.y *= MAX_SPEED / speed; }
-    rect.x += v.x * dt; rect.y += v.y * dt;
-    if (rect.x < LIMIT.minX || rect.x + rect.width > LIMIT.maxX) { rect.x = Math.min(LIMIT.maxX - rect.width, Math.max(LIMIT.minX, rect.x)); v.x *= -RESTITUTION; }
-    if (rect.y < LIMIT.minY || rect.y + rect.height > LIMIT.maxY) { rect.y = Math.min(LIMIT.maxY - rect.height, Math.max(LIMIT.minY, rect.y)); v.y *= -RESTITUTION; }
+/** Advances the world in place. Returns true once everything has come to rest. */
+export function stepWorld(bodies: Body[], vel: Record<string, Vec>, tethers: Tether[], dt: number, held: string | null) {
+  const byId = new Map(bodies.map(body => [body.id, body]));
+  const inv = (body: Body | undefined) => (!body || body.id === held ? 0 : body.invMass);
+  const v = (id: string) => (vel[id] ??= { x: 0, y: 0 });
+  let active = held !== null;
+
+  for (const tether of tethers) {
+    const b = byId.get(tether.to); if (!b) continue;
+    const a = tether.from ? byId.get(tether.from) : undefined;
+    if (tether.from && !a) continue;
+    const pa = a ? centre(a.rect) : ANCHOR, pb = centre(b.rect);
+    const dx = pb.x - pa.x, dy = pb.y - pa.y, d = Math.hypot(dx, dy) || 1;
+    if (d <= tether.length) continue;
+    const ux = dx / d, uy = dy / d;
+    const va = a ? v(a.id) : { x: 0, y: 0 }, vb = v(b.id);
+    const radial = (vb.x - va.x) * ux + (vb.y - va.y) * uy;
+    const pull = TETHER_STIFFNESS * (d - tether.length) + TETHER_DAMPING * Math.max(0, radial);
+    const wa = inv(a), wb = inv(b);
+    vb.x -= pull * ux * wb * dt; vb.y -= pull * uy * wb * dt;
+    va.x += pull * ux * wa * dt; va.y += pull * uy * wa * dt;
+    if (d - tether.length > 1) active = true;
+  }
+
+  const decay = Math.exp(-DAMPING * dt);
+  for (const body of bodies) {
+    if (body.id === held) continue;
+    const bv = v(body.id), rect = body.rect;
+    bv.x *= decay; bv.y *= decay;
+    const speed = Math.hypot(bv.x, bv.y);
+    if (speed > MAX_SPEED) { bv.x *= MAX_SPEED / speed; bv.y *= MAX_SPEED / speed; }
+    rect.x += bv.x * dt; rect.y += bv.y * dt;
+    if (rect.x < LIMIT.minX || rect.x + rect.width > LIMIT.maxX) { rect.x = Math.min(LIMIT.maxX - rect.width, Math.max(LIMIT.minX, rect.x)); bv.x *= -RESTITUTION; }
+    if (rect.y < LIMIT.minY || rect.y + rect.height > LIMIT.maxY) { rect.y = Math.min(LIMIT.maxY - rect.height, Math.max(LIMIT.minY, rect.y)); bv.y *= -RESTITUTION; }
     if (speed > 4) active = true;
   }
 
   for (let iteration = 0; iteration < 4; iteration++) {
     let corrected = false;
-    for (const key of BRANCH_KEYS) {
-      if (key === held) continue;
-      const rect = nodes[key];
-      // Central core is a circle: push out along the line from its centre to the nearest rectangle point.
+    for (const body of bodies) {
+      if (body.id === held) continue;
+      const rect = body.rect;
+      // The central core is a circle: push out along the line from its centre to the nearest rectangle point.
       const px = Math.max(rect.x, Math.min(ANCHOR.x, rect.x + rect.width));
       const py = Math.max(rect.y, Math.min(ANCHOR.y, rect.y + rect.height));
       let nx = px - ANCHOR.x, ny = py - ANCHOR.y;
-      let dist = Math.hypot(nx, ny);
-      if (dist < CORE_RADIUS + PAD) {
-        if (dist < 0.001) { const t = tetherState(rect); nx = t.dx; ny = t.dy; dist = 0; }
-        const len = Math.hypot(nx, ny) || 1;
-        nx /= len; ny /= len;
-        const depth = CORE_RADIUS + PAD - dist;
-        rect.x += nx * depth; rect.y += ny * depth;
-        bounce(vel[key], nx, ny);
-        corrected = true;
-      }
-      for (const obstacle of obstacles) {
-        const hit = overlap(obstacle, rect);
-        if (!hit) continue;
-        rect.x += hit.nx * hit.depth; rect.y += hit.ny * hit.depth;
-        bounce(vel[key], hit.nx, hit.ny);
-        corrected = true;
-      }
+      const dist = Math.hypot(nx, ny);
+      if (dist >= CORE_RADIUS + PAD) continue;
+      if (dist < 0.001) { const c = centre(rect); nx = c.x - ANCHOR.x || 1; ny = c.y - ANCHOR.y; }
+      const len = Math.hypot(nx, ny) || 1; nx /= len; ny /= len;
+      const depth = CORE_RADIUS + PAD - dist;
+      rect.x += nx * depth; rect.y += ny * depth;
+      const bv = v(body.id), vn = bv.x * nx + bv.y * ny;
+      if (vn < 0) { bv.x -= (1 + RESTITUTION) * vn * nx; bv.y -= (1 + RESTITUTION) * vn * ny; }
+      corrected = true;
     }
-    for (let i = 0; i < BRANCH_KEYS.length; i++) for (let j = i + 1; j < BRANCH_KEYS.length; j++) {
-      const ka = BRANCH_KEYS[i], kb = BRANCH_KEYS[j];
-      const a = nodes[ka], b = nodes[kb];
-      const hit = overlap(a, b);
-      if (!hit) continue;
-      const ia = ka === held ? 0 : 1, ib = kb === held ? 0 : 1;
-      if (ia + ib === 0) continue;
+    for (let i = 0; i < bodies.length; i++) for (let j = i + 1; j < bodies.length; j++) {
+      const a = bodies[i], b = bodies[j];
+      const hit = overlap(a.rect, b.rect); if (!hit) continue;
+      const ia = inv(a), ib = inv(b); if (ia + ib === 0) continue;
       const share = hit.depth / (ia + ib);
-      a.x -= hit.nx * share * ia; a.y -= hit.ny * share * ia;
-      b.x += hit.nx * share * ib; b.y += hit.ny * share * ib;
-      const va = vel[ka], vb = vel[kb];
+      a.rect.x -= hit.nx * share * ia; a.rect.y -= hit.ny * share * ia;
+      b.rect.x += hit.nx * share * ib; b.rect.y += hit.ny * share * ib;
+      const va = v(a.id), vb = v(b.id);
       const rel = (vb.x - va.x) * hit.nx + (vb.y - va.y) * hit.ny;
       if (rel < 0) {
         const impulse = -(1 + RESTITUTION) * rel / (ia + ib);
-        if (ia) { va.x -= impulse * hit.nx; va.y -= impulse * hit.ny; }
-        if (ib) { vb.x += impulse * hit.nx; vb.y += impulse * hit.ny; }
+        va.x -= impulse * hit.nx * ia; va.y -= impulse * hit.ny * ia;
+        vb.x += impulse * hit.nx * ib; vb.y += impulse * hit.ny * ib;
       }
       corrected = true;
     }
@@ -123,6 +124,6 @@ export function stepPhysics(
     active = true;
   }
 
-  if (!active) for (const key of BRANCH_KEYS) { vel[key].x = 0; vel[key].y = 0; }
-  return { nodes, settled: !active };
+  if (!active) for (const body of bodies) { const bv = v(body.id); bv.x = 0; bv.y = 0; }
+  return !active;
 }

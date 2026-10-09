@@ -227,3 +227,12 @@ body:has(.risa-admin) ::selection { color: #17112d; background: #b8a4ff; }
 
 .workspace-node .constellation-node > span:not(.constellation-node-icon) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .constellation-attached-panel { border-color: rgba(190, 160, 255, .7); background: linear-gradient(160deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .02) 50%), rgba(12, 20, 44, .82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 0 36px rgba(160, 130, 255, .35), 0 18px 40px rgba(0, 0, 0, .45); }
+/* Floating record tab: whole top strip is a grab bar; bobs gently like the nodes. */
+.workspace-floating-panel { animation: constellation-panel-in .35s ease-out, constellation-float 9s ease-in-out .35s infinite; }
+.workspace-floating-panel > .workspace-drag-handle { left: 0; right: 52px; top: 0; width: auto; height: 26px; border-radius: 12px 0 0 0; background: transparent; cursor: grab; color: rgba(201, 214, 245, .6); }
+.workspace-floating-panel > .workspace-drag-handle:hover { background: rgba(255, 255, 255, .05); color: #fff; }
+.workspace-floating-panel > .workspace-drag-handle:active { cursor: grabbing; }
+.workspace-floating-panel > .workspace-drag-handle svg { transform: rotate(90deg); }
+.workspace-floating-panel > .workspace-resize-handle { right: 4px; bottom: 4px; background: rgba(10, 18, 40, .7); }
+.workspace-floating-panel .constellation-panel-content { padding-top: 30px; }
+.workspace-floating-panel .constellation-panel-content { padding-bottom: 36px; }

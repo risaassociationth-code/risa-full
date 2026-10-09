@@ -5,8 +5,11 @@ import Link from "next/link";
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, CalendarDays, ChevronRight, FileText, LayoutList, Map, Minus, Plus, RotateCcw, Search, Sparkles, UsersRound, X } from "lucide-react";
 import { useAdminLanguage } from "./AdminLanguage";
 import { WorkspacePanel } from "./WorkspacePanel";
-import { boundRect, defaultWorkspaceLayout, parseWorkspaceLayout, type PanelRect, NODE_BOUNDS, type WorkspaceLayout } from "./constellation-layout";
-import { ANCHOR, CORE_RADIUS, TETHER_LENGTH, stepPhysics, tetherState, zeroVelocities } from "./constellation-physics";
+import { boundRect, defaultWorkspaceLayout, parseWorkspaceLayout, type PanelRect, type PanelBounds, NODE_BOUNDS, BRANCH_KEYS, type WorkspaceLayout } from "./constellation-layout";
+import { ANCHOR, CORE_RADIUS, PANEL_TETHER_LENGTH, TETHER_LENGTH, edgePoint, stepWorld, tetherState, type Body, type Tether, type Vec } from "./constellation-physics";
+
+/** Record tabs float freely in map space; size limits keep them readable. */
+const PANEL_BOUNDS: PanelBounds = { minX: -900, minY: -900, width: 1940, height: 1560, minWidth: 300, minHeight: 260, maxWidth: 900, maxHeight: 800 };
 
 export type MapRecord = { id: string; title_th: string; title_en: string; slug: string; status: string };
 export type MapCollection = "news" | "activities" | "team";
@@ -67,13 +70,13 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
   }, []);
   function reset() { setPan({ x: 0, y: 0 }); setZoom(1); }
   const nodeBounds=NODE_BOUNDS;
-  const panelBounds={width:viewSize.width,height:viewSize.height,minWidth:240,minHeight:180};
-  // ── Zero-gravity physics: nodes keep momentum when thrown, bounce off each other and drift on slack tethers.
+  // ── Zero-gravity physics: nodes and the open record tab keep momentum when thrown,
+  // bounce off each other and drift on slack tethers (nodes → core, tab → its node).
   const layoutRef=useRef(layout);
   const activeRef=useRef<Branch|null>(null);
   const listRef=useRef(false);
-  const velocity=useRef(zeroVelocities());
-  const held=useRef<{key:Branch;rect:PanelRect;t:number}|null>(null);
+  const velocity=useRef<Record<string,Vec>>({});
+  const held=useRef<{id:string;rect:PanelRect;t:number}|null>(null);
   const frame=useRef<number|null>(null);
   useLayoutEffect(()=>{layoutRef.current=layout;activeRef.current=active;listRef.current=list;});
   function kick(){
@@ -82,62 +85,75 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
     const tick=(now:number)=>{
       const dt=Math.min(1/30,Math.max(0.001,(now-last)/1000));last=now;
       const current=layoutRef.current;const grip=held.current;
-      const nodes=grip?{...current.nodes,[grip.key]:grip.rect}:current.nodes;
-      const open=activeRef.current;
-      const obstacles=open&&!listRef.current?[attachedRectFor(current,open,nodes)]:[];
-      const result=stepPhysics(nodes,velocity.current,dt,{held:grip?.key??null,obstacles});
-      layoutRef.current={...current,nodes:result.nodes};
-      setLayout(value=>({...value,nodes:result.nodes}));
-      frame.current=result.settled?null:window.requestAnimationFrame(tick);
+      const open=activeRef.current&&!listRef.current?activeRef.current:null;
+      const pick=(id:string,rect:PanelRect)=>({...(grip?.id===id?grip.rect:rect)});
+      const bodies:Body[]=BRANCH_KEYS.map(key=>({id:key,rect:pick(key,current.nodes[key]),invMass:1}));
+      const tethers:Tether[]=BRANCH_KEYS.map(key=>({from:null,to:key,length:TETHER_LENGTH}));
+      if(open){bodies.push({id:"panel",rect:pick("panel",current.panels[open]),invMass:.6});tethers.push({from:open,to:"panel",length:PANEL_TETHER_LENGTH});}
+      const settled=stepWorld(bodies,velocity.current,tethers,dt,grip?.id??null);
+      const nodes=Object.fromEntries(BRANCH_KEYS.map((key,index)=>[key,bodies[index].rect])) as WorkspaceLayout["nodes"];
+      const panelRect=open?bodies[bodies.length-1].rect:null;
+      const merge=(value:WorkspaceLayout):WorkspaceLayout=>({...value,nodes,panels:open&&panelRect?{...value.panels,[open]:panelRect}:value.panels});
+      layoutRef.current=merge(current);
+      setLayout(merge);
+      frame.current=settled?null:window.requestAnimationFrame(tick);
     };
     frame.current=window.requestAnimationFrame(tick);
   }
   useEffect(()=>()=>{if(frame.current!==null)window.cancelAnimationFrame(frame.current);},[]);
-  function grab(key:Branch){held.current={key,rect:layoutRef.current.nodes[key],t:performance.now()};velocity.current[key]={x:0,y:0};kick();}
-  function release(key:Branch){
-    const grip=held.current;if(!grip||grip.key!==key)return;
+  function rectOf(id:string){const open=activeRef.current;return id==="panel"&&open?layoutRef.current.panels[open]:layoutRef.current.nodes[id as Branch];}
+  function grab(id:string){held.current={id,rect:rectOf(id),t:performance.now()};velocity.current[id]={x:0,y:0};kick();}
+  function release(id:string){
+    const grip=held.current;if(!grip||grip.id!==id)return;
     const still=performance.now()-grip.t>90||window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if(still)velocity.current[key]={x:0,y:0};
+    if(still)velocity.current[id]={x:0,y:0};
     held.current=null;kick();
   }
   function movePanel(kind:"nodes"|"panels",key:Branch,rect:PanelRect){
-    const next=boundRect(rect,kind==="nodes"?nodeBounds:panelBounds);
-    if(kind==="panels"){setLayout(current=>({...current,panels:{...current.panels,[key]:next}}));return;}
+    const next=boundRect(rect,kind==="nodes"?nodeBounds:PANEL_BOUNDS);
+    const id=kind==="panels"?"panel":key;
     const grip=held.current;
-    if(grip&&grip.key===key){
-      const now=performance.now();const span=Math.max(8,now-grip.t)/1000;const v=velocity.current[key];
+    if(grip&&grip.id===id){
+      const now=performance.now();const span=Math.max(8,now-grip.t)/1000;const v=(velocity.current[id]??={x:0,y:0});
       v.x=v.x*.35+((next.x-grip.rect.x)/span)*.65;v.y=v.y*.35+((next.y-grip.rect.y)/span)*.65;
       grip.rect=next;grip.t=now;
     }
-    layoutRef.current={...layoutRef.current,nodes:{...layoutRef.current.nodes,[key]:next}};
-    setLayout(current=>({...current,nodes:{...current.nodes,[key]:next}}));
+    const apply=(value:WorkspaceLayout):WorkspaceLayout=>({...value,[kind]:{...value[kind],[key]:next}});
+    layoutRef.current=apply(layoutRef.current);
+    setLayout(apply);
     kick();
   }
   useEffect(()=>{if(loaded&&!list)kick();},[active,list,loaded]); // eslint-disable-line react-hooks/exhaustive-deps
-  function adjustLayout(dx:number,dy:number,resize=false){if(!layoutTarget)return;const {kind,key}=layoutTarget;const rect=boundRect(layout[kind][key],kind==="nodes"?nodeBounds:panelBounds);movePanel(kind,key,resize?{...rect,width:rect.width+dx,height:rect.height+dy}:{...rect,x:rect.x+dx,y:rect.y+dy});}
+  function adjustLayout(dx:number,dy:number,resize=false){if(!layoutTarget)return;const {kind,key}=layoutTarget;const rect=boundRect(layout[kind][key],kind==="nodes"?nodeBounds:PANEL_BOUNDS);movePanel(kind,key,resize?{...rect,width:rect.width+dx,height:rect.height+dy}:{...rect,x:rect.x+dx,y:rect.y+dy});}
   function resetLayout(){setLayout(defaultWorkspaceLayout());setLayoutTarget(null);reset();}
   function changeZoom(amount: number) { setZoom(value => Math.min(2, Math.max(.3, value + amount))); }
-  // Records panel lives in map space beside its parent node, on the side facing away from the centre prompt.
+  // A newly opened tab appears beside its node, on the side facing away from the centre prompt.
   const PANEL_GAP=72;
-  function attachedRectFor(source: WorkspaceLayout, key: Branch, nodes = source.nodes){
-    const n=nodes[key];const cy=n.y+n.height/2;
-    const w=Math.max(300,source.panels[key].width);const h=Math.max(260,source.panels[key].height);
+  function spawnRect(source: WorkspaceLayout, key: Branch): PanelRect {
+    const n=source.nodes[key];const cy=n.y+n.height/2;
+    const w=Math.min(900,Math.max(300,source.panels[key].width));const h=Math.min(800,Math.max(260,source.panels[key].height));
     const left=n.x+n.width/2<ANCHOR.x-60;
-    return {x:left?n.x-PANEL_GAP-w:n.x+n.width+PANEL_GAP,y:cy-h/2,width:w,height:h,left};
+    return {x:left?n.x-PANEL_GAP-w:n.x+n.width+PANEL_GAP,y:cy-h/2,width:w,height:h};
   }
-  function attachedRect(key: Branch){ return attachedRectFor(layout,key); }
   const prevView=useRef<{zoom:number;pan:{x:number;y:number}}|null>(null);
   const [easing,setEasing]=useState(false);
   function ease(){setEasing(true);window.setTimeout(()=>setEasing(false),520);}
-  /** Zooms out just enough to show the centre prompt, the chosen node and its panel together. */
-  function focusOn(key: Branch){
-    const n=layout.nodes[key];const p=attachedRect(key);const pad=40;
+  /** Zooms out just enough to show the centre prompt, the chosen node and its tab together. */
+  function focusOn(key: Branch, p: PanelRect){
+    const n=layoutRef.current.nodes[key];const pad=40;
     const minX=Math.min(408,n.x,p.x),minY=Math.min(234,n.y,p.y),maxX=Math.max(632,n.x+n.width,p.x+p.width),maxY=Math.max(458,n.y+n.height,p.y+p.height);
     const target=Math.min(1,viewSize.width/(maxX-minX+pad*2),viewSize.height/(maxY-minY+pad*2));
     const nextZoom=Math.min(2,Math.max(.3,target/fit));const s=fit*nextZoom;
     setZoom(nextZoom);setPan({x:-s*((minX+maxX)/2-520),y:-s*((minY+maxY)/2-330)});
   }
-  function openRecords(key: Branch){if(!active)prevView.current={zoom,pan};setActive(key);ease();focusOn(key);}
+  function openRecords(key: Branch){
+    if(!active)prevView.current={zoom,pan};
+    const spawn=spawnRect(layoutRef.current,key);
+    const apply=(value:WorkspaceLayout):WorkspaceLayout=>({...value,panels:{...value.panels,[key]:spawn}});
+    layoutRef.current=apply(layoutRef.current);setLayout(apply);
+    velocity.current.panel={x:0,y:0};
+    setActive(key);ease();focusOn(key,spawn);
+  }
   function toggle(key: Branch) { if(active===key)closeRecords();else openRecords(key); }
   function closeRecords(){const key=active;setActive(null);if(prevView.current){ease();setZoom(prevView.current.zoom);setPan(prevView.current.pan);prevView.current=null;}if(key)window.requestAnimationFrame(()=>nodeButtons.current[key]?.focus());}
   function title(record: MapRecord) { return (th ? record.title_th : record.title_en) || record.title_th || record.title_en || (th ? "ไม่มีชื่อ" : "Untitled"); }
@@ -189,7 +205,16 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
               const bow=Math.min(70,Math.max(0,TETHER_LENGTH-t.d)*.14)*(index%2?1:-1);
               const mx=(sx+t.cx)/2-uy*bow,my=(sy+t.cy)/2+ux*bow;
               return <path key={branch.key} className={`${branch.key==="news"||branch.key==="overview"?"constellation-violet-line":"constellation-cyan-line"}${t.taut?" constellation-taut":""}`} d={`M${sx} ${sy} Q ${mx} ${my} ${t.cx} ${t.cy}`}/>;
-            })}</g>{!list&&active&&(()=>{const n=layout.nodes[active];const p=attachedRect(active);const sx=p.left?n.x:n.x+n.width;const sy=n.y+n.height/2;const ex=p.left?p.x+p.width:p.x;const ey=p.y+p.height/2;const dir=p.left?-1:1;const c=PANEL_GAP*.55;const sag=Math.min(28,Math.abs(ex-sx)*.25);return <g className={active==="news"||active==="overview"?"constellation-violet-line":"constellation-cyan-line"} fill="none" strokeWidth="2" filter="url(#constellation-glow)"><path d={`M${sx} ${sy} C ${sx+dir*c} ${sy+sag}, ${ex-dir*c} ${ey+sag}, ${ex} ${ey}`}/><circle cx={sx} cy={sy} r="4" fill="currentColor" stroke="none"/><circle cx={ex} cy={ey} r="4" fill="currentColor" stroke="none"/></g>;})()}</svg>
+            })}</g>{!list&&active&&(()=>{
+              // Tab tether: node edge → tab edge, slack bow until fully extended, then straight and bright.
+              const n=layout.nodes[active],p=layout.panels[active];
+              const nc={x:n.x+n.width/2,y:n.y+n.height/2},pc={x:p.x+p.width/2,y:p.y+p.height/2};
+              const d=Math.hypot(pc.x-nc.x,pc.y-nc.y)||1;const taut=d>=PANEL_TETHER_LENGTH;
+              const start=edgePoint(n,pc.x,pc.y),end=edgePoint(p,nc.x,nc.y);
+              const ux=(pc.x-nc.x)/d,uy=(pc.y-nc.y)/d;const bow=Math.min(60,Math.max(0,PANEL_TETHER_LENGTH-d)*.18);
+              const mx=(start.x+end.x)/2-uy*bow,my=(start.y+end.y)/2+ux*bow;
+              return <g className={`${active==="news"||active==="overview"?"constellation-violet-line":"constellation-cyan-line"}${taut?" constellation-taut":""}`} fill="none" filter="url(#constellation-glow)"><path className={taut?"constellation-taut":undefined} d={`M${start.x} ${start.y} Q ${mx} ${my} ${end.x} ${end.y}`}/><circle cx={start.x} cy={start.y} r="4" fill="currentColor" stroke="none"/><circle cx={end.x} cy={end.y} r="4" fill="currentColor" stroke="none"/></g>;
+            })()}</svg>
           <div className="constellation-center"><span className="constellation-orbit constellation-orbit-outer" aria-hidden /><span className="constellation-orbit constellation-orbit-inner" aria-hidden /><Sparkles size={32} aria-hidden /><h1>{th ? "อยากทำอะไร?" : "What would you like to do?"}</h1><p>{th ? "เลือกงานที่ต้องการ" : "Choose a task"}</p></div>
           {branches.map(({key,th:thai,en,icon:Icon}) => {
             const rect = layout.nodes[key];
@@ -202,12 +227,12 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
               </button>
             </WorkspacePanel>;
           })}
-          {!list&&active&&(()=>{const p=attachedRect(active);return <div className="workspace-record-panel constellation-attached-panel" style={{position:"absolute",left:p.x,top:p.y,width:p.width,height:p.height}}>
+          {!list&&active&&(()=>{const p=layout.panels[active];const branch=branches.find(item=>item.key===active)!;return <WorkspacePanel key={`panel-${active}`} className="workspace-record-panel constellation-attached-panel workspace-floating-panel" rect={p} bounds={PANEL_BOUNDS} scale={fit*zoom} name={th?branch.th:branch.en} th={th} onChange={rect=>movePanel("panels",active,rect)} onSelect={()=>setLayoutTarget({kind:"panels",key:active})} onGrab={()=>grab("panel")} onRelease={()=>release("panel")}>
             <aside id="constellation-panel" className="constellation-panel-content" aria-label={th?"รายการในหมวดที่เลือก":"Selected category records"}>
               <button type="button" className="constellation-close" aria-label={th?"ปิดรายการ":"Close records"} onClick={closeRecords}><X size={18} aria-hidden /></button>
               {active==="overview"?<section className="constellation-overview"><h2>{th?"ภาพรวมเนื้อหา":"Content overview"}</h2><p>{th?"รายการที่มีอยู่ในตัวแก้ไข":"Records in the existing editors"}</p><ul>{collections.map(branch=><li key={branch.key}><Link href={`/admin/${branch.key}`}>{th?branch.th:branch.en}<span>{data[branch.key].total}</span><ChevronRight size={18} aria-hidden /></Link></li>)}</ul></section>:records(active)}
             </aside>
-          </div>;})()}
+          </WorkspacePanel>;})()}
         </div>
         <div className="constellation-zoom" role="group" aria-label={th ? "มุมมองแผนที่" : "Map view"}>
           <button type="button" aria-label={th ? "ซูมออก" : "Zoom out"} disabled={zoom <= .3} onClick={()=>changeZoom(-.15)}><Minus size={18} aria-hidden /></button><span>{Math.round(zoom*100)}%</span><button type="button" aria-label={th ? "ซูมเข้า" : "Zoom in"} disabled={zoom >= 2} onClick={()=>changeZoom(.15)}><Plus size={18} aria-hidden /></button><button type="button" aria-label={th ? "คืนมุมมอง" : "Reset view"} onClick={reset}><RotateCcw size={18} aria-hidden /></button>
