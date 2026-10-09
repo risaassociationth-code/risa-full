@@ -16,8 +16,6 @@ export default async function Page() {
   return <div>
     <Link href="/admin/activities" className="mb-4 inline-block text-sm text-accent">จัดการกิจกรรม →</Link>
     <PageHeader title="ข่าวสาร" description={`${allNews.length} ข่าวบนหน้าจัดการ · ${rows.length} ข่าวในตัวแก้ไข · ${imported.length} ข่าวจาก MMS Hub`} />
-    <p className="mb-4 text-sm text-muted">คลิกหัวข้อหรือ “แก้ไข” แล้วทำตามขั้นตอน เนื้อหา → รูปภาพ → ดูตัวอย่าง → เผยแพร่ ข่าวจาก MMS Hub จะคงเครดิตต้นฉบับไว้</p>
     <CollectionTable config={{ ...config, hasSort: false }} rows={allNews} />
-    <Link href="/th/news" className="mt-5 inline-block text-sm text-accent hover:underline">ดูข่าวสารบนเว็บไซต์ ↗</Link>
   </div>;
 }

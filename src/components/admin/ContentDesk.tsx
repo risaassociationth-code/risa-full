@@ -27,7 +27,6 @@ export function ContentDesk({ items }: { items: DeskItem[] }) {
       <label className="text-sm">แหล่งที่มา<select className="mt-1 block w-full rounded-lg border border-line bg-paper p-3" value={source} onChange={e => setSource(e.target.value)}><option value="all">ทุกแหล่งที่มา</option><option value="mms">MMS Hub</option><option value="risa">RISA</option></select></label>
     </div>
     <p className="mb-3 text-sm text-muted" aria-live="polite">พบ {filtered.length} จาก {items.length} รายการ</p>
-    <p className="mb-3 text-sm text-muted">เปลี่ยนสถานะ: เปิดตัวแก้ไข → ขั้นตอนเผยแพร่ → เลือกสถานะ → บันทึก</p>
     <div className="space-y-3">
       {filtered.map(item => <article key={`${item.kind}-${item.id}`} className="flex flex-wrap items-center gap-4 rounded-xl border border-line bg-paper p-4">
         {item.cover && <img src={item.cover} alt="" className="h-16 w-24 rounded-lg object-cover" /> /* eslint-disable-line @next/next/no-img-element */}
@@ -37,7 +36,6 @@ export function ContentDesk({ items }: { items: DeskItem[] }) {
         </div>
         <div className="flex flex-wrap items-center gap-4 text-sm">
           {item.imported ? <ManageImportedNewsButton kind={item.kind} slug={item.slug} label="เปิดในตัวแก้ไข →" /> : <Link className="rounded-lg bg-accent px-3 py-2 font-medium text-accent-ink" href={`/admin/${item.kind}/${item.id}`}>แก้ไข</Link>}
-          {(item.imported || item.status === "published") && <Link className="text-accent underline" target="_blank" rel="noreferrer" href={item.imported && item.kind === "activities" ? `/th/mms-hub/${item.id.slice(4)}` : `/th/${item.kind}/${item.slug}`}>ดูบนเว็บไซต์ ↗</Link>}
         </div>
       </article>)}
       {!filtered.length && <p className="rounded-xl border border-dashed border-line p-8 text-center text-muted">ไม่พบรายการ ลองล้างคำค้นหาหรือเลือกทุกสถานะ</p>}

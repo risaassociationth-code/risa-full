@@ -17,6 +17,5 @@ export default async function Page() {
     <PageHeader title="กิจกรรม" description={`${all.length} รายการ · ${rows.length} รายการในตัวแก้ไข · ${imported.length} รายการจาก MMS Hub`} />
     <p className="mb-4 text-sm text-muted">คลิกชื่อกิจกรรมจาก MMS Hub เพื่อนำเข้าและแก้ไข โดยคงสถานะเผยแพร่เดิม วันที่เผยแพร่ต้นฉบับไม่ใช่วันจัดกิจกรรม โปรดตรวจสอบและเพิ่มวันจัดจริงเมื่อแก้ไข</p>
     <CollectionTable config={{ ...config, hasSort: false }} rows={all} />
-    <Link href="/th/activities" className="mt-5 inline-block text-sm text-accent hover:underline">ดูกิจกรรมบนเว็บไซต์ ↗</Link>
   </div>;
 }

@@ -191,7 +191,6 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
         )}
       </div>
 
-      {guided && <p className="mb-3 text-sm text-muted">{th ? "เปลี่ยนสถานะ: เปิดตัวแก้ไข → ขั้นตอนเผยแพร่ → เลือกสถานะ → บันทึก" : "To change status: open editor → publish step → select status → save"}</p>}
       <Card className="overflow-hidden">
         {filtered.length === 0 ? (
           <EmptyState
@@ -316,9 +315,8 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                           {busy && <Loader2 className="size-3.5 animate-spin text-faint" />}
                           {guided && !imported && <>
                             <Link href={linkFor(id)} className="rounded-lg border border-line px-2 py-1 text-xs text-accent">{th ? "แก้ไข" : "Edit"}</Link>
-                            {row.status === "published" && <Link href={`/${th ? "th" : "en"}/${config.key}/${String(row.slug)}`} target="_blank" rel="noreferrer" className="px-2 text-xs text-accent underline">{th ? "ดูบนเว็บไซต์ ↗" : "View site ↗"}</Link>}
                           </>}
-                          {imported ? <Link href={config.key === "activities" ? `/${th ? "th" : "en"}/mms-hub/${id.slice(4)}` : `/${th ? "th" : "en"}/news/${String(row.slug)}`} className="text-xs text-accent hover:underline">{th ? "ดูหน้าเว็บ ↗" : "View site ↗"}</Link> : <button
+                          {!imported && <button
                             type="button"
                             onClick={() => onDuplicate(id)}
                             disabled={busy}

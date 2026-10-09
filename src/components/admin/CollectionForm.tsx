@@ -374,7 +374,6 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
             </div>
             <p className="mt-4 text-sm text-muted">{th ? "ตรวจหัวข้อ รูปภาพ และรายละเอียดแล้วกดบันทึกด้านล่าง" : "Review the title, media, and details before saving."}</p>
             <details className="mt-5 border-t border-line pt-4"><summary className="cursor-pointer text-sm text-muted">{th ? "ตัวเลือกเพิ่มเติม: ที่อยู่หน้าเว็บ" : "Advanced: URL slug"}</summary><div className="mt-3">{config.fields.filter(field => field.type === "slug").map(renderField)}</div></details>
-            {!isNew && initial?.status === "published" && <a className="mt-4 inline-block text-sm text-accent underline" target="_blank" rel="noreferrer" href={`/${th ? "th" : "en"}/${config.key}/${initial.slug}`}>{th ? "ดูฉบับที่บันทึกอยู่บนเว็บไซต์ ↗" : "View published version ↗"}</a>}
           </div>
         </Card>
       </>}
