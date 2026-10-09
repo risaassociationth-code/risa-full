@@ -415,7 +415,7 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
             className={`inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-accent-ink hover:brightness-110 disabled:opacity-60 ${((guided && step === 2) || config.key === "team") && values.status === "published" ? "" : ""}`}
           >
             {pending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
-            {guided ? step < 2 ? (th ? "ถัดไป →" : "Next →") : values.status === "published" ? (th ? "บันทึกและเผยแพร่" : "Save and publish") : (th ? "บันทึกฉบับร่าง" : "Save draft") : config.key === "team" ? (values.status === "published" ? (th ? "บันทึกและเผยแพร่" : "Save and publish") : (th ? "บันทึกฉบับร่าง" : "Save draft")) : (th ? "บันทึก" : "Save")}
+            {guided && step < 2 ? (th ? "ถัดไป →" : "Next →") : (th ? "บันทึก" : "Save")}
           </button>
         </div>
       </div>

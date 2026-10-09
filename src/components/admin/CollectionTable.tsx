@@ -299,15 +299,22 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                       ))}
                       {config.hasStatus && (
                         <td className="px-4 py-2.5">
-                          {guided ? <StatusBadge status={String(row.status)} /> : <button
+                          <button
                             type="button"
+                            role="switch"
+                            aria-checked={row.status === "published"}
                             disabled={busy}
-                            onClick={() => onToggleStatus(row)}
-                            className="disabled:opacity-50"
-                            title={config.key === "team" ? (th ? "เปิดหน้าต่างยืนยันการเผยแพร่หรือซ่อนโปรไฟล์" : "Toggle profile visibility") : (th ? "คลิกเพื่อสลับสถานะ" : "Click to toggle status")}
+                            onClick={() => {
+                              startTransition(async () => {
+                                await onToggleStatus(row, true);
+                              });
+                            }}
+                            className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-wait disabled:opacity-50 ${row.status === "published" ? 'bg-accent' : 'bg-surface-3'}`}
+                            title={th ? "คลิกเพื่อสลับสถานะ" : "Toggle status"}
                           >
-                            <StatusBadge status={row.status as string} />
-                          </button>}
+                            <span className="sr-only">{row.status === "published" ? (th ? "เผยแพร่" : "Published") : (th ? "ฉบับร่าง" : "Draft")}</span>
+                            <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition-transform ${row.status === "published" ? 'translate-x-4' : 'translate-x-0'}`} />
+                          </button>
                         </td>
                       )}
                       <td className="px-4 py-2.5">
