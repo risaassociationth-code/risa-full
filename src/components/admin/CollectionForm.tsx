@@ -366,10 +366,12 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
                 role="switch"
                 aria-checked={values.status === "published"}
                 onClick={() => set("status", values.status === "published" ? "draft" : "published")}
-                className={`relative inline-flex h-[28px] w-[52px] shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface ${values.status === "published" ? 'bg-accent' : 'bg-surface-3'}`}
+                className={`relative inline-flex h-[28px] w-[100px] shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface ${values.status === "published" ? 'bg-accent' : 'bg-surface-3'}`}
               >
                 <span className="sr-only">{th ? "เปิดใช้งานเผยแพร่" : "Toggle publish status"}</span>
-                <span className={`pointer-events-none inline-block h-[24px] w-[24px] transform rounded-full bg-white shadow ring-0 transition-transform ${values.status === "published" ? 'translate-x-[24px]' : 'translate-x-0'}`} />
+                <span className={`absolute text-[11px] font-bold text-white transition-opacity ${values.status === "published" ? 'left-3 opacity-100' : 'left-3 opacity-0'}`}>{th ? "เผยแพร่" : "Publish"}</span>
+                <span className={`absolute text-[11px] font-bold text-muted transition-opacity ${values.status === "published" ? 'right-3 opacity-0' : 'right-3 opacity-100'}`}>{th ? "ปิดใช้งาน" : "Disabled"}</span>
+                <span className={`pointer-events-none z-10 inline-block h-[24px] w-[24px] transform rounded-full bg-white shadow ring-0 transition-transform ${values.status === "published" ? 'translate-x-[72px]' : 'translate-x-0'}`} />
               </button>
             </div>
             <p className="mt-4 text-sm text-muted">{th ? "ตรวจหัวข้อ รูปภาพ และรายละเอียดแล้วกดบันทึกด้านล่าง" : "Review the title, media, and details before saving."}</p>
