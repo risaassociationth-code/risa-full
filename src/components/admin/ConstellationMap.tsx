@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useTransition, useRef, useState } from "react";
 import Link from "next/link";
+import { setStatus } from "@/actions/collections";
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, CalendarDays, ChevronRight, FileText, LayoutList, Map, Minus, Plus, RotateCcw, Search, Sparkles, UsersRound, X } from "lucide-react";
 import { useAdminLanguage } from "./AdminLanguage";
 import { WorkspacePanel } from "./WorkspacePanel";
@@ -33,6 +34,7 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
   
   const [query, setQuery] = useState("");
   const list = mode === "list" || !!query.trim();
+  const [isPending, startTransition] = useTransition();
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [fit, setFit] = useState(1);
@@ -204,7 +206,7 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
       <div className="constellation-records-heading"><h2>{th ? branch.th : branch.en}</h2><Link className="constellation-add" href={`/admin/${key}/new`}><Plus size={16} aria-hidden />{th ? "เพิ่มรายการ" : "Add record"}</Link></div>
       {matches.length ? <ul>{matches.map(record => <li key={record.id}>
         <FileText size={20} aria-hidden />
-        <div className="constellation-record-copy"><h3>{title(record)}</h3><span className="constellation-status">{record.status === "published" ? (th ? "เผยแพร่" : "Published") : (th ? "ฉบับร่าง" : "Draft")}</span></div>
+        <div className="constellation-record-copy"><h3>{title(record)}</h3><button type="button" role="switch" aria-checked={record.status === "published"} disabled={isPending} onClick={() => startTransition(() => { setStatus(key, record.id, record.status === "published" ? "draft" : "published"); })} className={`constellation-status constellation-status-${record.status}`}><span className="constellation-status-dot"></span>{record.status === "published" ? (th ? "เผยแพร่" : "Published") : (th ? "ฉบับร่าง" : "Draft")}</button></div>
         <Link href={`/admin/${key}/${record.id}`} className="constellation-edit">{th ? "แก้ไข" : "Edit"}<ArrowRight size={14} aria-hidden /></Link>
       </li>)}</ul> : <p className="constellation-empty">{searching ? (th ? "ไม่พบรายการที่ค้นหา" : "No matching records") : (th ? "ยังไม่มีรายการ เริ่มต้นด้วยการเพิ่มรายการแรก" : "No records yet. Add your first record.")}</p>}
       <Link href={`/admin/${key}`} className="constellation-all">{th ? "เปิดรายการทั้งหมด" : "Open all records"}<ChevronRight size={16} aria-hidden /></Link>

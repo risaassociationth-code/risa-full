@@ -85,7 +85,7 @@ body:has(.risa-admin) ::selection { color: #17112d; background: #b8a4ff; }
 .constellation-records li > svg { color: #b5c4df; margin-top: 4px; flex-shrink: 0; }
 .constellation-record-copy { min-width: 0; flex: 1; flex-basis: 120px; }
 .constellation-record-copy h3 { font-size: 14px; font-weight: 500; line-height: 1.7; overflow-wrap: anywhere; }
-.constellation-status { display: inline-block; border-radius: 20px; padding: 2px 8px; margin-top: 7px; background: #24334f; color: #dce5f9; font-size: 11px; }
+.constellation-status-old { display: inline-block; border-radius: 20px; padding: 2px 8px; margin-top: 7px; background: #24334f; color: #dce5f9; font-size: 11px; }
 .constellation-edit, .constellation-preview { display: inline-flex; gap: 8px; align-items: center; min-height: 40px; padding: 8px 10px; font-size: 12px; border: 1px solid #415477; border-radius: 6px; }
 .constellation-preview { margin-left: 32px; }
 .constellation-edit:hover, .constellation-preview:hover { background: #1c2d48; }
@@ -142,10 +142,6 @@ body:has(.risa-admin) ::selection { color: #17112d; background: #b8a4ff; }
 .workspace-layout-controls button:hover { background: #1c2d48; }
 .workspace-storage-status { padding: 8px 20px 12px; font-size: 11px; color: #a7bbdb; text-align: center; }
 @media (max-width: 767px) { .constellation-list-panel { padding: 24px 16px; } .workspace-layout-controls button { min-width: 44px; min-height: 44px; } }
-.risa-admin .admin-publish-button { background: #a2e6be; color: #0c2b1a; min-height: 48px; padding-inline: 24px; font-weight: 600; border: 1px solid transparent; }
-.risa-admin .admin-publish-button:hover:not(:disabled) { background: #c1f2d4; }
-.risa-admin .admin-publish-button:focus-visible { outline-color: #a2e6be; outline-offset: 4px; }
-.risa-admin .admin-publish-button:disabled { background: #88b89c; color: #193624; cursor: wait; }
 
 .constellation-attached-panel { z-index: 6; cursor: auto; animation: constellation-panel-in .35s ease-out; }
 @keyframes constellation-panel-in { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
@@ -241,3 +237,9 @@ body:has(.risa-admin) ::selection { color: #17112d; background: #b8a4ff; }
 .workspace-floating-panel > .workspace-resize-handle { right: 4px; bottom: 4px; background: rgba(10, 18, 40, .7); }
 .workspace-floating-panel .constellation-panel-content { padding-top: 30px; }
 .workspace-floating-panel .constellation-panel-content { padding-bottom: 36px; }
+.constellation-status { display: inline-flex; align-items: center; gap: 6px; border-radius: 20px; padding: 2px 8px; margin-top: 7px; background: #24334f; color: #dce5f9; font-size: 11px; border: none; cursor: pointer; transition: 0.2s; }
+.constellation-status:hover:not(:disabled) { filter: brightness(1.2); }
+.constellation-status:disabled { opacity: 0.6; cursor: wait; }
+.constellation-status-published { background: #1a4a2e; color: #a2e6be; }
+.constellation-status-dot { width: 6px; height: 6px; border-radius: 50%; background: #6282b8; transition: 0.2s; }
+.constellation-status-published .constellation-status-dot { background: #4ade80; }

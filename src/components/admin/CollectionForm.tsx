@@ -356,12 +356,22 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
         <Card className="mt-6">
           <CardHead title={th ? "การแสดงบนเว็บไซต์" : "Website visibility"} />
           <div className="p-5">
-            <Field label={th ? "สถานะการแสดงผล" : "Visibility status"}>
-              <Select aria-label={th ? "การแสดงบนเว็บไซต์" : "Website visibility"} value={String(values.status ?? "draft")} onChange={(e) => set("status", e.target.value)}>
-                <option value="draft">{th ? "ฉบับร่าง — เก็บไว้เขียนต่อ ยังไม่แสดงบนหน้าเว็บ" : "Draft — kept for editing, not visible to public"}</option>
-                <option value="published">{th ? "เผยแพร่ — ทุกคนเห็นบนเว็บไซต์หลังบันทึก" : "Published — visible on the website after saving"}</option>
-              </Select>
-            </Field>
+            <div className="flex items-center justify-between gap-4 rounded-xl border border-line bg-surface p-4">
+              <div>
+                <h3 className="text-[13px] font-medium">{th ? "เปิดเผยแพร่สู่สาธารณะ" : "Publish to website"}</h3>
+                <p className="mt-0.5 text-[12px] text-muted">{th ? "เนื้อหาจะแสดงให้ทุกคนเห็นบนหน้าเว็บไซต์" : "Make this content visible to the public."}</p>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={values.status === "published"}
+                onClick={() => set("status", values.status === "published" ? "draft" : "published")}
+                className={`relative inline-flex h-[28px] w-[52px] shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface ${values.status === "published" ? 'bg-accent' : 'bg-surface-3'}`}
+              >
+                <span className="sr-only">{th ? "เปิดใช้งานเผยแพร่" : "Toggle publish status"}</span>
+                <span className={`pointer-events-none inline-block h-[24px] w-[24px] transform rounded-full bg-white shadow ring-0 transition-transform ${values.status === "published" ? 'translate-x-[24px]' : 'translate-x-0'}`} />
+              </button>
+            </div>
             <p className="mt-4 text-sm text-muted">{th ? "ตรวจหัวข้อ รูปภาพ และรายละเอียดแล้วกดบันทึกด้านล่าง" : "Review the title, media, and details before saving."}</p>
             <details className="mt-5 border-t border-line pt-4"><summary className="cursor-pointer text-sm text-muted">{th ? "ตัวเลือกเพิ่มเติม: ที่อยู่หน้าเว็บ" : "Advanced: URL slug"}</summary><div className="mt-3">{config.fields.filter(field => field.type === "slug").map(renderField)}</div></details>
             {!isNew && initial?.status === "published" && <a className="mt-4 inline-block text-sm text-accent underline" target="_blank" rel="noreferrer" href={`/${th ? "th" : "en"}/${config.key}/${initial.slug}`}>{th ? "ดูฉบับที่บันทึกอยู่บนเว็บไซต์ ↗" : "View published version ↗"}</a>}
@@ -403,7 +413,7 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
             type="submit"
             disabled={pending}
             aria-busy={pending}
-            className={`inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-accent-ink hover:brightness-110 disabled:opacity-60 ${((guided && step === 2) || config.key === "team") && values.status === "published" ? "admin-publish-button" : ""}`}
+            className={`inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-accent-ink hover:brightness-110 disabled:opacity-60 ${((guided && step === 2) || config.key === "team") && values.status === "published" ? "" : ""}`}
           >
             {pending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
             {guided ? step < 2 ? (th ? "ถัดไป →" : "Next →") : values.status === "published" ? (th ? "บันทึกและเผยแพร่" : "Save and publish") : (th ? "บันทึกฉบับร่าง" : "Save draft") : config.key === "team" ? (values.status === "published" ? (th ? "บันทึกและเผยแพร่" : "Save and publish") : (th ? "บันทึกฉบับร่าง" : "Save draft")) : (th ? "บันทึก" : "Save")}
