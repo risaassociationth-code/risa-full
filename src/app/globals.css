@@ -264,3 +264,8 @@ body[data-edit-mode="on"] { padding-bottom: 3.5rem; }
     scroll-behavior: auto !important;
   }
 }
+
+/* Calendar Section */
+.minimal-calendar-section { padding-top: 40px; padding-bottom: 40px; }
+.minimal-calendar-card { transition: transform 0.2s, box-shadow 0.2s; }
+.minimal-calendar-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.05); }

@@ -96,6 +96,12 @@ export type LocationItem = {
   lat: number; lng: number; kind: "office" | "branch" | "partner" | "member"; url: string;
 };
 
+export type CalendarEvent = {
+  id: string; title_th: string; title_en: string;
+  approx_date_th: string; approx_date_en: string;
+  body_th: string; body_en: string; sort_order: number;
+};
+
 export type Partner = { id: string; name: string; logo_url: string; url: string };
 
 // ── public reads (published only) ──────────────────────────────────────────
@@ -182,3 +188,6 @@ export const getLocations = cache(async () =>
 
 export const getPartners = cache(async () =>
   sql<Partner[]>`select * from partners where status = 'published' order by sort, created_at`);
+
+export const getCalendarEvents = cache(async () =>
+  sql<CalendarEvent[]>`select * from calendar_events where status = 'published' order by sort_order, created_at`);

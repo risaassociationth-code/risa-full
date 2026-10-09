@@ -1,4 +1,4 @@
-export const BRANCH_KEYS = ["news", "activities", "team", "overview"] as const;
+export const BRANCH_KEYS = ["news", "activities", "calendar", "team", "overview"] as const;
 export type LayoutBranch = typeof BRANCH_KEYS[number];
 export type PanelRect = { x: number; y: number; width: number; height: number };
 export type PanelBounds = { width: number; height: number; minWidth: number; minHeight: number; maxWidth?: number; maxHeight?: number; minX?: number; minY?: number };
@@ -10,7 +10,7 @@ export const NODE_BOUNDS: PanelBounds = { minX: -4000, minY: -4000, width: 9000,
 export function defaultWorkspaceLayout(): WorkspaceLayout {
   return { version: 1, nodes: {
     news: {x:410,y:58,width:220,height:88}, activities: {x:92,y:296,width:220,height:88},
-    team: {x:729,y:296,width:220,height:88}, overview: {x:410,y:526,width:220,height:88},
+    calendar: {x:92,y:58,width:220,height:88}, team: {x:729,y:296,width:220,height:88}, overview: {x:410,y:526,width:220,height:88},
   }, panels: Object.fromEntries(BRANCH_KEYS.map(key => [key,{x:520,y:20,width:360,height:340}])) as Record<LayoutBranch,PanelRect>, notes: [] };
 }
 

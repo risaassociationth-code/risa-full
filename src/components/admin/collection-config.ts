@@ -517,6 +517,27 @@ const listItems: CollectionConfig = {
   ],
 };
 
+const calendar: CollectionConfig = {
+  key: "calendar",
+  table: "calendar_events",
+  label: "ปฏิทินกิจกรรม",
+  singular: "ปฏิทิน",
+  adminPath: "/admin/calendar",
+  hasStatus: true,
+  hasSort: true,
+  titleField: "title",
+  searchColumns: ["title", "approx_date", "body"],
+  columns: [
+    { name: "approx_date", label: "ช่วงเวลา", bilingual: true },
+    { name: "title", label: "หัวข้อกิจกรรม", bilingual: true },
+  ],
+  fields: [
+    { name: "title", label: "หัวข้อกิจกรรม", type: "text", bilingual: true, required: true },
+    { name: "approx_date", label: "ช่วงเวลา", type: "text", bilingual: true, required: true, placeholder: "ปลาย มิ.ย. / Late June" },
+    { name: "body", label: "รายละเอียด", type: "textarea", bilingual: true },
+  ],
+};
+
 export const COLLECTIONS = {
   news,
   activities,
@@ -529,6 +550,7 @@ export const COLLECTIONS = {
   gallery_photos: galleryPhotos,
   documents,
   timeline,
+  calendar,
   stats,
   services,
   locations,

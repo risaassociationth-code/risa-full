@@ -3,7 +3,7 @@
 import { useEffect, useLayoutEffect, useTransition, useRef, useState } from "react";
 import Link from "next/link";
 import { setStatus } from "@/actions/collections";
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, CalendarDays, ChevronRight, FileText, LayoutList, Map, Minus, Plus, RotateCcw, Search, Sparkles, UsersRound, X } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, CalendarDays, CalendarClock, ChevronRight, FileText, LayoutList, Map, Minus, Plus, RotateCcw, Search, Sparkles, UsersRound, X } from "lucide-react";
 import { useAdminLanguage } from "./AdminLanguage";
 import { WorkspacePanel } from "./WorkspacePanel";
 import { boundRect, defaultWorkspaceLayout, parseWorkspaceLayout, type PanelRect, type PanelBounds, NODE_BOUNDS, BRANCH_KEYS, type WorkspaceLayout } from "./constellation-layout";
@@ -13,13 +13,14 @@ import { ANCHOR, CORE_RADIUS, PANEL_TETHER_LENGTH, TETHER_LENGTH, edgePoint, ste
 const PANEL_BOUNDS: PanelBounds = { minX: -4000, minY: -4000, width: 9000, height: 9000, minWidth: 300, minHeight: 260, maxWidth: 900, maxHeight: 800 };
 
 export type MapRecord = { id: string; title_th: string; title_en: string; slug: string; status: string };
-export type MapCollection = "news" | "activities" | "team";
+export type MapCollection = "news" | "activities" | "calendar" | "team";
 type Branch = MapCollection | "overview";
 export type ConstellationData = Record<MapCollection, { records: MapRecord[]; total: number }>;
 
 const branches = [
   { key: "news", th: "ข่าวสาร", en: "News", icon: FileText },
   { key: "activities", th: "กิจกรรม", en: "Activities", icon: CalendarDays },
+  { key: "calendar", th: "ปฏิทิน", en: "Calendar", icon: CalendarClock },
   { key: "team", th: "บุคลากร", en: "Personnel", icon: UsersRound },
   { key: "overview", th: "ภาพรวม", en: "Overview", icon: LayoutList },
 ] as const;
