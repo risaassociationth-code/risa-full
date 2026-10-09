@@ -133,7 +133,13 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
   return <section lang={locale} className="constellation-workspace">
     <div className="constellation-toolbar">
       <div className="constellation-search"><Search size={17} aria-hidden /><input type="search" value={query} onChange={event => setQuery(event.target.value)} aria-label={th ? "ค้นหารายการในแผนที่" : "Search map records"} placeholder={th ? "ค้นหารายการ…" : "Search records…"} /></div>
+      <div className="flex items-center gap-2 pr-2">
+        <Sparkles className="size-5 text-[#b8a4ff]" aria-hidden="true" />
+        <h2 className="text-[15px] font-bold tracking-wide text-[#f4f6ff]">
+          {th ? "กระดานจักรวาล" : "Cosmic Board"}
+        </h2>
       </div>
+    </div>
     
     <div className={`constellation-body ${list ? "constellation-list-mode" : ""}`}>
       <div ref={viewport} className="constellation-viewport" tabIndex={list ? -1 : 0} role="region" aria-label={th ? "แผนที่งาน ใช้ปุ่มลูกศรเลื่อน เครื่องหมายบวกหรือลบซูม และเลขศูนย์คืนมุมมอง" : "Task map. Arrow keys pan, plus or minus zoom, and zero resets the view."}
