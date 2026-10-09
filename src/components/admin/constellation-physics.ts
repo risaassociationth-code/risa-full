@@ -4,16 +4,16 @@ import type { PanelRect } from "./constellation-layout";
 export const ANCHOR = { x: 520, y: 346 };
 export const CORE_RADIUS = 112;
 /** Rope pays out freely up to this length, so a node can drift far away and still stay tethered. */
-export const TETHER_LENGTH = 470;
+export const TETHER_LENGTH = 1600;
 /** Record tabs hang off their node on a longer rope so they can be parked well away from the map. */
-export const PANEL_TETHER_LENGTH = 560;
+export const PANEL_TETHER_LENGTH = 1800;
 const TETHER_STIFFNESS = 9;
 const TETHER_DAMPING = 2.4;
 const DAMPING = 0.5;
 const RESTITUTION = 0.8;
 const PAD = 14;
 const MAX_SPEED = 2600;
-const LIMIT = { minX: -900, minY: -900, maxX: 1940, maxY: 1560 };
+const LIMIT = { minX: -4000, minY: -4000, maxX: 5000, maxY: 5000 };
 
 export type Vec = { x: number; y: number };
 /** A moving rectangle. `invMass` 0 = immovable (e.g. while held by the pointer). */

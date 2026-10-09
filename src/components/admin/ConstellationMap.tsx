@@ -9,7 +9,7 @@ import { boundRect, defaultWorkspaceLayout, parseWorkspaceLayout, type PanelRect
 import { ANCHOR, CORE_RADIUS, PANEL_TETHER_LENGTH, TETHER_LENGTH, edgePoint, stepWorld, tetherState, type Body, type Tether, type Vec } from "./constellation-physics";
 
 /** Record tabs float freely in map space; size limits keep them readable. */
-const PANEL_BOUNDS: PanelBounds = { minX: -900, minY: -900, width: 1940, height: 1560, minWidth: 300, minHeight: 260, maxWidth: 900, maxHeight: 800 };
+const PANEL_BOUNDS: PanelBounds = { minX: -4000, minY: -4000, width: 9000, height: 9000, minWidth: 300, minHeight: 260, maxWidth: 900, maxHeight: 800 };
 
 export type MapRecord = { id: string; title_th: string; title_en: string; slug: string; status: string };
 export type MapCollection = "news" | "activities" | "team";
