@@ -125,7 +125,6 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
         <FileText size={20} aria-hidden />
         <div className="constellation-record-copy"><h3>{title(record)}</h3><span className="constellation-status">{record.status === "published" ? (th ? "เผยแพร่" : "Published") : (th ? "ฉบับร่าง" : "Draft")}</span></div>
         <Link href={`/admin/${key}/${record.id}`} className="constellation-edit">{th ? "แก้ไข" : "Edit"}<ArrowRight size={14} aria-hidden /></Link>
-        {record.status === "published" && key !== "team" && record.slug && <Link href={`/${locale}/${key}/${record.slug}`} target="_blank" rel="noreferrer" className="constellation-preview">{th ? "ดูบนเว็บไซต์" : "View site"}</Link>}
       </li>)}</ul> : <p className="constellation-empty">{searching ? (th ? "ไม่พบรายการที่ค้นหา" : "No matching records") : (th ? "ยังไม่มีรายการ เริ่มต้นด้วยการเพิ่มรายการแรก" : "No records yet. Add your first record.")}</p>}
       <Link href={`/admin/${key}`} className="constellation-all">{th ? "เปิดรายการทั้งหมด" : "Open all records"}<ChevronRight size={16} aria-hidden /></Link>
     </section>;

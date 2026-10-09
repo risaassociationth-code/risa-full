@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ExternalLink, LogOut } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { ArrowLeft, ExternalLink, LogOut } from "lucide-react";
 import { AdminLanguageSwitch, useAdminLanguage } from "./AdminLanguage";
 
 type TopbarProps = {
@@ -15,9 +16,20 @@ type TopbarProps = {
 export function Topbar({ user }: TopbarProps) {
   const { locale } = useAdminLanguage();
   const th = locale === "th";
+  const pathname = usePathname();
+  const onBoard = pathname === "/admin";
 
   return (
-    <div className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-line bg-paper/95 pl-16 pr-4 backdrop-blur lg:pl-8 lg:pr-8">
+    <div className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-line bg-paper/95 pl-4 pr-4 backdrop-blur lg:pl-8 lg:pr-8">
+      {!onBoard && (
+        <Link
+          href="/admin"
+          className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-line px-3 text-[14px] font-medium text-ink hover:bg-surface"
+        >
+          <ArrowLeft className="size-4" aria-hidden />
+          {th ? "กลับหน้าหลัก" : "Back to board"}
+        </Link>
+      )}
       <Link
         href={th ? "/th" : "/en"}
         target="_blank"
