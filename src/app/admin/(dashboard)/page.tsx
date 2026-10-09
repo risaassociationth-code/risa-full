@@ -4,7 +4,6 @@ import { ConstellationMap, type ConstellationData, type MapCollection } from "@/
 
 export const metadata = { title: "หน้าหลักผู้ดูแล · RISA Admin" };
 
-import { sql } from "@/lib/db";
 
 export default async function DashboardPage() {
   const user = await requireUser();

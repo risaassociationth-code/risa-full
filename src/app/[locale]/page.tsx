@@ -1,17 +1,16 @@
 import Link from "next/link";
 import { MsicFeature } from "@/components/site/MsicFeature";
-import { ArrowRight, CalendarDays } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { getLocale } from "@/lib/request";
 import { contentLanguage, localePath, pick } from "@/lib/i18n";
 import { formatCalendarDate } from "@/lib/calendar-date";
 import { getSettings } from "@/lib/content";
-import { getNews, getUpcomingActivities, getCalendarEvents } from "@/lib/queries";
+import { getNews, getUpcomingActivities } from "@/lib/queries";
 import { Editable, EditableRich } from "@/components/editable/Editable";
-import { CalendarSection } from "@/components/site/CalendarSection";
 
 export default async function HomePage() {
-  const [locale, news, activities, settings, calendarEvents] = await Promise.all([
-    getLocale(), getNews(4), getUpcomingActivities(2), getSettings(), getCalendarEvents()
+  const [locale, news, activities, settings] = await Promise.all([
+    getLocale(), getNews(4), getUpcomingActivities(2), getSettings(),
   ]);
   const L = (href: string) => href.startsWith("/") ? localePath(locale, href) : href;
   const featured = news[0];
@@ -50,7 +49,6 @@ export default async function HomePage() {
         {latestNews.length ? <div className="minimal-news-list">{latestNews.map(item => <Link key={item.id} href={L(`/news/${item.slug}`)} className="minimal-news-item"><span className="minimal-news-date">{item.published_at ? formatCalendarDate(item.published_at, th ? "th-TH" : "en-GB", "short") : ""}</span><h3 lang={contentLanguage(item, "title", locale)}>{pick(item, "title", locale)}</h3><ArrowRight size={18} aria-hidden /></Link>)}</div> : !featured && <p className="text-muted">{locale === "th" ? "ติดตามข่าวสารจาก RISA ได้เร็ว ๆ นี้" : "Updates from RISA are coming soon."}</p>}
         {activities.length > 0 && <div className="minimal-activities"><Link href={L("/activities")} className="minimal-activity-label"><Editable k="home.activities.title" /></Link>{activities.map(item => <Link key={item.id} href={L(`/activities/${item.slug}`)}>{pick(item, "title", locale)} <ArrowRight size={16} aria-hidden /></Link>)}</div>}
       </section>
-      {calendarEvents.length > 0 && <CalendarSection events={calendarEvents} locale={locale} />}
     </div>
   );
 }

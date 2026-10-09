@@ -99,7 +99,7 @@ export type LocationItem = {
 export type CalendarEvent = {
   id: string; title_th: string; title_en: string;
   approx_date_th: string; approx_date_en: string;
-  body_th: string; body_en: string; sort_order: number;
+  body_th: string; body_en: string; sort: number;
 };
 
 export type Partner = { id: string; name: string; logo_url: string; url: string };
