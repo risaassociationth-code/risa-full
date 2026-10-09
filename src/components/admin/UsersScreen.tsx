@@ -82,7 +82,7 @@ function NewUserForm({ onCreated, onCancel }: { onCreated: (u: User) => void; on
         <Input value={name} onChange={(e) => setName(e.target.value)} required />
       </Field>
       <Field label="ชื่อผู้ใช้" required hint="ใช้ a-z, 0-9, _ หรือ - ได้">
-        <Input value={username} onChange={(e) => setUsername(e.target.value.toLowerCase())} required minLength={3} maxLength={32} autoCapitalize="none" spellCheck={false} placeholder="smartlab" />
+        <Input value={username} onChange={(e) => setUsername(e.target.value.toLowerCase())} required minLength={3} maxLength={32} autoCapitalize="none" spellCheck={false} />
       </Field>
       <Field label="สิทธิ์การใช้งาน" required>
         <Select value={role} onChange={(e) => setRole(e.target.value as "admin" | "editor")}>

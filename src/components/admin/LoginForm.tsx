@@ -14,7 +14,7 @@ export function LoginForm({ next }: { next: string }) {
       <Field label="ชื่อผู้ใช้" required>
         <div className="relative">
           <UserRound className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-faint" />
-          <Input name="username" aria-label="ชื่อผู้ใช้" required autoComplete="username" autoCapitalize="none" spellCheck={false} autoFocus className="pl-9" placeholder="smartlab" />
+          <Input name="username" aria-label="ชื่อผู้ใช้" required autoComplete="username" autoCapitalize="none" spellCheck={false} autoFocus className="pl-9" />
         </div>
       </Field>
       <Field label="รหัสผ่าน" required>
