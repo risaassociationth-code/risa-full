@@ -23,7 +23,14 @@ export default async function DashboardPage() {
         { sort: 11, th: 'STS', en: 'STS', th_date: 'เมษายน', en_date: 'April', body_th: 'Science and technology society.', body_en: 'Science and technology society.' }
       ];
       for (const e of events) {
-        await sql`INSERT INTO calendar_events (title_th, title_en, approx_date_th, approx_date_en, body_th, body_en, sort_order) VALUES (${e.th}, ${e.en}, ${e.th_date}, ${e.en_date}, ${e.body_th}, ${e.body_en}, ${e.sort})`;
+        await sql`INSERT INTO calendar_events (title_th, title_en, approx_date_th, approx_date_en, body_th, body_en, sort) VALUES (${e.th}, ${e.en}, ${e.th_date}, ${e.en_date}, ${e.body_th}, ${e.body_en}, ${e.sort})`;
+      }
+      // Also seed the calendar nav item if not exists
+      const navCount = await sql`SELECT COUNT(*) FROM nav_items WHERE href = '/calendar'`;
+      if (navCount[0].count === '0') {
+        const nextSort = await sql`SELECT MAX(sort) as m FROM nav_items WHERE parent_id IS NULL`;
+        const sort = (Number(nextSort[0]?.m) || 0) + 1;
+        await sql`INSERT INTO nav_items (id, label_th, label_en, href, sort, status) VALUES (gen_random_uuid(), 'ปฏิทิน', 'Calendar', '/calendar', ${sort}, 'published')`;
       }
     }
   } catch (e) {

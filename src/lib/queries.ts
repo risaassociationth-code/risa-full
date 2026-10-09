@@ -190,4 +190,4 @@ export const getPartners = cache(async () =>
   sql<Partner[]>`select * from partners where status = 'published' order by sort, created_at`);
 
 export const getCalendarEvents = cache(async () =>
-  sql<CalendarEvent[]>`select * from calendar_events where status = 'published' order by sort_order, created_at`);
+  sql<CalendarEvent[]>`select * from calendar_events where status = 'published' order by sort, created_at`);
