@@ -90,7 +90,7 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (guided && step < 3) { setStep(step + 1); return; }
+    if (guided && step < 2) { setStep(step + 1); return; }
     save();
   }
 
@@ -329,8 +329,8 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
           <button type="button" className="text-sm text-accent" onClick={() => dirty ? setLeaveHref(backHref) : router.push(backHref)}>← {th ? "กลับรายการ" : "Back to "}{config.singular}</button>
           <p role="status" className="text-xs text-muted">{pending ? (th ? "กำลังบันทึก…" : "Saving...") : dirty ? (th ? "มีการแก้ไขที่ยังไม่บันทึก" : "Unsaved changes") : savedAt ? `${th ? "บันทึกแล้ว" : "Saved"} · ${new Date(savedAt).toLocaleString(th ? "th-TH" : "en-US", { timeZone: "Asia/Bangkok" })}` : isNew ? (th ? "รายการใหม่ — ยังไม่บันทึก" : "New record — unsaved") : (th ? "ฉบับที่บันทึกไว้ — ยังไม่มีการแก้ไข" : "Saved version — no edits")}</p>
         </div>
-        <nav aria-label={th ? "ขั้นตอนการแก้ไข" : "Editing steps"} className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {(th ? ["เนื้อหา", "รูปภาพ", "ดูตัวอย่าง", "เผยแพร่"] : ["Content", "Media", "Preview", "Publish"]).map((label, index) => <button type="button" key={label} aria-current={step === index ? "step" : undefined} onClick={() => setStep(index)} className={`rounded-xl border p-3 text-left text-sm ${step === index ? "border-accent bg-accent-soft font-semibold text-accent" : "border-line bg-paper text-muted"}`}>{index + 1}. {label}</button>)}
+        <nav aria-label={th ? "ขั้นตอนการแก้ไข" : "Editing steps"} className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {(th ? ["เนื้อหา", "รูปภาพ", "ดูตัวอย่างและเผยแพร่"] : ["Content", "Media", "Preview & Publish"]).map((label, index) => <button type="button" key={label} aria-current={step === index ? "step" : undefined} onClick={() => setStep(index)} className={`rounded-xl border p-3 text-left text-sm ${step === index ? "border-accent bg-accent-soft font-semibold text-accent" : "border-line bg-paper text-muted"}`}>{index + 1}. {label}</button>)}
         </nav>
         {(step === 0 || step === 2) && <div className="flex gap-2" aria-label={th ? "ภาษาที่กำลังแก้ไข" : "Editing language"}>
           {(["th", "en"] as const).map(lang => <button key={lang} type="button" aria-pressed={editLocale === lang} onClick={() => setEditLocale(lang)} className="rounded-lg border border-line px-4 py-2 text-sm aria-pressed:bg-ink aria-pressed:text-white">{lang === "th" ? "ภาษาไทย" : "English"}</button>)}
@@ -348,24 +348,26 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
         </div>
       </Card>}
       {importedNews && <p className="rounded-lg border border-line bg-surface p-4 text-sm text-muted">{th ? "MMS Hub · เนื้อหาจากเครือข่าย — โปรดคงเครดิตต้นฉบับและตรวจวันจัดกิจกรรม ชื่อบุคคล และบทบาทองค์กรก่อนเผยแพร่ สถานะฉบับร่างซ่อนรายการจากหน้า" : "MMS Hub · Network content — please preserve original credits and check event dates, names, and roles before publishing. Draft status hides the record from the "}{config.singular}{th ? "ของ RISA" : " page"}</p>}
-      {guided && step === 3 && <Card>
-        <CardHead title={th ? "4. เลือกว่าจะให้คนทั่วไปเห็นหรือไม่" : "4. Visibility and publish"} />
-        <div className="p-5">
-          <Field label={th ? "การแสดงบนเว็บไซต์" : "Website visibility"}>
-            <Select aria-label={th ? "การแสดงบนเว็บไซต์" : "Website visibility"} value={String(values.status ?? "draft")} onChange={(e) => set("status", e.target.value)}>
-              <option value="draft">{th ? "ฉบับร่าง — เก็บไว้เขียนต่อ ยังไม่แสดงบนหน้าเว็บ" : "Draft — kept for editing, not visible to public"}</option>
-              <option value="published">{th ? "เผยแพร่ — ทุกคนเห็นบนเว็บไซต์หลังบันทึก" : "Published — visible on the website after saving"}</option>
-            </Select>
-          </Field>
-          <p className="mt-4 text-sm text-muted">{th ? "ตรวจหัวข้อ รูปภาพ และรายละเอียดแล้วกดบันทึกด้านล่าง การเลือกสถานะอย่างเดียวยังไม่เปลี่ยนหน้าเว็บ" : "Review the title, media, and details before saving. Changing status alone doesn't update the site."}</p>
-          <details className="mt-5 border-t border-line pt-4"><summary className="cursor-pointer text-sm text-muted">{th ? "ตัวเลือกเพิ่มเติม: ที่อยู่หน้าเว็บ" : "Advanced: URL slug"}</summary><div className="mt-3">{config.fields.filter(field => field.type === "slug").map(renderField)}</div></details>
-          {!isNew && initial?.status === "published" && <a className="mt-4 inline-block text-sm text-accent underline" target="_blank" rel="noreferrer" href={`/${th ? "th" : "en"}/${config.key}/${initial.slug}`}>{th ? "ดูฉบับที่บันทึกอยู่บนเว็บไซต์ ↗" : "View published version ↗"}</a>}
-        </div>
-      </Card>}
-      {guided && step === 2 && <Card>
-        <CardHead title={th ? "3. ตรวจตัวอย่างเนื้อหา" : "3. Review content preview"} />
-        <div className="p-5"><p className="mb-4 text-sm text-muted">{th ? "ตัวอย่างจากสิ่งที่กำลังแก้ไข ยังไม่เผยแพร่ การจัดหน้าจริงอาจต่างเล็กน้อย" : "Preview of your unsaved edits. Final rendering may vary slightly."}</p><DraftPreview values={values} locale={editLocale} /></div>
-      </Card>}
+      {guided && step === 2 && <>
+        <Card>
+          <CardHead title={th ? "3. ตรวจตัวอย่างเนื้อหา" : "3. Review content preview"} />
+          <div className="p-5"><p className="mb-4 text-sm text-muted">{th ? "ตัวอย่างจากสิ่งที่กำลังแก้ไข ยังไม่เผยแพร่ การจัดหน้าจริงอาจต่างเล็กน้อย" : "Preview of your unsaved edits. Final rendering may vary slightly."}</p><DraftPreview values={values} locale={editLocale} /></div>
+        </Card>
+        <Card className="mt-6">
+          <CardHead title={th ? "การแสดงบนเว็บไซต์" : "Website visibility"} />
+          <div className="p-5">
+            <Field label={th ? "สถานะการแสดงผล" : "Visibility status"}>
+              <Select aria-label={th ? "การแสดงบนเว็บไซต์" : "Website visibility"} value={String(values.status ?? "draft")} onChange={(e) => set("status", e.target.value)}>
+                <option value="draft">{th ? "ฉบับร่าง — เก็บไว้เขียนต่อ ยังไม่แสดงบนหน้าเว็บ" : "Draft — kept for editing, not visible to public"}</option>
+                <option value="published">{th ? "เผยแพร่ — ทุกคนเห็นบนเว็บไซต์หลังบันทึก" : "Published — visible on the website after saving"}</option>
+              </Select>
+            </Field>
+            <p className="mt-4 text-sm text-muted">{th ? "ตรวจหัวข้อ รูปภาพ และรายละเอียดแล้วกดบันทึกด้านล่าง" : "Review the title, media, and details before saving."}</p>
+            <details className="mt-5 border-t border-line pt-4"><summary className="cursor-pointer text-sm text-muted">{th ? "ตัวเลือกเพิ่มเติม: ที่อยู่หน้าเว็บ" : "Advanced: URL slug"}</summary><div className="mt-3">{config.fields.filter(field => field.type === "slug").map(renderField)}</div></details>
+            {!isNew && initial?.status === "published" && <a className="mt-4 inline-block text-sm text-accent underline" target="_blank" rel="noreferrer" href={`/${th ? "th" : "en"}/${config.key}/${initial.slug}`}>{th ? "ดูฉบับที่บันทึกอยู่บนเว็บไซต์ ↗" : "View published version ↗"}</a>}
+          </div>
+        </Card>
+      </>}
       {(!guided || step < 2) && <Card>
         <CardHead title={guided ? step === 0 ? (th ? "1. เขียนเนื้อหาและรายละเอียด" : "1. Write content and details") : (th ? "2. เลือกภาพหน้าปก" : "2. Select cover media") : (th ? "รายละเอียด" : "Details")} />
         <div className="grid gap-5 p-5">
@@ -396,15 +398,15 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
           >
             {guided && step > 0 ? (th ? "ย้อนกลับ" : "Back") : (th ? "กลับรายการ" : "Back to list")}
           </button>
-          {guided && step < 3 && initial?.status !== "published" && <button type="button" onClick={() => save("draft")} disabled={pending} className="rounded-lg border border-line px-4 py-2.5 text-sm">{th ? "บันทึกฉบับร่าง" : "Save draft"}</button>}
+          {guided && step < 2 && initial?.status !== "published" && <button type="button" onClick={() => save("draft")} disabled={pending} className="rounded-lg border border-line px-4 py-2.5 text-sm">{th ? "บันทึกฉบับร่าง" : "Save draft"}</button>}
           <button
             type="submit"
             disabled={pending}
             aria-busy={pending}
-            className={`inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-accent-ink hover:brightness-110 disabled:opacity-60 ${((guided && step === 3) || config.key === "team") && values.status === "published" ? "admin-publish-button" : ""}`}
+            className={`inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-accent-ink hover:brightness-110 disabled:opacity-60 ${((guided && step === 2) || config.key === "team") && values.status === "published" ? "admin-publish-button" : ""}`}
           >
             {pending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
-            {guided ? step < 3 ? (th ? "ถัดไป →" : "Next →") : values.status === "published" ? (th ? "บันทึกและเผยแพร่" : "Save and publish") : (th ? "บันทึกฉบับร่าง" : "Save draft") : config.key === "team" ? (values.status === "published" ? (th ? "บันทึกและเผยแพร่" : "Save and publish") : (th ? "บันทึกฉบับร่าง" : "Save draft")) : (th ? "บันทึก" : "Save")}
+            {guided ? step < 2 ? (th ? "ถัดไป →" : "Next →") : values.status === "published" ? (th ? "บันทึกและเผยแพร่" : "Save and publish") : (th ? "บันทึกฉบับร่าง" : "Save draft") : config.key === "team" ? (values.status === "published" ? (th ? "บันทึกและเผยแพร่" : "Save and publish") : (th ? "บันทึกฉบับร่าง" : "Save draft")) : (th ? "บันทึก" : "Save")}
           </button>
         </div>
       </div>
