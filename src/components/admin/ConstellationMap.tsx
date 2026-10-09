@@ -200,11 +200,14 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
             <defs><filter id="constellation-glow" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="5000" height="5000"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
             <g fill="none" filter="url(#constellation-glow)">{branches.map((branch,index)=>{
               // Slack ropes bow sideways; once fully paid out they pull straight and glow brighter.
-              const t=tetherState(layout.nodes[branch.key]);if(t.d<=CORE_RADIUS)return null;
+              const n=layout.nodes[branch.key];
+              const t=tetherState(n);if(t.d<=CORE_RADIUS)return null;
               const ux=t.dx/t.d,uy=t.dy/t.d;const sx=ANCHOR.x+ux*CORE_RADIUS,sy=ANCHOR.y+uy*CORE_RADIUS;
+              const end=edgePoint(n,sx,sy);
               const bow=Math.min(70,Math.max(0,TETHER_LENGTH-t.d)*.14)*(index%2?1:-1);
-              const mx=(sx+t.cx)/2-uy*bow,my=(sy+t.cy)/2+ux*bow;
-              return <path key={branch.key} className={`${branch.key==="news"||branch.key==="overview"?"constellation-violet-line":"constellation-cyan-line"}${t.taut?" constellation-taut":""}`} d={`M${sx} ${sy} Q ${mx} ${my} ${t.cx} ${t.cy}`}/>;
+              const mx=(sx+end.x)/2-uy*bow,my=(sy+end.y)/2+ux*bow;
+              const className = `${branch.key==="news"||branch.key==="overview"?"constellation-violet-line":"constellation-cyan-line"}${t.taut?" constellation-taut":""}`;
+              return <g key={branch.key} className={className}><path d={`M${sx} ${sy} Q ${mx} ${my} ${end.x} ${end.y}`}/><circle cx={sx} cy={sy} r="4" fill="currentColor" stroke="none"/><circle cx={end.x} cy={end.y} r="4" fill="currentColor" stroke="none"/></g>;
             })}</g>{!list&&active&&(()=>{
               // Tab tether: node edge → tab edge, slack bow until fully extended, then straight and bright.
               const n=layout.nodes[active],p=layout.panels[active];
