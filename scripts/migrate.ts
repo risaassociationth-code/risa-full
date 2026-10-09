@@ -8,11 +8,12 @@ import postgres from "postgres";
 const DIR = path.join(process.cwd(), "supabase", "migrations");
 
 async function main() {
-  if (!process.env.DATABASE_URL) {
-    console.error("DATABASE_URL is not set. Copy .env.example to .env.local first.");
+  const dbUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+  if (!dbUrl) {
+    console.error("DATABASE_URL or POSTGRES_URL is not set.");
     process.exit(1);
   }
-  const sql = postgres(process.env.DATABASE_URL, {
+  const sql = postgres(dbUrl, {
     onnotice: (n) => console.log(`    ${n.message}`),
   });
 

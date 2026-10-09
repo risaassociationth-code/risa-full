@@ -5,8 +5,8 @@ declare global {
   var __risa_sql: ReturnType<typeof postgres> | undefined;
 }
 
-const connection = process.env.DATABASE_URL;
-if (!connection) throw new Error("DATABASE_URL is not set. Copy .env.example to .env.local.");
+const connection = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+if (!connection) throw new Error("DATABASE_URL or POSTGRES_URL is not set.");
 
 const rawSql =
   global.__risa_sql ??
