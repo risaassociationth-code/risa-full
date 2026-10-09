@@ -36,7 +36,7 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [fit, setFit] = useState(1);
-  const [viewSize, setViewSize] = useState({width:1040,height:480});
+  const [viewSize, setViewSize] = useState({width: 0, height: 0});
   const [layout,setLayout] = useState(defaultWorkspaceLayout);
   const [loaded,setLoaded] = useState(false);
   const [stored,setStored] = useState(false);
@@ -44,11 +44,31 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
   const viewport = useRef<HTMLDivElement>(null);
   const nodeButtons = useRef<Partial<Record<Branch,HTMLButtonElement|null>>>({});
   const drag = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null);
+  const hasFramed = useRef(false);
   const storageKey=`risa-constellation-layout:${workspaceKey}`;
   useEffect(()=>{
     const frame=window.requestAnimationFrame(()=>{try{const raw=localStorage.getItem(storageKey);const saved=parseWorkspaceLayout(raw);setLayout(saved??defaultWorkspaceLayout());if(raw&&!saved)localStorage.removeItem(storageKey);}catch{setStored(false);}setLoaded(true);});
     return ()=>window.cancelAnimationFrame(frame);
   },[storageKey]);
+  useEffect(()=>{
+    if (loaded && viewSize.width > 0 && fit > 0 && !hasFramed.current) {
+      hasFramed.current = true;
+      const pad = 60;
+      let minX = 408, minY = 234, maxX = 632, maxY = 458; // core bounds
+      for (const key of BRANCH_KEYS) {
+        const n = layout.nodes[key];
+        if (n.x < minX) minX = n.x;
+        if (n.y < minY) minY = n.y;
+        if (n.x + n.width > maxX) maxX = n.x + n.width;
+        if (n.y + n.height > maxY) maxY = n.y + n.height;
+      }
+      const target = Math.min(1, viewSize.width / (maxX - minX + pad * 2), viewSize.height / (maxY - minY + pad * 2));
+      const nextZoom = Math.min(2, Math.max(.3, target / fit));
+      const s = fit * nextZoom;
+      setZoom(nextZoom);
+      setPan({x: -s * ((minX + maxX) / 2 - 520), y: -s * ((minY + maxY) / 2 - 330)});
+    }
+  }, [loaded, viewSize, fit, layout]);
   useEffect(()=>{
     if(!loaded)return;
     const timer=window.setTimeout(()=>{try{localStorage.setItem(storageKey,JSON.stringify(layout));setStored(true);}catch{setStored(false);}},300);
