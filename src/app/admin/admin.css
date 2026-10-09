@@ -246,3 +246,18 @@ body:has(.risa-admin) ::selection { color: #17112d; background: #b8a4ff; }
 /* Freeze the gentle bob while the cursor is on a box, so its edge can't slide in and out under the pointer (hover flicker). */
 .workspace-node:hover, .workspace-node:focus-within { animation-play-state: paused; }
 .workspace-floating-panel:hover, .workspace-floating-panel:focus-within { animation-play-state: running, paused; }
+
+/* Cosmic Notes */
+.constellation-notes-control { position: absolute; bottom: 12px; left: 12px; }
+.constellation-add-note { display: flex; align-items: center; gap: 8px; border: 1px solid #78dcff; border-radius: 8px; background: rgba(16, 29, 53, .8); color: #8cdeff; padding: 6px 14px; font-size: 13px; font-weight: 500; cursor: pointer; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: background .2s, border-color .2s; }
+.constellation-add-note:hover { background: rgba(30, 50, 90, .8); border-color: #a0e6ff; }
+.workspace-note-panel { z-index: 4; border-radius: 12px; background: linear-gradient(135deg, rgba(255, 230, 140, .2) 0%, rgba(255, 200, 100, .05) 100%), rgba(28, 22, 10, .7); border: 1px solid rgba(255, 215, 120, .4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 8px 32px rgba(255, 210, 100, .15); }
+.workspace-note-panel > .workspace-drag-handle { background: rgba(255, 215, 120, .15); color: #ffd685; }
+.workspace-note-panel > .workspace-drag-handle:hover { background: rgba(255, 215, 120, .3); color: #fff; }
+.workspace-note-panel > .workspace-resize-handle { background: rgba(255, 215, 120, .15); color: #ffd685; }
+.workspace-note-panel > .workspace-resize-handle:hover { background: rgba(255, 215, 120, .3); color: #fff; }
+.constellation-note-content { position: relative; padding: 36px 16px 16px; height: 100%; display: flex; flex-direction: column; }
+.constellation-note-close { position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 6px; color: rgba(255, 255, 255, .5); cursor: pointer; z-index: 5; }
+.constellation-note-close:hover { background: rgba(255, 255, 255, .1); color: #fff; }
+.constellation-note-textarea { flex: 1; width: 100%; background: transparent; border: none; color: #ffebc2; font-size: 16px; line-height: 1.5; resize: none; outline: none; font-family: inherit; }
+.constellation-note-textarea::placeholder { color: rgba(255, 235, 194, .4); }

@@ -1,8 +1,9 @@
 export const BRANCH_KEYS = ["news", "activities", "team", "overview"] as const;
 export type LayoutBranch = typeof BRANCH_KEYS[number];
 export type PanelRect = { x: number; y: number; width: number; height: number };
-export type WorkspaceLayout = { version: 1; nodes: Record<LayoutBranch, PanelRect>; panels: Record<LayoutBranch, PanelRect> };
 export type PanelBounds = { width: number; height: number; minWidth: number; minHeight: number; maxWidth?: number; maxHeight?: number; minX?: number; minY?: number };
+export type CosmicNote = { id: string; text: string; x: number; y: number; width: number; height: number; color?: string };
+export type WorkspaceLayout = { version: 1; nodes: Record<LayoutBranch, PanelRect>; panels: Record<LayoutBranch, PanelRect>; notes?: CosmicNote[] };
 /** Nodes may float well outside the starting board; their tether keeps them in reach. */
 export const NODE_BOUNDS: PanelBounds = { minX: -4000, minY: -4000, width: 9000, height: 9000, minWidth: 180, minHeight: 80, maxWidth: 320, maxHeight: 160 };
 
@@ -10,7 +11,7 @@ export function defaultWorkspaceLayout(): WorkspaceLayout {
   return { version: 1, nodes: {
     news: {x:410,y:58,width:220,height:88}, activities: {x:92,y:296,width:220,height:88},
     team: {x:729,y:296,width:220,height:88}, overview: {x:410,y:526,width:220,height:88},
-  }, panels: Object.fromEntries(BRANCH_KEYS.map(key => [key,{x:520,y:20,width:360,height:340}])) as Record<LayoutBranch,PanelRect> };
+  }, panels: Object.fromEntries(BRANCH_KEYS.map(key => [key,{x:520,y:20,width:360,height:340}])) as Record<LayoutBranch,PanelRect>, notes: [] };
 }
 
 export function boundRect(rect: PanelRect, bounds: PanelBounds): PanelRect {
@@ -25,7 +26,7 @@ export function intersects(a: PanelRect, b: PanelRect) {
 
 /** Only known finite rectangles are accepted; preferences cannot supply styles or content. */
 export function parseWorkspaceLayout(raw: string | null): WorkspaceLayout | null {
-  if (!raw || raw.length > 20000) return null;
+  if (!raw || raw.length > 50000) return null;
   try {
     const value=JSON.parse(raw);
     if(value?.version !== 1)return null;
@@ -35,6 +36,9 @@ export function parseWorkspaceLayout(raw: string | null): WorkspaceLayout | null
       if(!rect || !["x","y","width","height"].every(field=>typeof rect[field]==="number" && Number.isFinite(rect[field])))return null;
       if(rect.x<-4000||rect.y<-4000||rect.width<1||rect.height<1||rect.x>5000||rect.y>5000||rect.width>4000||rect.height>4000)return null;
       out[kind][key]=boundRect(rect,kind==="nodes"?NODE_BOUNDS:{minX:-4000,minY:-4000,width:9000,height:9000,minWidth:240,minHeight:180,maxWidth:1000,maxHeight:800});
+    }
+    if (Array.isArray(value.notes)) {
+      out.notes = value.notes.filter((n: any) => typeof n.id === "string" && typeof n.text === "string" && typeof n.x === "number" && typeof n.y === "number" && typeof n.width === "number" && typeof n.height === "number");
     }
     // The centre prompt is a circle (centre 520,346, radius 112).
     const coversCore=(r:PanelRect)=>Math.hypot(Math.max(r.x,Math.min(520,r.x+r.width))-520,Math.max(r.y,Math.min(346,r.y+r.height))-346)<112;

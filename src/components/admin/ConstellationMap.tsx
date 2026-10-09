@@ -42,7 +42,7 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
   const [layout,setLayout] = useState(defaultWorkspaceLayout);
   const [loaded,setLoaded] = useState(false);
   const [stored,setStored] = useState(false);
-  const [layoutTarget,setLayoutTarget] = useState<{kind:"nodes"|"panels";key:Branch}|null>(null);
+  const [layoutTarget,setLayoutTarget] = useState<{kind:"nodes"|"panels"|"notes";key:string}|null>(null);
   const viewport = useRef<HTMLDivElement>(null);
   const nodeButtons = useRef<Partial<Record<Branch,HTMLButtonElement|null>>>({});
   const zoomRef = useRef(zoom); const fitRef = useRef(fit); const drag = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null);
@@ -126,10 +126,18 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
       const bodies:Body[]=BRANCH_KEYS.map(key=>({id:key,rect:pick(key,current.nodes[key]),invMass:1}));
       const tethers:Tether[]=BRANCH_KEYS.map(key=>({from:null,to:key,length:TETHER_LENGTH}));
       if(open){bodies.push({id:"panel",rect:pick("panel",current.panels[open]),invMass:.6});tethers.push({from:open,to:"panel",length:PANEL_TETHER_LENGTH});}
+      const notesList = current.notes || [];
+      notesList.forEach(n => {
+        const id = "note-" + n.id;
+        bodies.push({id, rect: pick(id, n), invMass: 1.5});
+        tethers.push({from: null, to: id, length: TETHER_LENGTH * 1.5});
+      });
       const settled=stepWorld(bodies,velocity.current,tethers,dt,grip?.id??null);
       const nodes=Object.fromEntries(BRANCH_KEYS.map((key,index)=>[key,bodies[index].rect])) as WorkspaceLayout["nodes"];
-      const panelRect=open?bodies[bodies.length-1].rect:null;
-      const merge=(value:WorkspaceLayout):WorkspaceLayout=>({...value,nodes,panels:open&&panelRect?{...value.panels,[open]:panelRect}:value.panels});
+      const panelRect=open?bodies[BRANCH_KEYS.length].rect:null;
+      let bodyIdx = BRANCH_KEYS.length + (open ? 1 : 0);
+      const nextNotes = notesList.map(n => ({...n, ...bodies[bodyIdx++].rect}));
+      const merge=(value:WorkspaceLayout):WorkspaceLayout=>({...value,nodes,panels:open&&panelRect?{...value.panels,[open]:panelRect}:value.panels, notes: nextNotes});
       layoutRef.current=merge(current);
       setLayout(merge);
       frame.current=settled?null:window.requestAnimationFrame(tick);
@@ -137,7 +145,13 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
     frame.current=window.requestAnimationFrame(tick);
   }
   useEffect(()=>()=>{if(frame.current!==null)window.cancelAnimationFrame(frame.current);},[]);
-  function rectOf(id:string){const open=activeRef.current;return id==="panel"&&open?layoutRef.current.panels[open]:layoutRef.current.nodes[id as Branch];}
+  function rectOf(id:string){
+    if(id.startsWith("note-")){
+      const noteId = id.replace("note-","");
+      return layoutRef.current.notes?.find(n => n.id === noteId) || {x:0,y:0,width:200,height:200};
+    }
+    const open=activeRef.current;return id==="panel"&&open?layoutRef.current.panels[open]:layoutRef.current.nodes[id as Branch];
+  }
   function grab(id:string){held.current={id,rect:rectOf(id),t:performance.now()};velocity.current[id]={x:0,y:0};kick();}
   function release(id:string){
     const grip=held.current;if(!grip||grip.id!==id)return;
@@ -145,23 +159,54 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
     if(still)velocity.current[id]={x:0,y:0};
     held.current=null;kick();
   }
-  function movePanel(kind:"nodes"|"panels",key:Branch,rect:PanelRect){
-    const next=boundRect(rect,kind==="nodes"?nodeBounds:PANEL_BOUNDS);
-    const id=kind==="panels"?"panel":key;
+  function movePanel(kind:"nodes"|"panels"|"notes",key:Branch|string,rect:PanelRect){
+    const next=boundRect(rect,kind==="panels"?PANEL_BOUNDS:NODE_BOUNDS);
+    const id=kind==="panels"?"panel":kind==="notes"?`note-${key}`:key;
     const grip=held.current;
     if(grip&&grip.id===id){
       const now=performance.now();const span=Math.max(8,now-grip.t)/1000;const v=(velocity.current[id]??={x:0,y:0});
       v.x=v.x*.35+((next.x-grip.rect.x)/span)*.65;v.y=v.y*.35+((next.y-grip.rect.y)/span)*.65;
       grip.rect=next;grip.t=now;
     }
-    const apply=(value:WorkspaceLayout):WorkspaceLayout=>({...value,[kind]:{...value[kind],[key]:next}});
+    const apply=(value:WorkspaceLayout):WorkspaceLayout=>{
+      if (kind === "notes") {
+        const notes = value.notes ? [...value.notes] : [];
+        const index = notes.findIndex(n => n.id === key);
+        if (index >= 0) notes[index] = { ...notes[index], x: next.x, y: next.y, width: next.width, height: next.height };
+        return { ...value, notes };
+      }
+      return {...value,[kind]:{...value[kind],[key]:next}};
+    };
     layoutRef.current=apply(layoutRef.current);
     setLayout(apply);
     kick();
   }
   useEffect(()=>{if(loaded&&!list)kick();},[active,list,loaded]); // eslint-disable-line react-hooks/exhaustive-deps
-  function adjustLayout(dx:number,dy:number,resize=false){if(!layoutTarget)return;const {kind,key}=layoutTarget;const rect=boundRect(layout[kind][key],kind==="nodes"?nodeBounds:PANEL_BOUNDS);movePanel(kind,key,resize?{...rect,width:rect.width+dx,height:rect.height+dy}:{...rect,x:rect.x+dx,y:rect.y+dy});}
+  function adjustLayout(dx:number,dy:number,resize=false){if(!layoutTarget)return;const {kind,key}=layoutTarget;const rect=boundRect(kind==="notes"?(layout.notes?.find(n=>n.id===key)||{x:0,y:0,width:200,height:200}):layout[kind][key as Branch],kind==="panels"?PANEL_BOUNDS:NODE_BOUNDS);movePanel(kind,key,resize?{...rect,width:rect.width+dx,height:rect.height+dy}:{...rect,x:rect.x+dx,y:rect.y+dy});}
   function resetLayout(){setLayout(defaultWorkspaceLayout());setLayoutTarget(null);reset();}
+  function addNote() {
+    setLayout(prev => {
+      const notes = prev.notes ? [...prev.notes] : [];
+      notes.push({ id: Math.random().toString(36).substring(2, 9), text: "", x: ANCHOR.x - 240 + Math.random()*50, y: ANCHOR.y + 180 + Math.random()*50, width: 220, height: 220 });
+      return { ...prev, notes };
+    });
+    setTimeout(kick, 50);
+  }
+  function updateNoteText(id: string, text: string) {
+    setLayout(prev => {
+      const notes = prev.notes ? [...prev.notes] : [];
+      const index = notes.findIndex(n => n.id === id);
+      if (index >= 0) notes[index] = { ...notes[index], text };
+      return { ...prev, notes };
+    });
+  }
+  function deleteNote(id: string) {
+    setLayout(prev => {
+      const notes = prev.notes ? prev.notes.filter(n => n.id !== id) : [];
+      return { ...prev, notes };
+    });
+    setTimeout(kick, 50);
+  }
   function changeZoom(amount: number) { setZoom(value => Math.min(2, Math.max(.3, value + amount))); }
   // A newly opened tab appears beside its node, on the side facing away from the centre prompt.
   const PANEL_GAP=72;
@@ -227,7 +272,7 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
     <div className={`constellation-body ${list ? "constellation-list-mode" : ""}`}>
       <div ref={viewport} className="constellation-viewport" tabIndex={list ? -1 : 0} role="region" aria-label={th ? "แผนที่งาน ใช้ปุ่มลูกศรเลื่อน เครื่องหมายบวกหรือลบซูม และเลขศูนย์คืนมุมมอง" : "Task map. Arrow keys pan, plus or minus zoom, and zero resets the view."}
         onKeyDown={event => { if(event.target !== event.currentTarget)return; const key=event.key; if(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","+","=","-","0"].includes(key))event.preventDefault(); if(key === "+" || key === "=")changeZoom(.15);if(key === "-")changeZoom(-.15);if(key === "0")reset();if(key === "Escape")closeRecords();if(key.startsWith("Arrow"))setPan(value => ({x:value.x+(key === "ArrowLeft" ? 30 : key === "ArrowRight" ? -30 : 0),y:value.y+(key === "ArrowUp" ? 30 : key === "ArrowDown" ? -30 : 0)})); }}
-        onPointerDown={event => {if((event.target as HTMLElement).closest("button,a,input,.constellation-attached-panel"))return;drag.current={x:event.clientX,y:event.clientY,panX:pan.x,panY:pan.y};event.currentTarget.setPointerCapture(event.pointerId);}}
+        onPointerDown={event => {if((event.target as HTMLElement).closest("button,a,input,textarea,.constellation-attached-panel,.workspace-note-panel"))return;drag.current={x:event.clientX,y:event.clientY,panX:pan.x,panY:pan.y};event.currentTarget.setPointerCapture(event.pointerId);}}
         onPointerMove={event => {if(drag.current)setPan({x:drag.current.panX+(event.clientX-drag.current.x)/(fit*zoom),y:drag.current.panY+(event.clientY-drag.current.y)/(fit*zoom)});}}
         onPointerUp={() => {drag.current=null;}} onPointerCancel={() => {drag.current=null;}}>
         <svg className="constellation-starfield" aria-hidden="true"><g fill="#c7dfff">{stars.map(([x,y],index)=><circle key={index} cx={`${x}%`} cy={`${y}%`} r={index%3===0?1.6:0.9} className="constellation-star" style={{animationDelay:`-${(index*0.37)%6}s`,animationDuration:`${3+(index%5)}s`}}/>)}</g></svg>
@@ -276,6 +321,20 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
               {active==="overview"?<section className="constellation-overview"><h2>{th?"ภาพรวมเนื้อหา":"Content overview"}</h2><p>{th?"รายการที่มีอยู่ในตัวแก้ไข":"Records in the existing editors"}</p><ul>{collections.map(branch=><li key={branch.key}><Link href={`/admin/${branch.key}`}>{th?branch.th:branch.en}<span>{data[branch.key].total}</span><ChevronRight size={18} aria-hidden /></Link></li>)}</ul></section>:records(active)}
             </aside>
           </WorkspacePanel>;})()}
+          {layout.notes?.map(note => {
+            const pScale = Math.min(note.width / 220, note.height / 220);
+            return <WorkspacePanel key={`note-${note.id}`} className="workspace-note-panel workspace-floating-panel" rect={note} bounds={nodeBounds} scale={fit*zoom} name={th?"บันทึกย่อ":"Note"} th={th} onChange={rect=>movePanel("notes",note.id,rect)} onSelect={()=>setLayoutTarget({kind:"notes",key:note.id})} onGrab={()=>grab(`note-${note.id}`)} onRelease={()=>release(`note-${note.id}`)}>
+              <div className="constellation-note-content" style={{ width: `${note.width / pScale}px`, height: `${note.height / pScale}px`, transform: `scale(${pScale})`, transformOrigin: 'top left' }}>
+                <button type="button" className="constellation-note-close" aria-label={th?"ลบบันทึก":"Delete note"} onClick={() => deleteNote(note.id)}><X size={16} aria-hidden /></button>
+                <textarea className="constellation-note-textarea" placeholder={th?"พิมพ์บันทึกย่อ...":"Type a note..."} value={note.text} onChange={e => updateNoteText(note.id, e.target.value)} onPointerDown={e=>e.stopPropagation()} onKeyDown={e=>e.stopPropagation()} />
+              </div>
+            </WorkspacePanel>
+          })}
+        </div>
+        <div className="constellation-notes-control">
+          <button type="button" aria-label={th ? "เพิ่มบันทึกย่อ" : "Add cosmic note"} onClick={addNote} className="constellation-add-note">
+            <Plus size={16} aria-hidden />{th ? "บันทึกย่อ" : "Add Note"}
+          </button>
         </div>
         <div className="constellation-zoom" role="group" aria-label={th ? "มุมมองแผนที่" : "Map view"}>
           <button type="button" aria-label={th ? "ซูมออก" : "Zoom out"} disabled={zoom <= .3} onClick={()=>changeZoom(-.15)}><Minus size={18} aria-hidden /></button><span>{Math.round(zoom*100)}%</span><button type="button" aria-label={th ? "ซูมเข้า" : "Zoom in"} disabled={zoom >= 2} onClick={()=>changeZoom(.15)}><Plus size={18} aria-hidden /></button><button type="button" aria-label={th ? "คืนมุมมอง" : "Reset view"} onClick={reset}><RotateCcw size={18} aria-hidden /></button>
