@@ -223,10 +223,10 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
             const rect = layout.nodes[key];
             const nodeScale = Math.min(rect.width / 220, rect.height / 88);
             return <WorkspacePanel key={key} className={`workspace-node workspace-node-${key}`} rect={rect} bounds={nodeBounds} scale={fit*zoom} name={th?thai:en} th={th} onChange={rect=>movePanel("nodes",key,rect)} onSelect={()=>setLayoutTarget({kind:"nodes",key})} onGrab={()=>grab(key)} onRelease={()=>release(key)}>
-              <button ref={element=>{nodeButtons.current[key]=element;}} type="button" className={`constellation-node constellation-node-${key}`} aria-expanded={active === key} aria-controls="constellation-panel" onClick={() => toggle(key)} style={{ fontSize: `${nodeScale * 22}px`, gap: `${nodeScale * 11}px` }}>
-                <span className="constellation-node-icon" style={{ width: `${Math.round(36 * nodeScale)}px`, height: `${Math.round(36 * nodeScale)}px` }}><Icon size={Math.round(20 * nodeScale)} aria-hidden /></span>
+              <button ref={element=>{nodeButtons.current[key]=element;}} type="button" className={`constellation-node constellation-node-${key}`} aria-expanded={active === key} aria-controls="constellation-panel" onClick={() => toggle(key)} style={{ fontSize: `${nodeScale * 28}px`, gap: `${nodeScale * 10}px`, padding: `0 ${nodeScale * 20}px` }}>
+                <span className="constellation-node-icon" style={{ width: `${Math.round(44 * nodeScale)}px`, height: `${Math.round(44 * nodeScale)}px`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon size={Math.round(26 * nodeScale)} aria-hidden /></span>
                 <span>{th ? thai : en}</span>
-                <ChevronRight size={Math.round(18 * nodeScale)} aria-hidden />
+                <ChevronRight size={Math.round(22 * nodeScale)} aria-hidden style={{ marginLeft: 'auto' }} />
               </button>
             </WorkspacePanel>;
           })}
