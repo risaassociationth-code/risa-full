@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowLeft, ExternalLink, LogOut } from "lucide-react";
+import { ArrowLeft, ExternalLink, LogOut, Sparkles } from "lucide-react";
 import { AdminLanguageSwitch, useAdminLanguage } from "./AdminLanguage";
 
 type TopbarProps = {
@@ -21,6 +21,12 @@ export function Topbar({ user }: TopbarProps) {
 
   return (
     <div className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-line bg-paper/95 pl-4 pr-4 backdrop-blur lg:pl-8 lg:pr-8">
+      <div className="flex items-center gap-2 mr-2">
+        <Sparkles className="size-5 text-[#b8a4ff]" aria-hidden="true" />
+        <h1 className="text-[15px] font-bold tracking-wide text-ink">
+          {th ? "กระดานจักรวาล" : "Cosmic Board"}
+        </h1>
+      </div>
       {!onBoard && (
         <Link
           href="/admin"
