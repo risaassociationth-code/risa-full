@@ -243,3 +243,6 @@ body:has(.risa-admin) ::selection { color: #17112d; background: #b8a4ff; }
 .constellation-status-published { background: #1a4a2e; color: #a2e6be; }
 .constellation-status-dot { width: 6px; height: 6px; border-radius: 50%; background: #6282b8; transition: 0.2s; }
 .constellation-status-published .constellation-status-dot { background: #4ade80; }
+/* Freeze the gentle bob while the cursor is on a box, so its edge can't slide in and out under the pointer (hover flicker). */
+.workspace-node:hover, .workspace-node:focus-within { animation-play-state: paused; }
+.workspace-floating-panel:hover, .workspace-floating-panel:focus-within { animation-play-state: running, paused; }
