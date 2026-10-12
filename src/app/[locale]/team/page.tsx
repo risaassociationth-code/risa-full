@@ -102,21 +102,21 @@ export default async function TeamPage() {
 
         {/* === TIER 3: Staff === */}
         {staff.length > 0 && (
-          <div className="relative w-full">
+          <div className="relative w-full max-w-7xl mx-auto">
             {/* Horizontal line (only if there are multiple staff) */}
             {staff.length > 1 && (
               <div 
-                className="absolute left-[10%] right-[10%] top-0 h-px bg-line sm:left-[15%] sm:right-[15%]" 
+                className="absolute left-[5%] right-[5%] top-0 h-px bg-line sm:left-[10%] sm:right-[10%]" 
                 aria-hidden 
               />
             )}
 
-            <div className="flex flex-wrap justify-center gap-x-8 gap-y-12 pt-8">
+            <div className="flex flex-wrap justify-center gap-x-4 gap-y-10 pt-8 sm:gap-x-6 lg:gap-x-8">
               {staff.map((member) => (
-                <div key={member.id} className="relative w-full max-w-[320px] sm:max-w-[280px]">
+                <div key={member.id} className="relative w-[140px] sm:w-[160px] lg:w-[176px]">
                   {/* Vertical drop line for this specific staff member */}
                   <div className="absolute left-1/2 top-0 h-8 w-px -translate-x-1/2 bg-line" aria-hidden />
-                  <StaffCard member={member} locale={locale} />
+                  <StaffCard member={member} locale={locale} size="sm" />
                 </div>
               ))}
             </div>
