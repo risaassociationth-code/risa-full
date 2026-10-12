@@ -36,10 +36,14 @@ export default async function TeamPage() {
     );
   }
 
-  // The first person is the head (President/Highest Position)
+  // --- ORG CHART CONFIGURATION ---
+  // Layer 1 automatically gets 1 person (the top sort).
+  // Layer 2 gets this many people:
+  const MIDDLE_TIER_COUNT = 2; 
+  
   const head = members[0];
-  // The rest are subordinates
-  const team = members.slice(1);
+  const managers = members.slice(1, 1 + MIDDLE_TIER_COUNT);
+  const staff = members.slice(1 + MIDDLE_TIER_COUNT);
 
   return (
     <Section>
@@ -50,40 +54,68 @@ export default async function TeamPage() {
       </div>
 
       <div className="flex flex-col items-center pb-20">
-        {/* TOP LEVEL: The Head of the Organization */}
+        
+        {/* === TIER 1: Head === */}
         <div className="relative z-10 w-full max-w-[320px]">
           <StaffCard member={head} locale={locale} />
-          {/* Vertical line dropping from the top card */}
-          {team.length > 0 && (
-            <div className="absolute left-1/2 top-full h-12 w-px -translate-x-1/2 bg-line" aria-hidden />
-          )}
         </div>
 
-        {/* SUBORDINATES LEVEL */}
-        {team.length > 0 && (
-          <div className="relative mt-12 w-full pt-8">
-            {/* Horizontal line to connect the drops. We stretch it only if there are multiple people on this level. 
-                Using responsive utilities so on small screens it only connects what fits, but generally 
-                a CSS org chart handles branching by connecting columns. 
-                For a grid, we center it and draw a line across. */}
-            {team.length > 1 && (
+        {/* Connector from Tier 1 to Tier 2 */}
+        {managers.length > 0 && (
+          <div className="h-12 w-px bg-line" aria-hidden />
+        )}
+
+        {/* === TIER 2: Managers / VP === */}
+        {managers.length > 0 && (
+          <div className="relative w-full">
+            {/* Horizontal line (only if there are multiple managers) */}
+            {managers.length > 1 && (
               <div 
-                className="absolute left-[10%] right-[10%] top-0 h-px bg-line sm:left-[20%] sm:right-[20%] md:left-[15%] md:right-[15%]" 
+                className="absolute left-[20%] right-[20%] top-0 h-px bg-line sm:left-[30%] sm:right-[30%]" 
                 aria-hidden 
               />
             )}
-
-            <div className="grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {team.map((member) => (
-                <div key={member.id} className="relative mx-auto w-full max-w-[320px]">
-                  {/* Vertical line dropping into each subordinate card */}
-                  <div className="absolute -top-8 left-1/2 h-8 w-px -translate-x-1/2 bg-line" aria-hidden />
+            
+            <div className="flex flex-wrap justify-center gap-x-8 gap-y-12">
+              {managers.map((member) => (
+                <div key={member.id} className="relative w-full max-w-[320px] pt-8">
+                  {/* Vertical drop line for this specific manager */}
+                  <div className="absolute left-1/2 top-0 h-8 w-px -translate-x-1/2 bg-line" aria-hidden />
                   <StaffCard member={member} locale={locale} />
                 </div>
               ))}
             </div>
           </div>
         )}
+
+        {/* Connector from Tier 2 to Tier 3 */}
+        {staff.length > 0 && (
+          <div className="h-12 w-px bg-line" aria-hidden />
+        )}
+
+        {/* === TIER 3: Staff === */}
+        {staff.length > 0 && (
+          <div className="relative w-full">
+            {/* Horizontal line (only if there are multiple staff) */}
+            {staff.length > 1 && (
+              <div 
+                className="absolute left-[10%] right-[10%] top-0 h-px bg-line sm:left-[15%] sm:right-[15%]" 
+                aria-hidden 
+              />
+            )}
+
+            <div className="flex flex-wrap justify-center gap-x-8 gap-y-12 pt-8">
+              {staff.map((member) => (
+                <div key={member.id} className="relative w-full max-w-[320px] sm:max-w-[280px]">
+                  {/* Vertical drop line for this specific staff member */}
+                  <div className="absolute left-1/2 top-0 h-8 w-px -translate-x-1/2 bg-line" aria-hidden />
+                  <StaffCard member={member} locale={locale} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </Section>
   );
