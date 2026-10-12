@@ -39,6 +39,7 @@ export default async function TeamPage() {
   // --- ORG CHART CONFIGURATION ---
   // The layout is driven directly by the 'tier' field configured on the Cosmic Board.
   const heads = members.filter(m => m.tier === 'head');
+  const advisors = members.filter(m => m.tier === 'advisor');
   const managers = members.filter(m => m.tier === 'manager');
   const staff = members.filter(m => m.tier === 'staff');
 
@@ -66,18 +67,18 @@ export default async function TeamPage() {
                 </div>
               ))}
             </div>
-            {/* Connector from Tier 1 to Tier 2/3 */}
-            {(managers.length > 0 || staff.length > 0) && (
+            {/* Connector from Tier 1 to Tier 2/3/4 */}
+            {(advisors.length > 0 || managers.length > 0 || staff.length > 0) && (
               <div className="mx-auto h-12 w-px bg-line" aria-hidden />
             )}
           </div>
         )}
 
-        {/* === TIER 2: Managers / VP === */}
-        {managers.length > 0 && (
+        {/* === TIER 2: Advisors / VP === */}
+        {advisors.length > 0 && (
           <div className="relative w-full">
-            {/* Horizontal line (only if there are multiple managers) */}
-            {managers.length > 1 && (
+            {/* Horizontal line (only if there are multiple advisors) */}
+            {advisors.length > 1 && (
               <div 
                 className="absolute left-[20%] right-[20%] top-0 h-px bg-line sm:left-[30%] sm:right-[30%]" 
                 aria-hidden 
@@ -85,22 +86,49 @@ export default async function TeamPage() {
             )}
             
             <div className="flex flex-wrap justify-center gap-x-8 gap-y-12">
-              {managers.map((member) => (
+              {advisors.map((member) => (
                 <div key={member.id} className="relative w-full max-w-[320px] pt-8">
+                  {/* Vertical drop line for this specific advisor */}
+                  <div className="absolute left-1/2 top-0 h-8 w-px -translate-x-1/2 bg-line" aria-hidden />
+                  <StaffCard member={member} locale={locale} />
+                </div>
+              ))}
+            </div>
+            {/* Connector from Tier 2 to Tier 3/4 */}
+            {(managers.length > 0 || staff.length > 0) && (
+              <div className="mx-auto h-12 w-px bg-line" aria-hidden />
+            )}
+          </div>
+        )}
+
+        {/* === TIER 3: Managers / Committee === */}
+        {managers.length > 0 && (
+          <div className="relative w-full">
+            {/* Horizontal line (only if there are multiple managers) */}
+            {managers.length > 1 && (
+              <div 
+                className="absolute left-[15%] right-[15%] top-0 h-px bg-line sm:left-[20%] sm:right-[20%]" 
+                aria-hidden 
+              />
+            )}
+            
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-12 pt-8 sm:gap-x-8">
+              {managers.map((member) => (
+                <div key={member.id} className="relative w-[200px] sm:w-[240px] max-w-[280px]">
                   {/* Vertical drop line for this specific manager */}
                   <div className="absolute left-1/2 top-0 h-8 w-px -translate-x-1/2 bg-line" aria-hidden />
                   <StaffCard member={member} locale={locale} />
                 </div>
               ))}
             </div>
-            {/* Connector from Tier 2 to Tier 3 */}
+            {/* Connector from Tier 3 to Tier 4 */}
             {staff.length > 0 && (
               <div className="mx-auto h-12 w-px bg-line" aria-hidden />
             )}
           </div>
         )}
 
-        {/* === TIER 3: Staff === */}
+        {/* === TIER 4: Researchers / Staff === */}
         {staff.length > 0 && (
           <div className="relative w-full max-w-7xl mx-auto">
             {/* Horizontal line (only if there are multiple staff) */}

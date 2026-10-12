@@ -267,8 +267,9 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
                 className="h-[18px] text-[10px] bg-surface-2 border border-line-soft text-muted rounded px-1 disabled:opacity-50"
               >
                 <option value="head">Top (Level 1)</option>
-                <option value="manager">Middle (Level 2)</option>
-                <option value="staff">Bottom (Level 3)</option>
+                <option value="advisor">Level 2</option>
+                <option value="manager">Level 3</option>
+                <option value="staff">Bottom (Level 4)</option>
               </select>
             )}
           </div>

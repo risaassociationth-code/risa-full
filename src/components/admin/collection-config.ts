@@ -215,7 +215,7 @@ const team: CollectionConfig = {
   ],
   fields: [
     { name: "name", label: "ชื่อ-นามสกุล", type: "text", bilingual: true, required: true, help: "หากไม่ใส่ภาษาอังกฤษ จะใช้ชื่อภาษาไทยแทน" },
-    { name: "tier", label: "ระดับในผังองค์กร", type: "select", options: [{ value: "head", label: "ระดับ 1 (ผู้บริหารสูงสุด)" }, { value: "manager", label: "ระดับ 2 (รองผู้บริหาร/หัวหน้า)" }, { value: "staff", label: "ระดับ 3 (บุคลากรทั่วไป)" }], required: true, help: "กำหนดชั้นของผังองค์กร (1, 2, หรือ 3)" },
+    { name: "tier", label: "ระดับในผังองค์กร", type: "select", options: [{ value: "head", label: "ระดับ 1 (นายกสมาคม/ประธาน)" }, { value: "advisor", label: "ระดับ 2 (อุปนายก/ที่ปรึกษา)" }, { value: "manager", label: "ระดับ 3 (ผู้จัดการ/กรรมการ)" }, { value: "staff", label: "ระดับ 4 (นักวิจัย/บุคลากร)" }], required: true, help: "กำหนดชั้นของผังองค์กร" },
     { name: "position", label: "ตำแหน่ง", type: "text", bilingual: true },
     { name: "department", label: "ฝ่าย / หน่วยงาน", type: "text", bilingual: true },
     { name: "photo_url", label: "รูปถ่ายบุคลากร", type: "image", help: "อัปโหลดรูปแนวตั้ง JPG, PNG หรือ WebP ไม่เกิน 4 MB ระบบใส่กรอบให้เอง" },

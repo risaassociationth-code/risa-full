@@ -28,6 +28,6 @@ export function validateStaff(values: Record<string, unknown>): string | null {
   if (text("phone") && !/^[+\d][\d\s().-]{4,39}$/.test(text("phone"))) return "กรุณาระบุหมายเลขโทรศัพท์ที่ถูกต้อง";
   if (text("photo_url") && !safePhotoUrl(text("photo_url"))) return "ลิงก์รูปภาพไม่ถูกต้อง";
   if (text("photo_position") && !["top", "center", "bottom"].includes(text("photo_position"))) return "ตำแหน่งภาพไม่ถูกต้อง";
-  if (text("tier") && !["head", "manager", "staff"].includes(text("tier"))) return "ระดับในผังองค์กรไม่ถูกต้อง";
+  if (text("tier") && !["head", "advisor", "manager", "staff"].includes(text("tier"))) return "ระดับในผังองค์กรไม่ถูกต้อง";
   return null;
 }
