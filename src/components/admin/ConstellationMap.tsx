@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect, useTransition, useRef, useState } from "react";
 import Link from "next/link";
 import { setStatus } from "@/actions/collections";
+import { setTeamTier } from "@/actions/tier";
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, CalendarDays, CalendarClock, ChevronRight, FileText, LayoutList, Map, Minus, Plus, RotateCcw, Search, Sparkles, UsersRound, X } from "lucide-react";
 import { useAdminLanguage } from "./AdminLanguage";
 import { WorkspacePanel } from "./WorkspacePanel";
@@ -12,7 +13,7 @@ import { ANCHOR, CORE_RADIUS, PANEL_TETHER_LENGTH, TETHER_LENGTH, edgePoint, ste
 /** Record tabs float freely in map space; size limits keep them readable. */
 const PANEL_BOUNDS: PanelBounds = { minX: -4000, minY: -4000, width: 9000, height: 9000, minWidth: 300, minHeight: 260, maxWidth: 900, maxHeight: 800 };
 
-export type MapRecord = { id: string; title_th: string; title_en: string; slug: string; status: string };
+export type MapRecord = { id: string; title_th: string; title_en: string; slug: string; status: string; tier?: string; };
 export type MapCollection = "news" | "activities" | "calendar" | "team";
 type Branch = MapCollection | "overview";
 export type ConstellationData = Record<MapCollection, { records: MapRecord[]; total: number }>;
@@ -254,7 +255,24 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
       <div className="constellation-records-heading"><h2>{th ? branch.th : branch.en}</h2><Link className="constellation-add" href={`/admin/${key}/new`}><Plus size={16} aria-hidden />{th ? "เพิ่มรายการ" : "Add record"}</Link></div>
       {matches.length ? <ul>{matches.map(record => <li key={record.id}>
         <FileText size={20} aria-hidden />
-        <div className="constellation-record-copy"><h3>{title(record)}</h3><button type="button" role="switch" aria-checked={record.status === "published"} disabled={isPending} onClick={() => startTransition(() => { setStatus(key, record.id, record.status === "published" ? "draft" : "published"); })} className={`relative inline-flex h-[18px] w-[76px] shrink-0 cursor-pointer items-center rounded-full border border-transparent transition-colors focus-visible:outline-none disabled:cursor-wait disabled:opacity-50 mt-1.5 ${record.status === "published" ? 'bg-[#a2e6be]' : 'bg-[#415477]'}`}><span className={`absolute text-[9px] font-bold text-[#0c2b1a] transition-opacity ${record.status === "published" ? 'left-1.5 opacity-100' : 'left-1.5 opacity-0'}`}>{th ? "เผยแพร่" : "Publish"}</span><span className={`absolute text-[9px] font-bold text-[#a7bbdb] transition-opacity ${record.status === "published" ? 'right-1.5 opacity-0' : 'right-1.5 opacity-100'}`}>{th ? "ปิดใช้งาน" : "Disabled"}</span><span className={`pointer-events-none z-10 inline-block h-[14px] w-[14px] transform rounded-full bg-white shadow ring-0 transition-transform ${record.status === "published" ? 'translate-x-[58px]' : 'translate-x-0'}`} /></button></div>
+        <div className="constellation-record-copy">
+          <h3>{title(record)}</h3>
+          <div className="flex items-center gap-2 mt-1.5">
+            <button type="button" role="switch" aria-checked={record.status === "published"} disabled={isPending} onClick={() => startTransition(() => { setStatus(key, record.id, record.status === "published" ? "draft" : "published"); })} className={`relative inline-flex h-[18px] w-[76px] shrink-0 cursor-pointer items-center rounded-full border border-transparent transition-colors focus-visible:outline-none disabled:cursor-wait disabled:opacity-50 ${record.status === "published" ? 'bg-[#a2e6be]' : 'bg-[#415477]'}`}><span className={`absolute text-[9px] font-bold text-[#0c2b1a] transition-opacity ${record.status === "published" ? 'left-1.5 opacity-100' : 'left-1.5 opacity-0'}`}>{th ? "เผยแพร่" : "Publish"}</span><span className={`absolute text-[9px] font-bold text-[#a7bbdb] transition-opacity ${record.status === "published" ? 'right-1.5 opacity-0' : 'right-1.5 opacity-100'}`}>{th ? "ปิดใช้งาน" : "Disabled"}</span><span className={`pointer-events-none z-10 inline-block h-[14px] w-[14px] transform rounded-full bg-white shadow ring-0 transition-transform ${record.status === "published" ? 'translate-x-[58px]' : 'translate-x-0'}`} /></button>
+            {key === "team" && (
+              <select 
+                value={record.tier ?? "staff"} 
+                disabled={isPending}
+                onChange={(e) => startTransition(() => { setTeamTier(record.id, e.target.value); })}
+                className="h-[18px] text-[10px] bg-surface-2 border border-line-soft text-muted rounded px-1 disabled:opacity-50"
+              >
+                <option value="head">Top (Level 1)</option>
+                <option value="manager">Middle (Level 2)</option>
+                <option value="staff">Bottom (Level 3)</option>
+              </select>
+            )}
+          </div>
+        </div>
         <Link href={`/admin/${key}/${record.id}`} className="constellation-edit">{th ? "แก้ไข" : "Edit"}<ArrowRight size={14} aria-hidden /></Link>
       </li>)}</ul> : <p className="constellation-empty">{searching ? (th ? "ไม่พบรายการที่ค้นหา" : "No matching records") : (th ? "ยังไม่มีรายการ เริ่มต้นด้วยการเพิ่มรายการแรก" : "No records yet. Add your first record.")}</p>}
       <Link href={`/admin/${key}`} className="constellation-all">{th ? "เปิดรายการทั้งหมด" : "Open all records"}<ChevronRight size={16} aria-hidden /></Link>

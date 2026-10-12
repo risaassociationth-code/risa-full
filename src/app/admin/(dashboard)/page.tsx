@@ -13,7 +13,7 @@ export default async function DashboardPage() {
     const title = key === "team" ? "name" : "title";
     return [key, { total: rows.length, records: rows.map(row => ({
       id: String(row.id), title_th: String(row[`${title}_th`] ?? ""), title_en: String(row[`${title}_en`] ?? ""),
-      slug: String(row.slug ?? ""), status: String(row.status ?? "draft"),
+      slug: String(row.slug ?? ""), status: String(row.status ?? "draft"), tier: String(row.tier ?? "staff")
     })) }] as const;
   }));
   return <ConstellationMap workspaceKey={user.id} data={Object.fromEntries(entries) as ConstellationData} />;
