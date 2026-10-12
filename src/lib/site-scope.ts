@@ -11,6 +11,6 @@ export function publicTabs(locale: string) {
     { href: `/${locale}/news`, label: locale === "th" ? "ข่าวสาร" : "News", newTab: false, children: [] },
     { href: `/${locale}/activities`, label: locale === "th" ? "กิจกรรม" : "Activities", newTab: false, children: [] },
     { href: `/${locale}/calendar`, label: locale === "th" ? "ปฏิทิน" : "Calendar", newTab: false, children: [] },
-    { href: `/${locale}/team`, label: locale === "th" ? "บุคลากร" : "Personnel", newTab: false, children: [] },
+    { href: `/${locale}/team`, label: locale === "th" ? "ผังองค์กร" : "Organization Chart", newTab: false, children: [] },
   ];
 }
