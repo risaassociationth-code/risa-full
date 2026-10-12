@@ -16,7 +16,7 @@ export default async function TeamPage() {
   const th = locale === "th";
   const members = await sql<(StaffProfile & { id: string })[]>`
     select id, name_th, name_en, position_th, position_en, department_th, department_en,
-      bio_th, bio_en, photo_url, photo_position, email, phone
+      bio_th, bio_en, photo_url, photo_position, email, phone, tier
     from staff_members where status = 'published' order by sort, created_at`;
 
   if (!members.length) {
@@ -37,13 +37,10 @@ export default async function TeamPage() {
   }
 
   // --- ORG CHART CONFIGURATION ---
-  // Layer 1 automatically gets 1 person (the top sort).
-  // Layer 2 gets this many people:
-  const MIDDLE_TIER_COUNT = 2; 
-  
-  const head = members[0];
-  const managers = members.slice(1, 1 + MIDDLE_TIER_COUNT);
-  const staff = members.slice(1 + MIDDLE_TIER_COUNT);
+  // The layout is driven directly by the 'tier' field configured on the Cosmic Board.
+  const heads = members.filter(m => m.tier === 'head');
+  const managers = members.filter(m => m.tier === 'manager');
+  const staff = members.filter(m => m.tier === 'staff');
 
   return (
     <Section>
@@ -56,13 +53,24 @@ export default async function TeamPage() {
       <div className="flex flex-col items-center pb-20">
         
         {/* === TIER 1: Head === */}
-        <div className="relative z-10 w-full max-w-[320px]">
-          <StaffCard member={head} locale={locale} />
-        </div>
-
-        {/* Connector from Tier 1 to Tier 2 */}
-        {managers.length > 0 && (
-          <div className="h-12 w-px bg-line" aria-hidden />
+        {heads.length > 0 && (
+          <div className="relative z-10 w-full">
+            {heads.length > 1 && (
+              <div className="absolute left-[20%] right-[20%] top-0 h-px bg-line sm:left-[30%] sm:right-[30%]" aria-hidden />
+            )}
+            <div className="flex flex-wrap justify-center gap-x-8 gap-y-12">
+              {heads.map(head => (
+                <div key={head.id} className="relative w-full max-w-[320px]">
+                  {heads.length > 1 && <div className="absolute left-1/2 -top-8 h-8 w-px -translate-x-1/2 bg-line" aria-hidden />}
+                  <StaffCard member={head} locale={locale} />
+                </div>
+              ))}
+            </div>
+            {/* Connector from Tier 1 to Tier 2/3 */}
+            {(managers.length > 0 || staff.length > 0) && (
+              <div className="mx-auto h-12 w-px bg-line" aria-hidden />
+            )}
+          </div>
         )}
 
         {/* === TIER 2: Managers / VP === */}
@@ -85,12 +93,11 @@ export default async function TeamPage() {
                 </div>
               ))}
             </div>
+            {/* Connector from Tier 2 to Tier 3 */}
+            {staff.length > 0 && (
+              <div className="mx-auto h-12 w-px bg-line" aria-hidden />
+            )}
           </div>
-        )}
-
-        {/* Connector from Tier 2 to Tier 3 */}
-        {staff.length > 0 && (
-          <div className="h-12 w-px bg-line" aria-hidden />
         )}
 
         {/* === TIER 3: Staff === */}
