@@ -111,9 +111,9 @@ export default async function TeamPage() {
               />
             )}
 
-            <div className="flex flex-wrap justify-center gap-x-4 gap-y-10 pt-8 sm:gap-x-6 lg:gap-x-8">
+            <div className="flex flex-wrap justify-center gap-x-3 gap-y-8 pt-8 sm:gap-x-4 lg:gap-x-6">
               {staff.map((member) => (
-                <div key={member.id} className="relative w-[140px] sm:w-[160px] lg:w-[176px]">
+                <div key={member.id} className="relative w-[120px] sm:w-[140px] lg:w-40">
                   {/* Vertical drop line for this specific staff member */}
                   <div className="absolute left-1/2 top-0 h-8 w-px -translate-x-1/2 bg-line" aria-hidden />
                   <StaffCard member={member} locale={locale} size="sm" />
