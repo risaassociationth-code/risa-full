@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ImagePlus, Loader2, Save, Trash2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, ImagePlus, Loader2, Save, Trash2, X } from "lucide-react";
 import { createRow, deleteRow, updateRow } from "@/actions/collections";
 import { Field, Input, Select, Textarea } from "@/components/ui/field";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
@@ -16,6 +16,37 @@ import { ConfirmDialog } from "./ConfirmDialog";
 import { StaffCard } from "@/components/site/StaffCard";
 import type { StaffProfile } from "@/lib/staff";
 import { useAdminLanguage } from "./AdminLanguage";
+
+const GALLERY_PATTERNS = [
+  /<div[^>]*class="[^"]*mms-photo-gallery[^"]*"[^>]*>[\s\S]*?<\/div>\s*<\/div>/gi,
+  /<h3[^>]*>\s*ประมวลภาพกิจกรรม\s*\/\s*Photo Gallery\s*<\/h3>\s*(?:<p[^>]*>(?:\s*<img[^>]+>\s*)+<\/p>\s*)*/gi,
+  /(?:<p[^>]*>(?:\s*<img[^>]+>\s*)+<\/p>\s*)+$/gi,
+];
+
+function extractGalleryFromBody(html: string): { cleanBody: string; images: string[] } {
+  let cleanBody = html || "";
+  const images: string[] = [];
+  for (const pattern of GALLERY_PATTERNS) {
+    cleanBody = cleanBody.replace(pattern, (match) => {
+      const srcMatches = [...match.matchAll(/<img[^>]+src="([^"]+)"[^>]*>/gi)];
+      for (const m of srcMatches) {
+        if (m[1] && !images.includes(m[1])) images.push(m[1]);
+      }
+      return "";
+    });
+  }
+  return { cleanBody: cleanBody.trim() || "<p></p>", images };
+}
+
+function combineBodyAndGallery(cleanBody: string, images: string[]): string {
+  const base = extractGalleryFromBody(cleanBody).cleanBody;
+  if (!images.length) return base === "<p></p>" ? "" : base;
+  const cards = images
+    .map((src) => `<div class="mms-photo-card"><img src="${src}" alt="ภาพประกอบกิจกรรม" loading="lazy"></div>`)
+    .join("");
+  const galleryHtml = `<div class="mms-photo-gallery not-prose"><h3 class="mms-photo-gallery-title">ประมวลภาพกิจกรรม / Photo Gallery</h3><div class="mms-photo-grid">${cards}</div></div>`;
+  return `${base === "<p></p>" ? "" : base}${galleryHtml}`;
+}
 
 type Props = {
   config: CollectionConfig;
@@ -41,6 +72,12 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
   const guided = config.key === "news" || config.key === "activities";
   const importedNews = guided && /^mms-hub-\d+$/.test(String(initial?.slug ?? ""));
   const [values, setValues] = useState<Row>(() => ({ ...(initial ?? {}), ...(scope ?? {}) }));
+  const [galleryImages, setGalleryImages] = useState<string[]>(() =>
+    guided
+      ? extractGalleryFromBody(String(initial?.body_th || initial?.body_en || "")).images
+      : [],
+  );
+  const [galleryPickerIndex, setGalleryPickerIndex] = useState<number | "new" | null>(null);
   const [savedSnapshot, setSavedSnapshot] = useState(() => JSON.stringify({ ...(initial ?? {}), ...(scope ?? {}) }));
   const [savedAt, setSavedAt] = useState<string>(String(initial?.updated_at ?? ""));
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -86,6 +123,20 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
   function set(name: string, value: unknown) {
     bypassGuard.current = false;
     setValues((prev) => ({ ...prev, [name]: value }));
+  }
+
+  function updateGallery(nextImages: string[]) {
+    bypassGuard.current = false;
+    setGalleryImages(nextImages);
+    setValues((prev) => {
+      const cleanTh = extractGalleryFromBody(String(prev.body_th ?? "")).cleanBody;
+      const cleanEn = extractGalleryFromBody(String(prev.body_en ?? "")).cleanBody;
+      return {
+        ...prev,
+        body_th: combineBodyAndGallery(cleanTh, nextImages),
+        body_en: combineBodyAndGallery(cleanEn, nextImages),
+      };
+    });
   }
 
   function onSubmit(e: React.FormEvent) {
@@ -186,10 +237,16 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
             placeholder={field.placeholder}
           />
         );
-      case "richtext":
+      case "richtext": {
+        const cleanVal = guided ? extractGalleryFromBody(String(raw ?? "")).cleanBody : String(raw ?? "");
         return (
-          <RichTextEditor value={String(raw ?? "")} onChange={(html) => set(name, html)} />
+          <RichTextEditor
+            key={name}
+            value={cleanVal}
+            onChange={(html) => set(name, guided ? combineBodyAndGallery(html, galleryImages) : html)}
+          />
         );
+      }
       case "number":
         return (
           <Input
@@ -380,11 +437,89 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
         </Card>
       </>}
       {(!guided || step < 2) && <Card>
-        <CardHead title={guided ? step === 0 ? (th ? "1. เขียนเนื้อหาและรายละเอียด" : "1. Write content and details") : (th ? "2. เลือกภาพหน้าปก" : "2. Select cover media") : (th ? "รายละเอียด" : "Details")} />
+        <CardHead title={guided ? step === 0 ? (th ? "1. เขียนเนื้อหาและรายละเอียด" : "1. Write content and details") : (th ? "2. เลือกภาพหน้าปกและแกลเลอรี" : "2. Select cover & gallery media") : (th ? "รายละเอียด" : "Details")} />
         <div className="grid gap-5 p-5">
           {guided && step === 1 && <p className="text-sm text-muted">{th ? "ภาพนี้จะแสดงบนการ์ดและด้านบนของเรื่อง คลิกปุ่มเพื่ออัปโหลดหรือเลือกภาพที่เคยใช้" : "This media is shown on cards and at the top of the post. Click to upload or pick from the library."}</p>}
           {config.fields.filter(field => !guided || (step === 1 ? field.type === "image" : field.type !== "image" && field.type !== "slug")).map(renderField)}
           {guided && step === 1 && !!values.cover_url && <button type="button" className="w-fit text-sm text-muted underline" onClick={() => set("cover_url", "")}>{th ? "นำภาพหน้าปกออก (ยังเก็บไฟล์ไว้ในคลัง)" : "Remove cover image (keeps file in library)"}</button>}
+
+          {guided && (
+            <div className="border-t border-line pt-5">
+              <Field
+                label={th ? `ประมวลภาพกิจกรรม / Photo Gallery (${galleryImages.length})` : `Photo Gallery (${galleryImages.length})`}
+                hint={th ? "อัปโหลดหรือเลือกรูปภาพเพื่อแสดงในส่วนประมวลภาพกิจกรรมท้ายโพสต์ (จัดเรียงขนาดเท่ากันอัตโนมัติ)" : "Upload or pick photos to display in the aligned Photo Gallery section at the bottom of the post."}
+              >
+                <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                  {galleryImages.map((src, idx) => (
+                    <div
+                      key={`${src}-${idx}`}
+                      className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-line bg-surface"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={src} alt="" className="size-full object-cover" />
+                      <div className="absolute inset-x-0 top-0 flex items-center justify-between bg-gradient-to-b from-black/70 to-transparent p-1.5 opacity-95 transition-opacity">
+                        <div className="flex gap-1">
+                          {idx > 0 && (
+                            <button
+                              type="button"
+                              title={th ? "เลื่อนไปทางซ้าย" : "Move left"}
+                              onClick={() => {
+                                const next = [...galleryImages];
+                                [next[idx - 1], next[idx]] = [next[idx], next[idx - 1]];
+                                updateGallery(next);
+                              }}
+                              className="flex size-6 items-center justify-center rounded bg-black/60 text-white hover:bg-black"
+                            >
+                              <ArrowLeft className="size-3.5" />
+                            </button>
+                          )}
+                          {idx < galleryImages.length - 1 && (
+                            <button
+                              type="button"
+                              title={th ? "เลื่อนไปทางขวา" : "Move right"}
+                              onClick={() => {
+                                const next = [...galleryImages];
+                                [next[idx + 1], next[idx]] = [next[idx], next[idx + 1]];
+                                updateGallery(next);
+                              }}
+                              className="flex size-6 items-center justify-center rounded bg-black/60 text-white hover:bg-black"
+                            >
+                              <ArrowRight className="size-3.5" />
+                            </button>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          title={th ? "ลบรูปนี้" : "Remove photo"}
+                          onClick={() => updateGallery(galleryImages.filter((_, i) => i !== idx))}
+                          className="flex size-6 items-center justify-center rounded bg-red-600/90 text-white hover:bg-red-600"
+                        >
+                          <X className="size-3.5" />
+                        </button>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setGalleryPickerIndex(idx)}
+                        className="absolute inset-x-0 bottom-0 bg-black/70 py-1.5 text-center text-xs text-white opacity-90 hover:bg-black hover:opacity-100"
+                      >
+                        {th ? "เปลี่ยนรูปภาพ" : "Change photo"}
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setGalleryPickerIndex("new")}
+                    className="flex aspect-[4/3] flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-line bg-surface/60 text-muted transition-colors hover:border-accent hover:bg-surface hover:text-accent"
+                  >
+                    <ImagePlus className="size-6" />
+                    <span className="px-2 text-center text-xs font-medium">
+                      {th ? "+ เพิ่มรูปแกลเลอรี" : "+ Add gallery photo"}
+                    </span>
+                  </button>
+                </div>
+              </Field>
+            </div>
+          )}
         </div>
       </Card>}
 
@@ -427,6 +562,22 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
         onOpenChange={(v) => !v && setMediaField(null)}
         kind={mediaField && config.fields.find((f) => f.name === mediaField)?.type === "file" ? "document" : "image"}
         onSelect={(url) => mediaField && set(mediaField, url)}
+      />
+
+      <MediaPickerDialog
+        open={galleryPickerIndex !== null}
+        onOpenChange={(v) => !v && setGalleryPickerIndex(null)}
+        kind="image"
+        onSelect={(url) => {
+          if (galleryPickerIndex === "new") {
+            updateGallery([...galleryImages, url]);
+          } else if (typeof galleryPickerIndex === "number") {
+            const next = [...galleryImages];
+            next[galleryPickerIndex] = url;
+            updateGallery(next);
+          }
+          setGalleryPickerIndex(null);
+        }}
       />
 
       <IconPickerDialog
