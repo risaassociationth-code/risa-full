@@ -42,11 +42,15 @@ export function Topbar({ user }: TopbarProps) {
         <AdminLanguageSwitch />
         <div className="text-right leading-tight">
           <p className="text-[13px] font-medium">{user.name || user.username}</p>
-          <p className="text-[11px] text-faint">
-            {user.role === "admin"
-              ? th ? "ผู้ดูแลระบบ" : "Admin"
-              : th ? "ผู้แก้ไข" : "Editor"}
-          </p>
+          {user.name && user.name !== (user.role === "admin" ? (th ? "ผู้ดูแลระบบ" : "Admin") : (th ? "ผู้แก้ไข" : "Editor")) ? (
+            <p className="text-[11px] text-faint">
+              {user.role === "admin"
+                ? th ? "ผู้ดูแลระบบ" : "Admin"
+                : th ? "ผู้แก้ไข" : "Editor"}
+            </p>
+          ) : user.username && user.username !== (user.name || "") ? (
+            <p className="text-[11px] text-faint">@{user.username}</p>
+          ) : null}
         </div>
         <form action="/api/auth/logout" method="POST">
           <button

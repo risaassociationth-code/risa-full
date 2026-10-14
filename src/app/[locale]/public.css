@@ -73,8 +73,129 @@ body:has(.risa-public) { background: #070c18; }
   backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
   box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
-.risa-public .msic-feature-photo { border-radius: 4px; overflow: hidden; }
-.risa-public .msic-feature-photo img { width: 100%; height: auto; }
+/* Futuristic Scientific Viewfinder Frame for Event Highlight */
+.risa-public .msic-feature-photo {
+  position: relative;
+  display: block;
+  border-radius: 10px;
+  background: rgba(11, 20, 34, 0.7);
+  border: 1px solid rgba(140, 185, 230, 0.22);
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.65), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  padding: 8px;
+  overflow: visible;
+  transition: border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
+}
+.risa-public .msic-feature-photo:hover {
+  border-color: rgba(214, 191, 145, 0.55);
+  box-shadow: 0 25px 55px -10px rgba(0, 0, 0, 0.75), 0 0 35px rgba(214, 191, 145, 0.2);
+  transform: translateY(-3px);
+}
+.risa-public .msic-photo-canvas {
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+}
+.risa-public .msic-photo-canvas img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Precision Corner Viewfinder Brackets */
+.risa-public .msic-corner {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+  z-index: 10;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease;
+}
+.risa-public .msic-corner-tl {
+  top: -4px; left: -4px;
+  border-top: 2px solid var(--color-accent);
+  border-left: 2px solid var(--color-accent);
+}
+.risa-public .msic-corner-tr {
+  top: -4px; right: -4px;
+  border-top: 2px solid var(--color-accent);
+  border-right: 2px solid var(--color-accent);
+}
+.risa-public .msic-corner-bl {
+  bottom: -4px; left: -4px;
+  border-bottom: 2px solid var(--color-accent);
+  border-left: 2px solid var(--color-accent);
+}
+.risa-public .msic-corner-br {
+  bottom: -4px; right: -4px;
+  border-bottom: 2px solid var(--color-accent);
+  border-right: 2px solid var(--color-accent);
+}
+.risa-public .msic-feature-photo:hover .msic-corner-tl { transform: translate(-4px, -4px); }
+.risa-public .msic-feature-photo:hover .msic-corner-tr { transform: translate(4px, -4px); }
+.risa-public .msic-feature-photo:hover .msic-corner-bl { transform: translate(-4px, 4px); }
+.risa-public .msic-feature-photo:hover .msic-corner-br { transform: translate(4px, 4px); }
+
+/* Reticle Crosshair Watermark */
+.risa-public .msic-reticle {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 10;
+  color: var(--color-accent);
+  pointer-events: none;
+  transition: transform 0.5s ease, opacity 0.35s ease;
+}
+.risa-public .msic-feature-photo:hover .msic-reticle {
+  transform: rotate(90deg);
+  opacity: 1;
+}
+
+/* Cinematic Prismatic Light Sweep */
+.risa-public .msic-sheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 25%, rgba(255, 255, 255, 0.12) 46%, rgba(214, 191, 145, 0.28) 50%, transparent 60%);
+  transform: translateX(-120%);
+  pointer-events: none;
+  transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.risa-public .msic-feature-photo:hover .msic-sheen {
+  transform: translateX(120%);
+}
+
+/* Floating Telemetry Chip Badge */
+.risa-public .msic-photo-badge {
+  position: absolute;
+  bottom: 18px;
+  left: 18px;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: rgba(7, 12, 24, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(140, 185, 230, 0.28);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: #e2e8f0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+.risa-public .msic-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 10px #38bdf8;
+  animation: msic-pulse-dot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes msic-pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.75); }
+}
 .risa-public .msic-feature-copy .minimal-eyebrow { color: var(--color-accent); font-size: 11px; letter-spacing: .08em; margin-bottom: 18px; }
 .risa-public .msic-feature-copy h2 { font-size: clamp(26px, 2.8vw, 36px); font-weight: 500; line-height: 1.35; letter-spacing: -.025em; }
 .risa-public .msic-feature-copy > p:not(.minimal-eyebrow) { font-size: 15px; line-height: 1.9; color: var(--color-muted); }
