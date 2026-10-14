@@ -59,22 +59,8 @@ export default async function TeamPage() {
         {heads.length > 0 && (
           <div className="relative z-10 w-full">
             <div className="flex flex-wrap justify-center">
-              {heads.map((head, index) => (
+              {heads.map((head) => (
                 <div key={head.id} className="flex flex-col items-center px-4">
-                  {heads.length > 1 && (
-                    <div className="relative h-8 w-full">
-                      <div
-                        className={cn(
-                          "absolute top-0 h-px bg-line",
-                          index === 0 && "left-1/2 right-0",
-                          index === heads.length - 1 && "left-0 right-1/2",
-                          index > 0 && index < heads.length - 1 && "left-0 right-0"
-                        )}
-                        aria-hidden
-                      />
-                      <div className="mx-auto h-full w-px bg-line" aria-hidden />
-                    </div>
-                  )}
                   <div className="w-full max-w-[320px]">
                     <StaffCard member={head} locale={locale} />
                   </div>
