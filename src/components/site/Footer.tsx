@@ -6,6 +6,7 @@ import { publicTabs } from "@/lib/site-scope";
 import { getLocale } from "@/lib/request";
 import { pick } from "@/lib/i18n";
 import { Editable, EditableRich } from "@/components/editable/Editable";
+import { LiveVisitorCount } from "./LiveVisitorCount";
 
 export async function Footer() {
   const [locale, settings] = await Promise.all([
@@ -131,6 +132,9 @@ export async function Footer() {
           >
             <Editable k="global.footer.map_label" />
           </a>}
+          <div className="pt-2">
+            <LiveVisitorCount locale={locale} />
+          </div>
         </div>
       </div>
 

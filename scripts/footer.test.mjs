@@ -27,6 +27,7 @@ for (const locale of ['th','en']) {
       '@/lib/site-scope':load('src/lib/site-scope.ts'),
       '@/components/editable/Editable':{Editable,EditableRich:Editable},
       './SocialIcons':{SocialIcon:()=>null},
+      './LiveVisitorCount':{LiveVisitorCount:()=>null},
     });
     const html = renderToStaticMarkup(await Footer());
     assert.match(html, /href="tel:\+66827934431"/);
