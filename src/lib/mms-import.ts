@@ -5,14 +5,14 @@ export const mmsRecords = records;
 export function sourceBody(record: (typeof records)[number]) {
   const notice = `<div class="mms-source-notice"><p><strong>MMS Hub — เนื้อหาจากเครือข่าย / Partner content</strong><br>เผยแพร่ตามต้นฉบับ ไม่ใช่ประกาศหรือผลงานของ RISA โดยอัตโนมัติ / Reproduced from MMS Hub; original organizational roles are retained. <a href="${record.url}" target="_blank" rel="noreferrer">ต้นฉบับ / Original source</a></p></div>`;
   const gallery = record.images && record.images.length > 0
-    ? `<div class="mms-photo-gallery not-prose"><h3 class="mms-photo-gallery-title">ประมวลภาพกิจกรรม / Photo Gallery</h3><div class="mms-photo-grid">${record.images.map(src => `<div class="mms-photo-card"><img src="${src}" alt="ภาพประกอบจาก MMS Hub" loading="lazy"></div>`).join('')}</div></div>`
+    ? `<div class="mms-photo-gallery not-prose"><h3 class="mms-photo-gallery-title">ประมวลภาพกิจกรรม / Photo Gallery</h3><div class="mms-photo-grid">${record.images.map(src => `<div class="mms-photo-card"><img src="${src}?v=2" alt="ภาพประกอบจาก MMS Hub" loading="lazy"></div>`).join('')}</div></div>`
     : '';
   return `${notice}${record.body}${gallery}`;
 }
 export const mmsNews: News[] = records.filter(r=>r.category==='1').map(r=>({
   id:`mms-${r.id}`, slug:`mms-hub-${r.id}`, title_th:r.title,title_en:r.title,
   excerpt_th:`จาก MMS Hub · ${r.excerpt}`,excerpt_en:`MMS Hub · Original-language source: ${r.excerpt}`,
-  body_th:sourceBody(r),body_en:sourceBody(r),cover_url:r.cover,tags:['MMS Hub'],
+  body_th:sourceBody(r),body_en:sourceBody(r),cover_url:r.cover ? `${r.cover}?v=2` : '',tags:['MMS Hub'],
   published_at:r.publishedAt || '',status:'published',
 }));
 

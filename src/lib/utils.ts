@@ -31,12 +31,13 @@ export function formatBytes(bytes?: number | null): string {
 
 function formatGalleries(html: string): string {
   const pImgRegex = /(?:<p[^>]*>\s*<img[^>]+>\s*<\/p>\s*){2,}/gi;
-  return html.replace(pImgRegex, (match) => {
+  const withGalleries = html.replace(pImgRegex, (match) => {
     const imgRegex = /<img[^>]+>/gi;
     const imgs = match.match(imgRegex) || [];
     const cards = imgs.map((img) => `<div class="mms-photo-card">${img}</div>`).join("");
     return `<div class="mms-photo-gallery not-prose"><h3 class="mms-photo-gallery-title">ประมวลภาพกิจกรรม / Photo Gallery</h3><div class="mms-photo-grid">${cards}</div></div>`;
   });
+  return withGalleries.replace(/\/images\/mms-hub\/([^"'>\s?]+)(?:\?v=\d+)?/g, "/images/mms-hub/$1?v=2");
 }
 
 /** Shared parser-based policy for saved content, public output and previews. */
