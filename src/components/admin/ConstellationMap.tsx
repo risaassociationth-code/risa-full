@@ -93,6 +93,14 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
     observer.observe(element);
     
     const handleWheel = (event: WheelEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (target?.closest(".constellation-panel-content, .constellation-records, .workspace-floating-panel, .constellation-list-panel, textarea")) {
+        if (event.ctrlKey || event.metaKey) {
+          event.preventDefault();
+          setZoom(value => Math.min(2, Math.max(.3, value - event.deltaY * 0.002)));
+        }
+        return;
+      }
       event.preventDefault();
       if (event.ctrlKey || event.metaKey) {
         setZoom(value => Math.min(2, Math.max(.3, value - event.deltaY * 0.002)));
@@ -338,7 +346,7 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
             const branch=branches.find(item=>item.key===active)!;
             const pScale = Math.min(p.width / 360, p.height / 340);
             return <WorkspacePanel key={`panel-${active}`} className="workspace-record-panel constellation-attached-panel workspace-floating-panel" rect={p} bounds={PANEL_BOUNDS} scale={fit*zoom} name={th?branch.th:branch.en} th={th} onChange={rect=>movePanel("panels",active,rect)} onSelect={()=>setLayoutTarget({kind:"panels",key:active})} onGrab={()=>grab("panel")} onRelease={()=>release("panel")}>
-            <aside id="constellation-panel" className="constellation-panel-content" aria-label={th?"รายการในหมวดที่เลือก":"Selected category records"} style={{ width: `${p.width / pScale}px`, height: `${p.height / pScale}px`, transform: `scale(${pScale})`, transformOrigin: 'top left' }}>
+            <aside id="constellation-panel" className="constellation-panel-content" aria-label={th?"รายการในหมวดที่เลือก":"Selected category records"} onWheel={(e)=>e.stopPropagation()} style={{ width: `${p.width / pScale}px`, height: `${p.height / pScale}px`, transform: `scale(${pScale})`, transformOrigin: 'top left' }}>
               <button type="button" className="constellation-close" aria-label={th?"ปิดรายการ":"Close records"} onClick={closeRecords}><X size={18} aria-hidden /></button>
               {active==="overview"?<section className="constellation-overview"><h2>{th?"ภาพรวมเนื้อหา":"Content overview"}</h2><p>{th?"รายการที่มีอยู่ในตัวแก้ไข":"Records in the existing editors"}</p><ul>{collections.map(branch=><li key={branch.key}><Link href={`/admin/${branch.key}`}>{th?branch.th:branch.en}<span>{data[branch.key].total}</span><ChevronRight size={18} aria-hidden /></Link></li>)}</ul></section>:records(active)}
             </aside>

@@ -133,7 +133,11 @@ body:has(.risa-admin) ::selection { color: #17112d; background: #b8a4ff; }
 .workspace-drag-handle:hover, .workspace-resize-handle:hover { background: #2a3b59; color: white; }
 .constellation-body:has(.constellation-panel-open) { display: block; }
 .workspace-record-panel { z-index: 5; border: 1px solid #8c7acc; border-radius: 12px; background: #0e1a2d; box-shadow: 0 14px 32px #0005; }
-.constellation-panel-content { height: 100%; overflow: auto; padding: 28px 20px 20px; border-radius: inherit; }
+.constellation-panel-content { height: 100%; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; touch-action: pan-y; padding: 28px 20px 20px; border-radius: inherit; scrollbar-width: thin; scrollbar-color: rgba(180, 160, 255, 0.4) transparent; }
+.constellation-panel-content::-webkit-scrollbar { width: 6px; }
+.constellation-panel-content::-webkit-scrollbar-track { background: transparent; }
+.constellation-panel-content::-webkit-scrollbar-thumb { background: rgba(180, 160, 255, 0.35); border-radius: 9999px; }
+.constellation-panel-content::-webkit-scrollbar-thumb:hover { background: rgba(180, 160, 255, 0.65); }
 .constellation-close { z-index: 4; }
 .constellation-list-panel { padding: 24px 20px; }
 .workspace-layout-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 10px 16px; border-bottom: 1px solid #415477; background: #0c182c; }
