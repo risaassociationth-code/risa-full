@@ -453,7 +453,7 @@ export function CalendarSection({
     <div className="rounded-[28px] border border-[#e2e8f0] bg-[#f8fafc] p-4 sm:p-6 md:p-8 text-[#0f2537] shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[340px_1fr] xl:grid-cols-[360px_1fr] md:gap-8 items-start">
         {/* Left Column: Interactive Month Calendar Card */}
-        <div className="rounded-2xl border border-[#edf2f7] bg-white p-5 sm:p-6 shadow-[0_4px_20px_rgba(15,37,55,0.04)]">
+        <div className="lg:sticky lg:top-28 self-start rounded-2xl border border-[#edf2f7] bg-white p-5 sm:p-6 shadow-[0_4px_20px_rgba(15,37,55,0.04)]">
           {/* Month Switcher */}
           <div className="mb-6 flex items-center justify-between px-1">
             <button
