@@ -29,9 +29,19 @@ export function formatBytes(bytes?: number | null): string {
   return `${n.toFixed(n < 10 && i > 0 ? 1 : 0)} ${units[i]}`;
 }
 
+function formatGalleries(html: string): string {
+  const pImgRegex = /(?:<p[^>]*>\s*<img[^>]+>\s*<\/p>\s*){2,}/gi;
+  return html.replace(pImgRegex, (match) => {
+    const imgRegex = /<img[^>]+>/gi;
+    const imgs = match.match(imgRegex) || [];
+    const cards = imgs.map((img) => `<div class="mms-photo-card">${img}</div>`).join("");
+    return `<div class="mms-photo-gallery not-prose"><h3 class="mms-photo-gallery-title">ประมวลภาพกิจกรรม / Photo Gallery</h3><div class="mms-photo-grid">${cards}</div></div>`;
+  });
+}
+
 /** Shared parser-based policy for saved content, public output and previews. */
 export function sanitizeHtml(html: string): string {
-  return sanitize(html, {
+  const sanitized = sanitize(html, {
     allowedTags: ["p", "br", "strong", "b", "em", "i", "u", "s", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "blockquote", "pre", "code", "hr", "a", "img", "figure", "figcaption", "div", "span", "table", "thead", "tbody", "tfoot", "tr", "th", "td"],
     allowedAttributes: {
       "*": ["lang", "dir", "class"],
@@ -49,4 +59,6 @@ export function sanitizeHtml(html: string): string {
       }),
     },
   });
+  return formatGalleries(sanitized);
 }
+
