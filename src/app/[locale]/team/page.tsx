@@ -6,6 +6,8 @@ import type { StaffProfile } from "@/lib/staff";
 import { StaffCard } from "@/components/site/StaffCard";
 import { Section } from "@/components/site/Section";
 
+import { cn } from "@/lib/utils";
+
 export async function generateMetadata(): Promise<Metadata> {
   const th = (await getLocale()) === "th";
   return { title: th ? "บุคลากร" : "Personnel", description: th ? "รู้จักบุคลากรและช่องทางติดต่อของ RISA" : "Meet the RISA team and find their professional contact details." };
@@ -53,98 +55,128 @@ export default async function TeamPage() {
 
       <div className="flex flex-col items-center pb-20">
         
-        {/* === TIER 1: Head === */}
+        {/* === TIER 1: Head / President === */}
         {heads.length > 0 && (
           <div className="relative z-10 w-full">
-            {heads.length > 1 && (
-              <div className="absolute left-[20%] right-[20%] top-0 h-px bg-line sm:left-[30%] sm:right-[30%]" aria-hidden />
-            )}
-            <div className="flex flex-wrap justify-center gap-x-8 gap-y-12">
-              {heads.map(head => (
-                <div key={head.id} className="relative w-full max-w-[320px]">
-                  {heads.length > 1 && <div className="absolute left-1/2 -top-8 h-8 w-px -translate-x-1/2 bg-line" aria-hidden />}
-                  <StaffCard member={head} locale={locale} />
+            <div className="flex flex-wrap justify-center">
+              {heads.map((head, index) => (
+                <div key={head.id} className="flex flex-col items-center px-4">
+                  {heads.length > 1 && (
+                    <div className="relative h-8 w-full">
+                      <div
+                        className={cn(
+                          "absolute top-0 h-px bg-line",
+                          index === 0 && "left-1/2 right-0",
+                          index === heads.length - 1 && "left-0 right-1/2",
+                          index > 0 && index < heads.length - 1 && "left-0 right-0"
+                        )}
+                        aria-hidden
+                      />
+                      <div className="mx-auto h-full w-px bg-line" aria-hidden />
+                    </div>
+                  )}
+                  <div className="w-full max-w-[320px]">
+                    <StaffCard member={head} locale={locale} />
+                  </div>
                 </div>
               ))}
             </div>
-            {/* Connector from Tier 1 to Tier 2/3/4 */}
+            {/* Connector from Tier 1 down to the next tier */}
             {(advisors.length > 0 || managers.length > 0 || staff.length > 0) && (
-              <div className="mx-auto h-12 w-px bg-line" aria-hidden />
+              <div className="mx-auto h-10 w-px bg-line" aria-hidden />
             )}
           </div>
         )}
 
         {/* === TIER 2: Advisors / VP === */}
         {advisors.length > 0 && (
-          <div className="relative w-full">
-            {/* Horizontal line (only if there are multiple advisors) */}
-            {advisors.length > 1 && (
-              <div 
-                className="absolute left-[20%] right-[20%] top-0 h-px bg-line sm:left-[30%] sm:right-[30%]" 
-                aria-hidden 
-              />
-            )}
-            
-            <div className="flex flex-wrap justify-center gap-x-8 gap-y-12">
-              {advisors.map((member) => (
-                <div key={member.id} className="relative w-full max-w-[320px] pt-8">
-                  {/* Vertical drop line for this specific advisor */}
-                  <div className="absolute left-1/2 top-0 h-8 w-px -translate-x-1/2 bg-line" aria-hidden />
-                  <StaffCard member={member} locale={locale} />
+          <div className="relative z-10 w-full">
+            <div className="flex flex-wrap justify-center">
+              {advisors.map((member, index) => (
+                <div key={member.id} className="flex flex-col items-center px-4 sm:px-6">
+                  <div className="relative h-8 w-full">
+                    {advisors.length > 1 && (
+                      <div
+                        className={cn(
+                          "absolute top-0 h-px bg-line",
+                          index === 0 && "left-1/2 right-0",
+                          index === advisors.length - 1 && "left-0 right-1/2",
+                          index > 0 && index < advisors.length - 1 && "left-0 right-0"
+                        )}
+                        aria-hidden
+                      />
+                    )}
+                    <div className="mx-auto h-full w-px bg-line" aria-hidden />
+                  </div>
+                  <div className="w-full max-w-[320px]">
+                    <StaffCard member={member} locale={locale} />
+                  </div>
                 </div>
               ))}
             </div>
-            {/* Connector from Tier 2 to Tier 3/4 */}
+            {/* Connector from Tier 2 down to the next tier */}
             {(managers.length > 0 || staff.length > 0) && (
-              <div className="mx-auto h-12 w-px bg-line" aria-hidden />
+              <div className="mx-auto h-10 w-px bg-line" aria-hidden />
             )}
           </div>
         )}
 
         {/* === TIER 3: Managers / Committee === */}
         {managers.length > 0 && (
-          <div className="relative w-full">
-            {/* Horizontal line (only if there are multiple managers) */}
-            {managers.length > 1 && (
-              <div 
-                className="absolute left-[15%] right-[15%] top-0 h-px bg-line sm:left-[20%] sm:right-[20%]" 
-                aria-hidden 
-              />
-            )}
-            
-            <div className="flex flex-wrap justify-center gap-x-6 gap-y-12 pt-8 sm:gap-x-8">
-              {managers.map((member) => (
-                <div key={member.id} className="relative w-[200px] sm:w-[240px] max-w-[280px]">
-                  {/* Vertical drop line for this specific manager */}
-                  <div className="absolute left-1/2 top-0 h-8 w-px -translate-x-1/2 bg-line" aria-hidden />
-                  <StaffCard member={member} locale={locale} />
+          <div className="relative z-10 w-full">
+            <div className="flex flex-wrap justify-center">
+              {managers.map((member, index) => (
+                <div key={member.id} className="flex flex-col items-center px-3 sm:px-4">
+                  <div className="relative h-8 w-full">
+                    {managers.length > 1 && (
+                      <div
+                        className={cn(
+                          "absolute top-0 h-px bg-line",
+                          index === 0 && "left-1/2 right-0",
+                          index === managers.length - 1 && "left-0 right-1/2",
+                          index > 0 && index < managers.length - 1 && "left-0 right-0"
+                        )}
+                        aria-hidden
+                      />
+                    )}
+                    <div className="mx-auto h-full w-px bg-line" aria-hidden />
+                  </div>
+                  <div className="w-[200px] sm:w-[240px] max-w-[280px]">
+                    <StaffCard member={member} locale={locale} />
+                  </div>
                 </div>
               ))}
             </div>
-            {/* Connector from Tier 3 to Tier 4 */}
+            {/* Connector from Tier 3 down to Tier 4 */}
             {staff.length > 0 && (
-              <div className="mx-auto h-12 w-px bg-line" aria-hidden />
+              <div className="mx-auto h-10 w-px bg-line" aria-hidden />
             )}
           </div>
         )}
 
         {/* === TIER 4: Researchers / Staff === */}
         {staff.length > 0 && (
-          <div className="relative w-full max-w-7xl mx-auto">
-            {/* Horizontal line (only if there are multiple staff) */}
-            {staff.length > 1 && (
-              <div 
-                className="absolute left-[5%] right-[5%] top-0 h-px bg-line sm:left-[10%] sm:right-[10%]" 
-                aria-hidden 
-              />
-            )}
-
-            <div className="flex flex-wrap justify-center gap-x-3 gap-y-8 pt-8 sm:gap-x-4 lg:gap-x-6">
-              {staff.map((member) => (
-                <div key={member.id} className="relative w-[120px] sm:w-[140px] lg:w-40">
-                  {/* Vertical drop line for this specific staff member */}
-                  <div className="absolute left-1/2 top-0 h-8 w-px -translate-x-1/2 bg-line" aria-hidden />
-                  <StaffCard member={member} locale={locale} size="sm" />
+          <div className="relative z-10 w-full max-w-7xl mx-auto overflow-x-auto pb-4">
+            <div className="flex justify-center min-w-max mx-auto">
+              {staff.map((member, index) => (
+                <div key={member.id} className="flex flex-col items-center px-1.5 sm:px-2.5 lg:px-3">
+                  <div className="relative h-8 w-full">
+                    {staff.length > 1 && (
+                      <div
+                        className={cn(
+                          "absolute top-0 h-px bg-line",
+                          index === 0 && "left-1/2 right-0",
+                          index === staff.length - 1 && "left-0 right-1/2",
+                          index > 0 && index < staff.length - 1 && "left-0 right-0"
+                        )}
+                        aria-hidden
+                      />
+                    )}
+                    <div className="mx-auto h-full w-px bg-line" aria-hidden />
+                  </div>
+                  <div className="w-[125px] sm:w-[145px] lg:w-[165px]">
+                    <StaffCard member={member} locale={locale} size="sm" />
+                  </div>
                 </div>
               ))}
             </div>
