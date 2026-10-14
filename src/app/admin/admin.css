@@ -1,6 +1,61 @@
 /* Admin-only tokens also reach body-hosted editor dialogs. */
-body:has(.risa-admin) {
+body:has(.risa-admin), [data-admin-theme] {
   color-scheme: dark;
+}
+
+/* 1. Obsidian Gold (Default / Executive Prestige) */
+body:has(.risa-admin),
+body:has(.risa-admin)[data-admin-theme="obsidian-gold"] {
+  --color-ink: #f8fafc; --color-ink-2: #e2e8f0;
+  --color-paper: #090f1d; --color-surface: #0f1a2e; --color-surface-2: #16243d;
+  --color-muted: #cbd5e1; --color-faint: #94a3b8;
+  --color-line: #2e3e57; --color-line-soft: #1e2c42;
+  --color-accent: #d6bf91; --color-accent-ink: #121008;
+  --color-accent-soft: #2e2617; --color-accent-line: #897957;
+}
+body:has(.risa-admin)[data-admin-theme="obsidian-gold"] .risa-admin,
+body:has(.risa-admin):not([data-admin-theme]) .risa-admin { background: #050a16; }
+body:has(.risa-admin)[data-admin-theme="obsidian-gold"] .admin-card,
+body:has(.risa-admin):not([data-admin-theme]) .admin-card { background: #0c1527; }
+body:has(.risa-admin)[data-admin-theme="obsidian-gold"] .admin-rail,
+body:has(.risa-admin):not([data-admin-theme]) .admin-rail { background: #070e1c; }
+body:has(.risa-admin)[data-admin-theme="obsidian-gold"] .admin-rail nav a[aria-current="page"],
+body:has(.risa-admin):not([data-admin-theme]) .admin-rail nav a[aria-current="page"] { background: #2a2215; color: #f0deb4; }
+body:has(.risa-admin)[data-admin-theme="obsidian-gold"] .admin-language-switch button[aria-pressed="true"],
+body:has(.risa-admin):not([data-admin-theme]) .admin-language-switch button[aria-pressed="true"] { color: #f0deb4; border-color: #d6bf91; }
+
+/* 2. Cyber Emerald */
+body:has(.risa-admin)[data-admin-theme="cyber-emerald"] {
+  --color-ink: #ecfdf5; --color-ink-2: #d1fae5;
+  --color-paper: #040d12; --color-surface: #0a1b20; --color-surface-2: #10272e;
+  --color-muted: #a7f3d0; --color-faint: #6ee7b7;
+  --color-line: #1d4344; --color-line-soft: #132f31;
+  --color-accent: #10b981; --color-accent-ink: #022013;
+  --color-accent-soft: #064e3b; --color-accent-line: #059669;
+}
+body:has(.risa-admin)[data-admin-theme="cyber-emerald"] .risa-admin { background: #02090d; }
+body:has(.risa-admin)[data-admin-theme="cyber-emerald"] .admin-card { background: #07151a; }
+body:has(.risa-admin)[data-admin-theme="cyber-emerald"] .admin-rail { background: #051218; }
+body:has(.risa-admin)[data-admin-theme="cyber-emerald"] .admin-rail nav a[aria-current="page"] { background: #06392c; color: #a7f3d0; }
+body:has(.risa-admin)[data-admin-theme="cyber-emerald"] .admin-language-switch button[aria-pressed="true"] { color: #a7f3d0; border-color: #10b981; }
+
+/* 3. Starlight Monolith */
+body:has(.risa-admin)[data-admin-theme="starlight-monolith"] {
+  --color-ink: #f8fafc; --color-ink-2: #e0f2fe;
+  --color-paper: #090d16; --color-surface: #0f172a; --color-surface-2: #1e293b;
+  --color-muted: #bae6fd; --color-faint: #7dd3fc;
+  --color-line: #223755; --color-line-soft: #172439;
+  --color-accent: #38bdf8; --color-accent-ink: #041b2d;
+  --color-accent-soft: #0c334d; --color-accent-line: #0284c7;
+}
+body:has(.risa-admin)[data-admin-theme="starlight-monolith"] .risa-admin { background: #05070d; }
+body:has(.risa-admin)[data-admin-theme="starlight-monolith"] .admin-card { background: #0a0f1d; }
+body:has(.risa-admin)[data-admin-theme="starlight-monolith"] .admin-rail { background: #080d19; }
+body:has(.risa-admin)[data-admin-theme="starlight-monolith"] .admin-rail nav a[aria-current="page"] { background: #0e304f; color: #bae6fd; }
+body:has(.risa-admin)[data-admin-theme="starlight-monolith"] .admin-language-switch button[aria-pressed="true"] { color: #bae6fd; border-color: #38bdf8; }
+
+/* 4. Cosmic Violet */
+body:has(.risa-admin)[data-admin-theme="cosmic-violet"] {
   --color-ink: #f4f6ff; --color-ink-2: #dce5f9;
   --color-paper: #0b1528; --color-surface: #142139; --color-surface-2: #1c2d48;
   --color-muted: #b5c4df; --color-faint: #a7bbdb;
@@ -8,33 +63,37 @@ body:has(.risa-admin) {
   --color-accent: #b8a4ff; --color-accent-ink: #17112d;
   --color-accent-soft: #2a2450; --color-accent-line: #8273c6;
 }
-.risa-admin { background: #070f20; color: var(--color-ink); }
+body:has(.risa-admin)[data-admin-theme="cosmic-violet"] .risa-admin { background: #070f20; }
+body:has(.risa-admin)[data-admin-theme="cosmic-violet"] .admin-card { background: #101c30; }
+body:has(.risa-admin)[data-admin-theme="cosmic-violet"] .admin-rail { background: #0a1427; }
+body:has(.risa-admin)[data-admin-theme="cosmic-violet"] .admin-rail nav a[aria-current="page"] { background: #28234b; color: #d0c4ff; }
+body:has(.risa-admin)[data-admin-theme="cosmic-violet"] .admin-language-switch button[aria-pressed="true"] { color: #d0c4ff; border-color: #b8a4ff; }
+
+.risa-admin { color: var(--color-ink); }
 .risa-admin .admin-page-header { border-bottom: 1px solid var(--color-line); padding-bottom: 24px; margin-bottom: 28px; }
 .risa-admin .admin-page-header h1 { font-size: 2rem; font-weight: 600; }
-.risa-admin .admin-card { border-radius: 10px; background: #101c30; }
-.admin-rail { background: #0a1427; color: var(--color-ink); }
+.risa-admin .admin-card { border-radius: 10px; }
+.admin-rail { color: var(--color-ink); }
 .admin-rail img { filter: grayscale(1) brightness(0) invert(1); }
 .admin-rail nav a { min-height: 44px; display: flex; align-items: center; }
-.admin-rail nav a[aria-current="page"] { background: #28234b; color: #d0c4ff; }
-.admin-brand-caption { color: #a7bbdb; font-size: 12px; }
+.admin-brand-caption { color: var(--color-faint); font-size: 12px; }
 .admin-language-switch { display: flex; gap: 4px; }
-.admin-language-switch button { min-width: 40px; min-height: 40px; padding: 6px; font-size: 12px; color: #a7bbdb; border-bottom: 2px solid transparent; }
-.admin-language-switch button[aria-pressed="true"] { color: #d0c4ff; border-color: #b8a4ff; }
+.admin-language-switch button { min-width: 40px; min-height: 40px; padding: 6px; font-size: 12px; color: var(--color-faint); border-bottom: 2px solid transparent; }
 .admin-mobile-overlay { position: fixed; inset: 0; z-index: 50; background: rgb(0 4 12 / 72%); }
 .admin-mobile-drawer { position: fixed; inset-block: 0; left: 0; z-index: 51; width: min(18rem, calc(100vw - 48px)); display: flex; flex-direction: column; border-right: 1px solid var(--color-line); }
-body:has(.risa-admin) .bg-ink, body:has(.risa-admin) [class~="aria-pressed:bg-ink"][aria-pressed="true"] { background-color: #b8a4ff; color: #17112d; }
-body:has(.risa-admin) .bg-ink:hover { background-color: #d0c4ff; color: #17112d; }
+body:has(.risa-admin) .bg-ink, body:has(.risa-admin) [class~="aria-pressed:bg-ink"][aria-pressed="true"] { background-color: var(--color-accent); color: var(--color-accent-ink); }
+body:has(.risa-admin) .bg-ink:hover { filter: brightness(1.15); }
 body:has(.risa-admin) [class~="bg-ink/40"] { background-color: rgb(0 4 12 / 72%); }
 body:has(.risa-admin) .bg-green-50 { background-color: #12382d; color: #9ee8bc; }
 body:has(.risa-admin) .bg-red-50 { background-color: #3b1c2b; color: #ffbbc8; border-color: #754150; }
 body:has(.risa-admin) .text-red-600 { color: #ffabbc; }
 body:has(.risa-admin) [class~="hover:bg-red-50"]:hover { background-color: #3b1c2b; color: #ffbbc8; }
 body:has(.risa-admin) :is([role="dialog"], [role="alertdialog"]) { color: var(--color-ink); }
-body:has(.risa-admin) [data-sonner-toaster] { --normal-bg: #142139; --normal-text: #f4f6ff; --normal-border: #415477; }
-.risa-admin :is(a,button,input,select,textarea):focus-visible, .admin-rail :focus-visible { outline: 3px solid #9fddff; outline-offset: 3px; }
-.risa-admin :is(input,textarea,select) { caret-color: #b8a4ff; }
+body:has(.risa-admin) [data-sonner-toaster] { --normal-bg: var(--color-surface); --normal-text: var(--color-ink); --normal-border: var(--color-line); }
+.risa-admin :is(a,button,input,select,textarea):focus-visible, .admin-rail :focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
+.risa-admin :is(input,textarea,select) { caret-color: var(--color-accent); }
 .risa-admin table { font-variant-numeric: tabular-nums; }
-body:has(.risa-admin) ::selection { color: #17112d; background: #b8a4ff; }
+body:has(.risa-admin) ::selection { color: var(--color-accent-ink); background: var(--color-accent); }
 .constellation-workspace { overflow: hidden; border: 1px solid #415477; border-radius: 14px; background: #081326; }
 .constellation-toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #293d5c; background: #0c182c; }
 .constellation-search { display: flex; gap: 10px; align-items: center; color: #a7bbdb; flex: 1; max-width: 360px; }

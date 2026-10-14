@@ -344,3 +344,40 @@ body:has(.risa-public) { background: #070c18; }
   }
   .risa-public a:focus-visible, .risa-public-menu a:focus-visible { outline-color: Highlight; }
 }
+
+/* --- High-Prestige Organization Chart Visual System --- */
+.risa-org-tree .risa-profile-card {
+  border: 1px solid rgba(140, 185, 230, 0.22) !important;
+  border-radius: 14px !important;
+  background: rgba(10, 18, 34, 0.82) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+.risa-org-tree .risa-profile-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.75), 0 0 28px rgba(214, 191, 145, 0.25) !important;
+}
+.risa-org-tree .tier-head .risa-profile-card {
+  border-color: rgba(214, 191, 145, 0.48) !important;
+  background: rgba(14, 24, 44, 0.92) !important;
+  box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.8), 0 0 32px rgba(214, 191, 145, 0.3) !important;
+}
+.risa-org-tree .risa-profile-card > div:first-child {
+  padding: 8px !important;
+  background: rgba(6, 12, 22, 0.7) !important;
+  border-bottom: 1px solid rgba(140, 185, 230, 0.16) !important;
+}
+.risa-org-tree .risa-profile-card > div:first-child > div {
+  border-radius: 10px !important;
+  overflow: hidden;
+}
+.risa-org-tree .risa-profile-card > div:first-child > div > div {
+  background: #091220 !important;
+}
+.risa-org-tree .risa-profile-card > div:last-child {
+  padding: 16px 18px !important;
+}

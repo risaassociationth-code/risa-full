@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowLeft, ExternalLink, LogOut } from "lucide-react";
 import { AdminLanguageSwitch, useAdminLanguage } from "./AdminLanguage";
+import { AdminThemeSwitch } from "./AdminTheme";
 
 type TopbarProps = {
   user: {
@@ -39,6 +40,7 @@ export function Topbar({ user }: TopbarProps) {
         {th ? "ดูเว็บไซต์" : "View site"}
       </Link>
       <div className="ml-auto flex items-center gap-3">
+        <AdminThemeSwitch />
         <AdminLanguageSwitch />
         <div className="text-right leading-tight">
           <p className="text-[13px] font-medium">{user.name || user.username}</p>

@@ -7,12 +7,13 @@ import { updateSettings } from "@/actions/admin";
 import { Field, Input, Textarea } from "@/components/ui/field";
 import { MediaPickerDialog } from "@/components/ui/media-picker";
 import { Card, CardHead } from "./ui";
-import type { SiteSettings } from "@/lib/content";
+import { useAdminTheme, ADMIN_THEMES } from "./AdminTheme";
 
 export function SettingsForm({ initial }: { initial: SiteSettings }) {
   const [values, setValues] = useState<SiteSettings>(initial);
   const [pending, start] = useTransition();
   const [mediaField, setMediaField] = useState<"logo_url" | "favicon_url" | null>(null);
+  const { theme, setTheme } = useAdminTheme();
 
   function set<K extends keyof SiteSettings>(key: K, v: SiteSettings[K]) {
     setValues((prev) => ({ ...prev, [key]: v }));
@@ -75,7 +76,45 @@ export function SettingsForm({ initial }: { initial: SiteSettings }) {
       </Card>
 
       <Card>
-        <CardHead title="แบรนด์" hint="สีหลักที่ใช้ทั่วทั้งเว็บไซต์" />
+        <CardHead title="แบรนด์และธีมระบบ" hint="เลือกชุดธีมสี (Theme Package) หรือปรับแต่งสีด้วยตนเอง" />
+        <div className="border-b border-line p-5">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted">
+            ชุดสีธีมระบบ (Theme Packages)
+          </p>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {ADMIN_THEMES.map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => {
+                  setTheme(opt.id);
+                  set("color_accent", opt.accent);
+                }}
+                className={`flex flex-col items-start gap-2.5 rounded-xl border p-3.5 text-left transition-all ${
+                  theme === opt.id
+                    ? "border-accent bg-surface-2 ring-1 ring-accent"
+                    : "border-line bg-surface hover:border-line-soft hover:bg-surface-2/60"
+                }`}
+              >
+                <div className="flex w-full items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <span className="size-4 rounded-full border border-white/20 shadow-sm" style={{ backgroundColor: opt.accent }} />
+                    <span className="size-3.5 rounded-full border border-white/10" style={{ backgroundColor: opt.paper }} />
+                  </div>
+                  {theme === opt.id && (
+                    <span className="rounded-full bg-accent/20 px-1.5 py-0.5 text-[10px] font-bold text-accent">
+                      Active
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-ink">{opt.name_en}</p>
+                  <p className="text-[11px] text-faint">{opt.name_th}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="grid gap-4 p-5 sm:grid-cols-3">
           <Field label="สีเน้น (Accent)">
             <div className="flex items-center gap-2">
