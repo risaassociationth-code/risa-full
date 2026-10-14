@@ -7,7 +7,7 @@ import { StaffCard } from "@/components/site/StaffCard";
 import { Section } from "@/components/site/Section";
 import { OrgChartBackground } from "@/components/site/OrgChartBackground";
 import { cn } from "@/lib/utils";
-import { Sparkles, MoveHorizontal } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 export async function generateMetadata(): Promise<Metadata> {
   const th = (await getLocale()) === "th";
@@ -20,107 +20,73 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 interface TierGroupProps {
-  badge: { en: string; th: string };
   beaconColor: string;
-  cardWidth: string;
   items: (StaffProfile & { id: string })[];
   locale: "th" | "en";
   hasTopConnector?: boolean;
   hasBottomConnector?: boolean;
   cardSize?: "md" | "sm";
   isHeadTier?: boolean;
+  tierType: "head" | "advisor" | "manager" | "staff";
 }
 
 function TierGroup({
-  badge,
   beaconColor,
-  cardWidth,
   items,
   locale,
   hasTopConnector = false,
   hasBottomConnector = false,
   cardSize = "md",
   isHeadTier = false,
+  tierType,
 }: TierGroupProps) {
   if (items.length === 0) return null;
-  const th = locale === "th";
-  const total = items.length;
 
   return (
-    <div className={cn("relative z-10 flex flex-col items-center", isHeadTier && "tier-head")}>
+    <div className={cn("relative z-10 flex flex-col items-center w-full", isHeadTier && "tier-head")}>
       {/* 1. Incoming Vertical Connector from Tier Above */}
       {hasTopConnector && (
-        <div className="flex flex-col items-center">
-          <div className="h-9 w-0.5 bg-gradient-to-b from-[#8cb9e6]/50 via-accent to-accent" />
+        <div className="flex flex-col items-center my-3 sm:my-5">
+          <div className="h-6 sm:h-9 w-0.5 bg-gradient-to-b from-[#8cb9e6]/50 via-accent to-accent" />
           <div
-            className="size-3 -my-1 rounded-full ring-4 ring-[#050a16] shadow-lg z-20"
+            className="size-2.5 sm:size-3 -my-0.5 rounded-full ring-4 ring-[#050a16] shadow-lg z-20"
             style={{
               backgroundColor: beaconColor,
               boxShadow: `0 0 12px ${beaconColor}`,
             }}
           />
-          <div className="h-6 w-0.5 bg-gradient-to-b from-accent to-accent/40" />
+          <div className="h-4 sm:h-6 w-0.5 bg-gradient-to-b from-accent to-accent/40" />
         </div>
       )}
 
-      {/* 2. Executive Tier Status Badge */}
-      <div className="mb-6 flex items-center gap-2 rounded-full border border-line/70 bg-[#091222]/80 px-4 py-1.5 shadow-md backdrop-blur-md">
-        <span
-          className="size-2 rounded-full animate-pulse"
-          style={{
-            backgroundColor: beaconColor,
-            boxShadow: `0 0 8px ${beaconColor}`,
-          }}
-        />
-        <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink">
-          {th ? badge.th : badge.en}
-        </span>
-      </div>
-
-      {/* 3. Cards Row with Synchronized Branch Bus Lines */}
-      <div className="flex justify-center items-start gap-6 sm:gap-8">
-        {items.map((member, idx) => (
+      {/* 2. Responsive Cards Row (Fits screen naturally, no side-scrolling required) */}
+      <div className="flex flex-wrap justify-center items-stretch gap-4 sm:gap-6 lg:gap-7 w-full max-w-6xl mx-auto">
+        {items.map((member) => (
           <div
             key={member.id}
-            className={cn("flex flex-col items-center shrink-0", cardWidth)}
-          >
-            {/* Top Branch connector into each card (when multiple cards in this tier) */}
-            {total > 1 ? (
-              <div className="relative w-full h-8 flex justify-center">
-                {/* Horizontal branch line segment bridging to sibling columns */}
-                <div
-                  className={cn(
-                    "absolute top-0 h-0.5 bg-gradient-to-r from-accent/40 via-accent to-accent/40",
-                    idx === 0 && "left-1/2 -right-3 sm:-right-4 rounded-l-full",
-                    idx === total - 1 && "-left-3 sm:-left-4 right-1/2 rounded-r-full",
-                    idx > 0 && idx < total - 1 && "-left-3 sm:-left-4 -right-3 sm:-right-4"
-                  )}
-                />
-                {/* Vertical drop stem down into card */}
-                <div className="relative h-full w-0.5 bg-gradient-to-b from-accent to-accent/40">
-                  <span
-                    className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 size-2 rounded-full bg-accent ring-2 ring-[#050a16] shadow-sm"
-                    style={{ boxShadow: `0 0 6px ${beaconColor}` }}
-                  />
-                </div>
-              </div>
-            ) : (
-              /* Single card in tier: simple straight feeder stem */
-              <div className="h-4 w-0.5 bg-gradient-to-b from-accent to-accent/40" />
+            className={cn(
+              "flex flex-col items-center",
+              tierType === "head" && "w-full max-w-[280px] sm:max-w-[320px]",
+              tierType === "advisor" && "w-full max-w-[260px] sm:max-w-[290px]",
+              tierType === "manager" && "w-[155px] sm:w-[190px] md:w-[205px] lg:w-[215px]",
+              tierType === "staff" && "w-[150px] sm:w-[180px] md:w-[195px] lg:w-[210px]"
             )}
+          >
+            {/* Top feeder stem into card */}
+            <div className="h-3 sm:h-4 w-0.5 bg-gradient-to-b from-accent to-accent/30 shrink-0" />
 
             {/* Card Frame */}
-            <div className="w-full">
+            <div className="w-full h-full">
               <StaffCard member={member} locale={locale} size={cardSize} />
             </div>
           </div>
         ))}
       </div>
 
-      {/* 4. Outgoing Vertical Trunk to Next Tier */}
+      {/* 3. Outgoing Vertical Trunk to Next Tier */}
       {hasBottomConnector && (
-        <div className="flex flex-col items-center mt-2">
-          <div className="h-10 w-0.5 bg-gradient-to-b from-accent/50 via-accent to-[#8cb9e6]/60" />
+        <div className="flex flex-col items-center mt-3 sm:mt-4">
+          <div className="h-6 sm:h-8 w-0.5 bg-gradient-to-b from-accent/50 via-accent to-[#8cb9e6]/60" />
         </div>
       )}
     </div>
@@ -192,10 +158,6 @@ export default async function TeamPage() {
       <Section className="relative z-10">
         {/* Page Hero Header */}
         <div className="mb-10 border-b border-line/60 pb-8 md:pb-12">
-          <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/70 px-3.5 py-1 text-xs font-medium uppercase tracking-[.22em] text-accent backdrop-blur-md mb-4">
-            <Sparkles className="size-3 text-accent" />
-            <span>RISA · {th ? "โครงสร้างบุคลากร" : "Organization Architecture"}</span>
-          </div>
           <h1 className="text-3xl font-medium tracking-tight sm:text-5xl md:text-6xl text-ink">
             {th ? "ผังองค์กรสมาคม" : "Organization Chart"}
           </h1>
@@ -204,82 +166,54 @@ export default async function TeamPage() {
               ? "โครงสร้างการบริหารและการเชื่อมโยงเครือข่ายนักวิจัยผู้ทรงคุณวุฒิในการขับเคลื่อนมาตรฐานงานวิจัยและอุตสาหกรรมไทย"
               : "Executive governance hierarchy, advisory council, and specialized research network driving research and industry advancement in Thailand."}
           </p>
-
-          {/* Mobile Swipe Guidance Pill */}
-          <div className="mt-6 inline-flex items-center gap-2 rounded-lg border border-accent/30 bg-accent/10 px-3 py-1.5 text-xs text-accent lg:hidden">
-            <MoveHorizontal className="size-3.5 shrink-0" />
-            <span>
-              {th
-                ? "ปัดซ้าย-ขวาเพื่อสำรวจผังองค์กรแนวกว้าง"
-                : "Swipe horizontally to explore the full organization tree"}
-            </span>
-          </div>
         </div>
 
-        {/* Scrollable Tree Viewport (Keeps all tiers in unified mathematical alignment) */}
-        <div className="w-full overflow-x-auto pb-20 pt-4 custom-scrollbar">
-          <div className="inline-flex flex-col items-center min-w-full px-4 sm:px-8 risa-org-tree">
-            {/* === TIER 1: Executive Leadership (President / Head) === */}
-            <TierGroup
-              badge={{
-                en: "Executive Leadership",
-                th: "คณะผู้บริหารระดับสูง",
-              }}
-              beaconColor="#d6bf91"
-              cardWidth="w-[320px]"
-              items={heads}
-              locale={locale}
-              hasTopConnector={false}
-              hasBottomConnector={hasT2 || hasT3 || hasT4}
-              cardSize="md"
-              isHeadTier={true}
-            />
+        {/* Tree Viewport (Fits screen width naturally without requiring side-scrolling) */}
+        <div className="w-full flex flex-col items-center pb-20 pt-4 risa-org-tree">
+          {/* === TIER 1: Executive Leadership (President / Head) === */}
+          <TierGroup
+            beaconColor="#d6bf91"
+            items={heads}
+            locale={locale}
+            hasTopConnector={false}
+            hasBottomConnector={hasT2 || hasT3 || hasT4}
+            cardSize="md"
+            isHeadTier={true}
+            tierType="head"
+          />
 
-            {/* === TIER 2: Advisory Council === */}
-            <TierGroup
-              badge={{
-                en: "Advisory Council",
-                th: "คณะที่ปรึกษาสมาคม",
-              }}
-              beaconColor="#38bdf8"
-              cardWidth="w-[270px]"
-              items={advisors}
-              locale={locale}
-              hasTopConnector={true}
-              hasBottomConnector={hasT3 || hasT4}
-              cardSize="md"
-            />
+          {/* === TIER 2: Advisory Council === */}
+          <TierGroup
+            beaconColor="#38bdf8"
+            items={advisors}
+            locale={locale}
+            hasTopConnector={true}
+            hasBottomConnector={hasT3 || hasT4}
+            cardSize="md"
+            tierType="advisor"
+          />
 
-            {/* === TIER 3: Executive Committee & Managers === */}
-            <TierGroup
-              badge={{
-                en: "Executive Committee",
-                th: "คณะทำงานบริหาร",
-              }}
-              beaconColor="#10b981"
-              cardWidth="w-[245px]"
-              items={managers}
-              locale={locale}
-              hasTopConnector={true}
-              hasBottomConnector={hasT4}
-              cardSize="sm"
-            />
+          {/* === TIER 3: Executive Committee & Managers === */}
+          <TierGroup
+            beaconColor="#10b981"
+            items={managers}
+            locale={locale}
+            hasTopConnector={true}
+            hasBottomConnector={hasT4}
+            cardSize="sm"
+            tierType="manager"
+          />
 
-            {/* === TIER 4: Research Fellows & Specialists === */}
-            <TierGroup
-              badge={{
-                en: "Research Fellows & Specialists",
-                th: "คณะนักวิจัยและผู้เชี่ยวชาญ",
-              }}
-              beaconColor="#818cf8"
-              cardWidth="w-[210px]"
-              items={staff}
-              locale={locale}
-              hasTopConnector={true}
-              hasBottomConnector={false}
-              cardSize="sm"
-            />
-          </div>
+          {/* === TIER 4: Research Fellows & Specialists === */}
+          <TierGroup
+            beaconColor="#818cf8"
+            items={staff}
+            locale={locale}
+            hasTopConnector={true}
+            hasBottomConnector={false}
+            cardSize="sm"
+            tierType="staff"
+          />
         </div>
       </Section>
     </div>
