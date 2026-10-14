@@ -9,7 +9,6 @@ import {
   Megaphone,
   Tag,
   Users,
-  ArrowRight,
 } from "lucide-react";
 import type { CalendarEvent } from "@/lib/queries";
 import { pick, type Locale } from "@/lib/i18n";
@@ -321,7 +320,6 @@ export function CalendarSection({
   const [selectedDay, setSelectedDay] = useState<number | null>(9);
   const [filterMode, setFilterMode] = useState<"all" | "month" | "day">("all");
   const [selectedCategory, setSelectedCategory] = useState<"all" | EventCategory>("all");
-  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const parsedEvents = useMemo(
     () => events.map((ev, idx) => parseEvent(ev, idx, locale)),
@@ -560,32 +558,28 @@ export function CalendarSection({
         {/* Right Column: Upcoming Events & Filters */}
         <div className="flex flex-col">
           {/* Section Header */}
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <Megaphone className="size-6 text-[#155eef] -rotate-12 stroke-[2]" />
-              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#0f2537]">
-                {th ? "กิจกรรมที่กำลังจะมาถึง" : "Upcoming Events"}
-              </h2>
-            </div>
-            <button
-              type="button"
-              onClick={handleViewAll}
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#155eef] transition-colors hover:text-[#0f4bc4] hover:underline"
-            >
-              <span>{th ? "ดูทั้งหมด" : "View all"}</span>
-              <ArrowRight className="size-4" />
-            </button>
+          <div className="flex items-center gap-2.5">
+            <Megaphone className="size-6 text-[#155eef] -rotate-12 stroke-[2]" />
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#0f2537]">
+              {th ? "กิจกรรมที่กำลังจะมาถึง" : "Upcoming Events"}
+            </h2>
           </div>
 
           {/* Filter Pills */}
           <div className="mt-4 mb-6 flex flex-wrap gap-2.5">
             {categories.map((cat) => {
-              const active = selectedCategory === cat.key;
+              const active =
+                cat.key === "all"
+                  ? selectedCategory === "all" && filterMode === "all"
+                  : selectedCategory === cat.key;
               return (
                 <button
                   key={cat.key}
                   type="button"
-                  onClick={() => setSelectedCategory(cat.key)}
+                  onClick={() => {
+                    setSelectedCategory(cat.key);
+                    if (cat.key === "all") setFilterMode("all");
+                  }}
                   className={`rounded-full px-4 py-2 text-[13px] sm:text-sm transition-all ${
                     active
                       ? "bg-[#155eef] font-semibold text-white shadow-[0_2px_8px_rgba(21,94,239,0.28)]"
@@ -620,7 +614,6 @@ export function CalendarSection({
                 // Alternate second card or internal category with the green badge style as shown in mockup
                 const useGreenStyle =
                   ev.category === "internal" || (ev.category === "conference" && idx % 2 === 1);
-                const isExpanded = expandedId === ev.id;
 
                 const badgeHeaderClass = useGreenStyle
                   ? "bg-[#ccebd9] text-[#134e32]"
@@ -637,14 +630,7 @@ export function CalendarSection({
                 return (
                   <div
                     key={ev.id}
-                    onClick={() =>
-                      ev.extraLines.length > 0
-                        ? setExpandedId(isExpanded ? null : ev.id)
-                        : undefined
-                    }
-                    className={`group rounded-2xl border border-[#e5eaf2] bg-white p-4 sm:p-5 shadow-[0_2px_12px_rgba(15,37,55,0.03)] transition-all hover:border-[#bfd4f2] hover:shadow-[0_6px_20px_rgba(21,94,239,0.08)] ${
-                      ev.extraLines.length > 0 ? "cursor-pointer" : ""
-                    }`}
+                    className="rounded-2xl border border-[#e5eaf2] bg-white p-4 sm:p-5 shadow-[0_2px_12px_rgba(15,37,55,0.03)] transition-all hover:border-[#bfd4f2] hover:shadow-[0_6px_20px_rgba(21,94,239,0.08)]"
                   >
                     <div className="flex items-center gap-4 sm:gap-6">
                       {/* Left Date Badge */}
@@ -664,7 +650,7 @@ export function CalendarSection({
                         </div>
                       </div>
 
-                      {/* Middle Event Content */}
+                      {/* Event Content */}
                       <div className="min-w-0 flex-1">
                         <h3 className="text-base sm:text-[19px] font-bold leading-snug text-[#0f2537]">
                           {ev.title}
@@ -702,23 +688,13 @@ export function CalendarSection({
                           )}
                         </div>
 
-                        {/* Expandable Extra Details (e.g. International Competitions list) */}
-                        {isExpanded && ev.extraLines.length > 0 && (
+                        {ev.extraLines.length > 0 && (
                           <div className="mt-3 border-t border-[#e5eaf2] pt-3 text-xs sm:text-[13px] text-[#475569] space-y-1">
                             {ev.extraLines.map((line, i) => (
                               <p key={i}>{line}</p>
                             ))}
                           </div>
                         )}
-                      </div>
-
-                      {/* Right Chevron */}
-                      <div className="shrink-0 pl-1">
-                        <ChevronRight
-                          className={`size-5 text-[#155eef] transition-transform duration-200 ${
-                            isExpanded ? "rotate-90" : "group-hover:translate-x-0.5"
-                          }`}
-                        />
                       </div>
                     </div>
                   </div>
