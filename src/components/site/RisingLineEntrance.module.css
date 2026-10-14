@@ -3,8 +3,8 @@
 .homeNav[data-visible="true"] { opacity: 1; visibility: visible; }
 .homeNav header > div, .normalNav header > div { min-height: 80px; }
 /* The pinned scene occupies 100svh; the remaining height is the animation's scroll distance. */
-.stage { --progress: 0; --copy: 1; --rise: 0px; --identity: 0; --trace: .025; --fallback: 0; --light: 0; --light-x: -30%; height: 200svh; position: relative; color: #eeeae1; background: #171918; }
-.scene { position: sticky; top: 0; height: 100svh; min-height: 500px; overflow: hidden; isolation: isolate; background: radial-gradient(ellipse at 50% 43%, #3c403d 0%, #262b29 42%, #171918 78%); }
+.stage { --progress: 0; --copy: 1; --rise: 0px; --identity: 0; --trace: .025; --fallback: 0; --light: 0; --light-x: -30%; height: 200svh; position: relative; z-index: 40; color: #eeeae1; background: #070c18; }
+.scene { position: sticky; top: 0; z-index: 40; height: 100svh; min-height: 500px; overflow: hidden; isolation: isolate; background: radial-gradient(ellipse at 50% 43%, #182233 0%, #0e1625 45%, #070c18 85%); }
 .collage { position: absolute; inset: 0; pointer-events: none; opacity: var(--collage, .18); }
 .collage::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 46%, #08112b 0%, #08112bd9 24%, transparent 63%), linear-gradient(0deg, #050a1b 0%, transparent 20%, transparent 84%, #050a1b 100%); }
 .photo { position: absolute; width: 46%; height: 43%; overflow: hidden; background: #254377; mask-image: radial-gradient(ellipse, #000 30%, transparent 73%); }
