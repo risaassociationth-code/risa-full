@@ -58,12 +58,6 @@ export function MsicFeature({ locale }: { locale: string }) {
           {/* Cinematic glass sheen on hover */}
           <div className="msic-sheen" aria-hidden="true" />
         </div>
-
-        {/* Floating Telemetry Badge */}
-        <div className="msic-photo-badge" aria-hidden="true">
-          <span className="msic-badge-dot" />
-          <span>{th ? "MSIC '26 · ประมวลภาพ" : "MSIC '26 · ARCHIVE"}</span>
-        </div>
       </Link>
 
       <div className="msic-feature-copy">

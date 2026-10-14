@@ -163,39 +163,6 @@ body:has(.risa-public) { background: #070c18; }
   transform: translateX(120%);
 }
 
-/* Floating Telemetry Chip Badge */
-.risa-public .msic-photo-badge {
-  position: absolute;
-  bottom: 18px;
-  left: 18px;
-  z-index: 10;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  border-radius: 9999px;
-  background: rgba(7, 12, 24, 0.82);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(140, 185, 230, 0.28);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  color: #e2e8f0;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-}
-.risa-public .msic-badge-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #38bdf8;
-  box-shadow: 0 0 10px #38bdf8;
-  animation: msic-pulse-dot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-@keyframes msic-pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.35; transform: scale(0.75); }
-}
 .risa-public .msic-feature-copy .minimal-eyebrow { color: var(--color-accent); font-size: 11px; letter-spacing: .08em; margin-bottom: 18px; }
 .risa-public .msic-feature-copy h2 { font-size: clamp(26px, 2.8vw, 36px); font-weight: 500; line-height: 1.35; letter-spacing: -.025em; }
 .risa-public .msic-feature-copy > p:not(.minimal-eyebrow) { font-size: 15px; line-height: 1.9; color: var(--color-muted); }
