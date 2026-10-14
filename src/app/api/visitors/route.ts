@@ -8,8 +8,8 @@ export async function GET(request: Request) {
   const sessionId = url.searchParams.get("sid")?.slice(0, 64);
   const isNew = url.searchParams.get("new") === "1";
 
-  let active = 7;
-  let total = 1580;
+  let active = 1;
+  let total = 1;
 
   try {
     // 1. If session provided, record presence
@@ -23,26 +23,26 @@ export async function GET(request: Request) {
       if (isNew) {
         await sql`
           insert into public.site_visits (id, total_views)
-          values ('global', 1581)
+          values ('global', 1)
           on conflict (id) do update set total_views = public.site_visits.total_views + 1, updated_at = now()
         `.catch(() => {});
       }
     }
 
-    // 2. Cleanup stale sessions (> 5 minutes ago)
+    // 2. Cleanup stale sessions (> 3 minutes ago)
     await sql`
-      delete from public.active_visitors where last_seen < now() - interval '5 minutes'
+      delete from public.active_visitors where last_seen < now() - interval '3 minutes'
     `.catch(() => {});
 
-    // 3. Count active sessions
+    // 3. Count exact active sessions
     const activeRes = await sql<{ count: string }[]>`
       select count(*)::text as count from public.active_visitors
-      where last_seen >= now() - interval '5 minutes'
+      where last_seen >= now() - interval '3 minutes'
     `.catch(() => []);
 
     const dbActive = activeRes[0]?.count ? parseInt(activeRes[0].count, 10) : 0;
-    // Provide a dynamic natural fluctuation baseline
-    active = Math.max(dbActive, 6 + (new Date().getMinutes() % 9));
+    // Current visitor is connected, so active count is at least 1
+    active = Math.max(1, dbActive);
 
     // 4. Get total visits
     const totalRes = await sql<{ total_views: string }[]>`
@@ -50,7 +50,7 @@ export async function GET(request: Request) {
     `.catch(() => []);
 
     if (totalRes[0]?.total_views) {
-      total = parseInt(totalRes[0].total_views, 10);
+      total = Math.max(1, parseInt(totalRes[0].total_views, 10));
     }
   } catch {
     // Use fallback metrics if database is initializing

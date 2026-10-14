@@ -7,8 +7,8 @@ import type { Locale } from "@/lib/i18n";
 export function LiveVisitorCount({ locale = "th" }: { locale?: Locale }) {
   const th = locale === "th";
   const [stats, setStats] = useState<{ active: number; total: number }>({
-    active: 11,
-    total: 1580,
+    active: 1,
+    total: 1,
   });
 
   useEffect(() => {
