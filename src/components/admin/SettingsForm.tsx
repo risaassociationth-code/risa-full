@@ -8,6 +8,7 @@ import { Field, Input, Textarea } from "@/components/ui/field";
 import { MediaPickerDialog } from "@/components/ui/media-picker";
 import { Card, CardHead } from "./ui";
 import { useAdminTheme, ADMIN_THEMES } from "./AdminTheme";
+import type { SiteSettings } from "@/lib/content";
 
 export function SettingsForm({ initial }: { initial: SiteSettings }) {
   const [values, setValues] = useState<SiteSettings>(initial);
