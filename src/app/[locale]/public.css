@@ -18,9 +18,15 @@
   color: var(--color-ink);
   background: var(--color-paper);
 }
-body:has(.risa-public) { background: #0b1422; }
+body:has(.risa-public) { background: #070c18; }
 .risa-public .container-page { max-width: 1240px; padding-inline: clamp(24px, 4vw, 48px); }
-.risa-public .risa-site-header { background: #0e1929; border-color: var(--color-line); box-shadow: none; backdrop-filter: none; }
+.risa-public .risa-site-header {
+  background: rgba(11, 20, 34, 0.78);
+  border-color: rgba(140, 185, 230, 0.12);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
 .risa-public .risa-site-header > .container-page { min-height: 88px; }
 .risa-public .risa-logo-plate { display: inline-flex; align-items: center; padding: 0; background: none; border: 0; }
 .risa-public .risa-site-header .risa-logo-plate img { height: 44px; max-width: 155px; filter: brightness(0) invert(1); }
@@ -47,7 +53,10 @@ body:has(.risa-public) { background: #0b1422; }
   color: var(--color-accent); font-size: 12px; letter-spacing: .18em;
 }
 .risa-public .risa-introduction .minimal-eyebrow::before { content: ""; width: 32px; height: 2px; background: currentColor; }
-.risa-public .risa-introduction h1 { font-size: clamp(30px, 3.3vw, 44px); font-weight: 500; line-height: 1.4; letter-spacing: -.02em; }
+.risa-public .risa-introduction h1 {
+  font-size: clamp(30px, 3.3vw, 44px); font-weight: 500; line-height: 1.4; letter-spacing: -.02em;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.7);
+}
 .risa-public[lang="th"] .risa-introduction h1 { line-height: 1.55; letter-spacing: 0; }
 .risa-public .risa-mission { border: 0; padding: 42px 0 0; }
 .risa-public .risa-mission .prose-risa { font-size: 16px; line-height: 1.9; color: var(--color-muted); }
@@ -56,12 +65,15 @@ body:has(.risa-public) { background: #0b1422; }
   border-radius: 0; background: none; color: var(--color-ink); box-shadow: none; font-size: 14px;
 }
 .risa-public .risa-gold-link:hover { color: var(--color-accent); background: none; }
-.risa-public .risa-event-first { border: 0; padding-top: 0; padding-bottom: 64px; }
+.risa-public .risa-event-first { border: 0; padding-top: 0; padding-bottom: 24px; }
 .risa-public .msic-feature {
   grid-template-columns: 1.55fr 1fr; gap: clamp(32px, 5vw, 64px);
-  margin: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none;
+  margin: 0; padding: clamp(28px, 4vw, 44px); border: 1px solid rgba(140, 185, 230, 0.14);
+  border-radius: 8px; background: rgba(15, 26, 43, 0.6);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
-.risa-public .msic-feature-photo { border-radius: 2px; overflow: hidden; }
+.risa-public .msic-feature-photo { border-radius: 4px; overflow: hidden; }
 .risa-public .msic-feature-photo img { width: 100%; height: auto; }
 .risa-public .msic-feature-copy .minimal-eyebrow { color: var(--color-accent); font-size: 11px; letter-spacing: .08em; margin-bottom: 18px; }
 .risa-public .msic-feature-copy h2 { font-size: clamp(26px, 2.8vw, 36px); font-weight: 500; line-height: 1.35; letter-spacing: -.025em; }
@@ -71,25 +83,36 @@ body:has(.risa-public) { background: #0b1422; }
 
 /* One lead story, followed by distinct dated rows. */
 .risa-public .risa-featured-news {
-  width: calc(100% - clamp(48px, 8vw, 96px)); max-width: 1144px;
-  margin: 0 auto; padding: 40px 0; grid-template-columns: 1.4fr 1fr;
-  gap: clamp(32px, 6vw, 80px); border: 0; border-block: 1px solid var(--color-line);
-  border-radius: 0; background: none; box-shadow: none; backdrop-filter: none;
+  width: 100%; max-width: 1240px;
+  margin: 0 auto; padding: clamp(28px, 4vw, 44px); grid-template-columns: 1.4fr 1fr;
+  gap: clamp(32px, 6vw, 80px); border: 1px solid rgba(140, 185, 230, 0.14);
+  border-radius: 8px; background: rgba(15, 26, 43, 0.6);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 .risa-public .risa-featured-news .minimal-hero-copy { padding: 0; min-width: 0; }
 .risa-public .risa-featured-news .minimal-eyebrow { color: var(--color-accent); font-size: 11px; letter-spacing: .07em; }
 .risa-public .risa-featured-news h2 { font-size: clamp(22px, 2vw, 28px); line-height: 1.55; }
 .risa-public .minimal-intro { max-width: 40rem; margin-top: 16px; font-size: 15px; color: var(--color-muted); }
 .risa-public .risa-featured-news .minimal-news-cover { padding: 0; }
-.risa-public .risa-featured-news .minimal-news-cover img { max-height: 260px; border-radius: 2px; object-fit: contain; }
+.risa-public .risa-featured-news .minimal-news-cover img { max-height: 260px; border-radius: 4px; object-fit: contain; }
 .risa-public .minimal-hero-link { gap: 12px; font-size: 14px; }
 .risa-public .minimal-circle { width: 30px; height: 30px; border: 0; background: none; color: var(--color-accent); }
 .risa-public .minimal-hero-link:hover .minimal-circle { background: none; }
 .risa-public .minimal-hero-link:hover > span:last-child { text-decoration: underline; }
-.risa-public .minimal-news-panel { min-height: 240px; padding: 32px; border-radius: 0; background: var(--color-surface); color: var(--color-ink); }
+.risa-public .minimal-news-panel { min-height: 240px; padding: 32px; border-radius: 4px; background: var(--color-surface); color: var(--color-ink); }
 .risa-public .minimal-news-panel .minimal-eyebrow { color: var(--color-muted); }
 .risa-public .minimal-news-word { font-size: clamp(40px, 6vw, 68px); }
-.risa-public .minimal-updates { padding-top: 40px; padding-bottom: 80px; }
+.risa-public .minimal-updates {
+  padding: clamp(32px, 4vw, 48px);
+  border: 1px solid rgba(140, 185, 230, 0.12);
+  border-radius: 8px;
+  background: rgba(15, 26, 43, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  margin-bottom: 60px;
+}
 .risa-public .minimal-updates-heading { border: 0; padding-top: 0; margin-bottom: 16px; }
 .risa-public .minimal-updates-heading h2 { font-size: 22px; font-weight: 500; }
 .risa-public .minimal-updates-heading > a { color: var(--color-muted); font-size: 13px; }
@@ -124,12 +147,20 @@ body:has(.risa-public) { background: #0b1422; }
 .risa-public .prose-risa table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; }
 .risa-public .prose-risa :is(td, th) { border: 1px solid var(--color-line); padding: 10px 14px; }
 .risa-public .msic-summary, .risa-public .msic-back, .risa-public .msic-story figcaption { color: var(--color-muted); }
-.risa-public .risa-cta-band { background: var(--color-surface); color: var(--color-ink); border-block: 1px solid var(--color-line); }
+.risa-public .risa-cta-band {
+  background: rgba(15, 26, 43, 0.6);
+  color: var(--color-ink);
+  border-block: 1px solid rgba(140, 185, 230, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
 .risa-public .risa-cta-band p { color: var(--color-muted); }
 .risa-public .risa-cta-band a { border-radius: 2px; box-shadow: none; }
 .risa-public > footer {
-  background: #08111e; color: var(--color-ink); border-top: 1px solid var(--color-line);
-  --color-paper: #0e1929;
+  background: #060b15;
+  color: var(--color-ink);
+  border-top: 1px solid rgba(140, 185, 230, 0.12);
+  --color-paper: #09101e;
 }
 .risa-public > footer .risa-logo-plate img { filter: brightness(0) invert(1); }
 .risa-public > footer :is(a, button):focus-visible { outline-color: var(--color-accent); }

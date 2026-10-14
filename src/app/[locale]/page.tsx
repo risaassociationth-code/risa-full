@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MsicFeature } from "@/components/site/MsicFeature";
+import { CosmicNetworkBackground } from "@/components/site/CosmicNetworkBackground";
 import { ArrowRight } from "lucide-react";
 import { getLocale } from "@/lib/request";
 import { contentLanguage, localePath, pick } from "@/lib/i18n";
@@ -17,7 +18,9 @@ export default async function HomePage() {
   const latestNews = news.slice(1);
   const th = locale === "th";
   return (
-    <div className="minimal-home">
+    <div className="minimal-home relative isolate overflow-hidden min-h-screen">
+      <CosmicNetworkBackground />
+      <div className="relative z-10 space-y-12">
       <section className="container-page risa-introduction">
         <div><p className="minimal-eyebrow">RISA</p><h1>{pick(settings, "org_name", locale)}</h1></div>
         <div className="risa-mission"><EditableRich k="global.footer.about_body" /><Link href={L("/activities")} className="risa-gold-link"><Editable k="home.hero.secondary_label" /><ArrowRight size={20} aria-hidden /></Link></div>
@@ -49,6 +52,7 @@ export default async function HomePage() {
         {latestNews.length ? <div className="minimal-news-list">{latestNews.map(item => <Link key={item.id} href={L(`/news/${item.slug}`)} className="minimal-news-item"><span className="minimal-news-date">{item.published_at ? formatCalendarDate(item.published_at, th ? "th-TH" : "en-GB", "short") : ""}</span><h3 lang={contentLanguage(item, "title", locale)}>{pick(item, "title", locale)}</h3><ArrowRight size={18} aria-hidden /></Link>)}</div> : !featured && <p className="text-muted">{locale === "th" ? "ติดตามข่าวสารจาก RISA ได้เร็ว ๆ นี้" : "Updates from RISA are coming soon."}</p>}
         {activities.length > 0 && <div className="minimal-activities"><Link href={L("/activities")} className="minimal-activity-label"><Editable k="home.activities.title" /></Link>{activities.map(item => <Link key={item.id} href={L(`/activities/${item.slug}`)}>{pick(item, "title", locale)} <ArrowRight size={16} aria-hidden /></Link>)}</div>}
       </section>
+      </div>
     </div>
   );
 }
