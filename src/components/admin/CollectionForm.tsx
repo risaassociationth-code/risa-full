@@ -347,7 +347,7 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
           {values.photo_url ? <button type="button" onClick={() => set("photo_url", "")} className="mt-3 text-sm text-muted underline">เอารูปออกจากโปรไฟล์ (ไฟล์ยังอยู่ในคลัง)</button> : null}
         </div>
       </Card>}
-      {importedNews && <p className="rounded-lg border border-line bg-surface p-4 text-sm text-muted">{th ? "MMS Hub · เนื้อหาจากเครือข่าย — โปรดคงเครดิตต้นฉบับและตรวจวันจัดกิจกรรม ชื่อบุคคล และบทบาทองค์กรก่อนเผยแพร่ สถานะฉบับร่างซ่อนรายการจากหน้า" : "MMS Hub · Network content — please preserve original credits and check event dates, names, and roles before publishing. Draft status hides the record from the "}{config.singular}{th ? "ของ RISA" : " page"}</p>}
+
       {guided && step === 2 && <>
         <Card>
           <CardHead title={th ? "3. ตรวจตัวอย่างเนื้อหา" : "3. Review content preview"} />

@@ -132,7 +132,6 @@ const news: CollectionConfig = {
     { name: "cover_url", label: "ภาพ", kind: "image" },
     { name: "title", label: "หัวข้อ", bilingual: true },
     { name: "published_at", label: "วันที่เผยแพร่", kind: "date", className: "hidden md:table-cell" },
-    { name: "tags", label: "แท็ก", kind: "tags", className: "hidden lg:table-cell" },
   ],
   fields: [
     { name: "title", label: "หัวข้อข่าว", type: "text", bilingual: true, required: true },
@@ -141,7 +140,6 @@ const news: CollectionConfig = {
     { name: "excerpt", label: "คำโปรย", type: "textarea", bilingual: true },
     { name: "body", label: "เนื้อหา", type: "richtext", bilingual: true },
     { name: "cover_url", label: "ภาพหน้าปก", type: "image" },
-    { name: "tags", label: "แท็ก", type: "tags", help: "คั่นแต่ละแท็กด้วยเครื่องหมายจุลภาค (,)" },
     { name: "published_at", label: "วันที่เผยแพร่", type: "date" },
   ],
 };
