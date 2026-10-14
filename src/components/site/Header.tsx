@@ -36,8 +36,8 @@ export async function Header() {
             className="h-10 w-auto max-w-[140px] shrink-0 object-contain md:h-14 md:max-w-[180px]"
           />
           </span>
-          <span className="hidden min-w-0 border-l border-line pl-3 text-[11px] leading-tight text-muted min-[1440px]:block">
-            <span className="line-clamp-2 max-w-[15rem]">{orgName}</span>
+          <span className="hidden min-w-0 border-l border-line pl-3 text-base leading-snug text-muted min-[1440px]:block">
+            <span className="line-clamp-2 max-w-[28rem]">{orgName}</span>
           </span>
         </Link>
 

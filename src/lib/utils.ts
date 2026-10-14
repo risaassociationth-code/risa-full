@@ -34,7 +34,7 @@ export function sanitizeHtml(html: string): string {
   return sanitize(html, {
     allowedTags: ["p", "br", "strong", "b", "em", "i", "u", "s", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "blockquote", "pre", "code", "hr", "a", "img", "figure", "figcaption", "div", "span", "table", "thead", "tbody", "tfoot", "tr", "th", "td"],
     allowedAttributes: {
-      "*": ["lang", "dir"],
+      "*": ["lang", "dir", "class"],
       a: ["href", "title", "target", "rel"],
       img: ["src", "alt", "title", "width", "height", "loading"],
       ol: ["start"], th: ["colspan", "rowspan", "scope"], td: ["colspan", "rowspan"],
