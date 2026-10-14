@@ -43,7 +43,7 @@ function TierGroup({
   if (items.length === 0) return null;
 
   return (
-    <div className={cn("relative z-10 flex flex-col items-center w-full", isHeadTier && "tier-head")}>
+    <div className={cn("relative z-10 flex flex-col items-center w-full", isHeadTier && "tier-head", `tier-${tierType}`)}>
       {/* 1. Incoming Vertical Connector from Tier Above */}
       {hasTopConnector && (
         <div className="flex flex-col items-center my-3 sm:my-5">
@@ -59,29 +59,44 @@ function TierGroup({
         </div>
       )}
 
-      {/* 2. Responsive Cards Row (Fits screen naturally, no side-scrolling required) */}
-      <div className="flex flex-wrap justify-center items-stretch gap-4 sm:gap-6 lg:gap-7 w-full max-w-6xl mx-auto">
-        {items.map((member) => (
-          <div
-            key={member.id}
-            className={cn(
-              "flex flex-col items-center",
-              tierType === "head" && "w-full max-w-[280px] sm:max-w-[320px]",
-              tierType === "advisor" && "w-full max-w-[260px] sm:max-w-[290px]",
-              tierType === "manager" && "w-[155px] sm:w-[190px] md:w-[205px] lg:w-[215px]",
-              tierType === "staff" && "w-[150px] sm:w-[180px] md:w-[195px] lg:w-[210px]"
-            )}
-          >
-            {/* Top feeder stem into card */}
-            <div className="h-3 sm:h-4 w-0.5 bg-gradient-to-b from-accent to-accent/30 shrink-0" />
+      {/* 2. Responsive Cards Row (Staff tier displays all 6 in 1 unified row on desktop) */}
+      {tierType === "staff" ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 lg:gap-4 w-full max-w-7xl mx-auto">
+          {items.map((member) => (
+            <div key={member.id} className="flex flex-col items-center w-full">
+              {/* Top feeder stem into card */}
+              <div className="h-3 sm:h-4 w-0.5 bg-gradient-to-b from-accent to-accent/30 shrink-0" />
 
-            {/* Card Frame */}
-            <div className="w-full h-full">
-              <StaffCard member={member} locale={locale} size={cardSize} />
+              {/* Card Frame */}
+              <div className="w-full h-full">
+                <StaffCard member={member} locale={locale} size={cardSize} />
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-wrap justify-center items-stretch gap-4 sm:gap-6 lg:gap-8 w-full max-w-5xl mx-auto">
+          {items.map((member) => (
+            <div
+              key={member.id}
+              className={cn(
+                "flex flex-col items-center",
+                tierType === "head" && "w-full max-w-[280px] sm:max-w-[320px]",
+                tierType === "advisor" && "w-full max-w-[260px] sm:max-w-[290px]",
+                tierType === "manager" && "w-full max-w-[240px] sm:max-w-[270px]"
+              )}
+            >
+              {/* Top feeder stem into card */}
+              <div className="h-3 sm:h-4 w-0.5 bg-gradient-to-b from-accent to-accent/30 shrink-0" />
+
+              {/* Card Frame */}
+              <div className="w-full h-full">
+                <StaffCard member={member} locale={locale} size={cardSize} />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* 3. Outgoing Vertical Trunk to Next Tier */}
       {hasBottomConnector && (

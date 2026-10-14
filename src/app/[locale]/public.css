@@ -381,3 +381,14 @@ body:has(.risa-public) { background: #070c18; }
 .risa-org-tree .risa-profile-card > div:last-child {
   padding: 16px 18px !important;
 }
+.risa-org-page .container-page {
+  max-width: 1480px !important;
+  padding-inline: clamp(16px, 2.5vw, 36px) !important;
+}
+.risa-org-tree .tier-staff .risa-profile-card > div:last-child {
+  padding: 13px 12px !important;
+}
+.risa-org-tree .tier-staff .risa-profile-card h2 {
+  font-size: 14.5px !important;
+  line-height: 1.35 !important;
+}
