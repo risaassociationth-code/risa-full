@@ -41,13 +41,14 @@ function TierGroup({
   tierType,
 }: TierGroupProps) {
   if (items.length === 0) return null;
+  const total = items.length;
 
   return (
     <div className={cn("relative z-10 flex flex-col items-center w-full", isHeadTier && "tier-head", `tier-${tierType}`)}>
       {/* 1. Incoming Vertical Connector from Tier Above */}
       {hasTopConnector && (
-        <div className="flex flex-col items-center my-3 sm:my-5">
-          <div className="h-6 sm:h-9 w-0.5 bg-gradient-to-b from-[#8cb9e6]/50 via-accent to-accent" />
+        <div className="flex flex-col items-center">
+          <div className="h-6 sm:h-8 w-0.5 bg-gradient-to-b from-[#8cb9e6]/50 via-accent to-accent" />
           <div
             className="size-2.5 sm:size-3 -my-0.5 rounded-full ring-4 ring-[#050a16] shadow-lg z-20"
             style={{
@@ -55,17 +56,34 @@ function TierGroup({
               boxShadow: `0 0 12px ${beaconColor}`,
             }}
           />
-          <div className="h-4 sm:h-6 w-0.5 bg-gradient-to-b from-accent to-accent/40" />
+          <div className="h-5 sm:h-7 w-0.5 bg-accent" />
         </div>
       )}
 
-      {/* 2. Responsive Cards Row (Staff tier displays all 6 in 1 unified row on desktop) */}
+      {/* 2. Responsive Cards Row with Continuous Branch Bus Lines */}
       {tierType === "staff" ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 lg:gap-4 w-full max-w-7xl mx-auto">
-          {items.map((member) => (
+          {items.map((member, idx) => (
             <div key={member.id} className="flex flex-col items-center w-full">
-              {/* Top feeder stem into card */}
-              <div className="h-3 sm:h-4 w-0.5 bg-gradient-to-b from-accent to-accent/30 shrink-0" />
+              {/* Branch connector into each card */}
+              <div className="relative w-full h-6 sm:h-7 flex justify-center">
+                {/* Horizontal bridging line connecting all 6 columns on desktop */}
+                <div
+                  className={cn(
+                    "absolute top-0 h-0.5 bg-accent hidden lg:block",
+                    idx === 0 && "left-1/2 -right-2 rounded-l-full",
+                    idx === total - 1 && "-left-2 right-1/2 rounded-r-full",
+                    idx > 0 && idx < total - 1 && "-left-2 -right-2"
+                  )}
+                />
+                {/* Vertical drop stem into the card */}
+                <div className="relative h-full w-0.5 bg-accent">
+                  <span
+                    className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 size-1.5 rounded-full bg-accent ring-2 ring-[#050a16]"
+                    style={{ boxShadow: `0 0 6px ${beaconColor}` }}
+                  />
+                </div>
+              </div>
 
               {/* Card Frame */}
               <div className="w-full h-full">
@@ -75,8 +93,8 @@ function TierGroup({
           ))}
         </div>
       ) : (
-        <div className="flex flex-wrap justify-center items-stretch gap-4 sm:gap-6 lg:gap-8 w-full max-w-5xl mx-auto">
-          {items.map((member) => (
+        <div className="flex flex-wrap justify-center items-stretch gap-6 sm:gap-8 w-full max-w-5xl mx-auto">
+          {items.map((member, idx) => (
             <div
               key={member.id}
               className={cn(
@@ -86,8 +104,28 @@ function TierGroup({
                 tierType === "manager" && "w-full max-w-[240px] sm:max-w-[270px]"
               )}
             >
-              {/* Top feeder stem into card */}
-              <div className="h-3 sm:h-4 w-0.5 bg-gradient-to-b from-accent to-accent/30 shrink-0" />
+              {/* Branch connector into card */}
+              <div className="relative w-full h-6 sm:h-7 flex justify-center">
+                {total > 1 && (
+                  <div
+                    className={cn(
+                      "absolute top-0 h-0.5 bg-accent",
+                      idx === 0 && "left-1/2 -right-3 sm:-right-4 rounded-l-full",
+                      idx === total - 1 && "-left-3 sm:-left-4 right-1/2 rounded-r-full",
+                      idx > 0 && idx < total - 1 && "-left-3 sm:-left-4 -right-3 sm:-right-4"
+                    )}
+                  />
+                )}
+                {/* Vertical drop stem into the card */}
+                <div className="relative h-full w-0.5 bg-accent">
+                  {total > 1 && (
+                    <span
+                      className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 size-1.5 rounded-full bg-accent ring-2 ring-[#050a16]"
+                      style={{ boxShadow: `0 0 6px ${beaconColor}` }}
+                    />
+                  )}
+                </div>
+              </div>
 
               {/* Card Frame */}
               <div className="w-full h-full">
@@ -100,8 +138,8 @@ function TierGroup({
 
       {/* 3. Outgoing Vertical Trunk to Next Tier */}
       {hasBottomConnector && (
-        <div className="flex flex-col items-center mt-3 sm:mt-4">
-          <div className="h-6 sm:h-8 w-0.5 bg-gradient-to-b from-accent/50 via-accent to-[#8cb9e6]/60" />
+        <div className="flex flex-col items-center">
+          <div className="h-6 sm:h-8 w-0.5 bg-gradient-to-b from-accent to-[#8cb9e6]/60" />
         </div>
       )}
     </div>
