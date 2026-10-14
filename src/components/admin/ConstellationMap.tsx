@@ -292,8 +292,8 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
     <div className="constellation-toolbar">
       <div className="constellation-search"><Search size={17} aria-hidden /><input type="search" value={query} onChange={event => setQuery(event.target.value)} aria-label={th ? "ค้นหารายการในแผนที่" : "Search map records"} placeholder={th ? "ค้นหารายการ…" : "Search records…"} /></div>
       <div className="flex items-center gap-2 pr-2">
-        <Sparkles className="size-5 text-[#b8a4ff]" aria-hidden="true" />
-        <h2 className="text-[15px] font-bold tracking-wide text-[#f4f6ff]">
+        <Sparkles className="size-5 text-[var(--color-accent)]" aria-hidden="true" />
+        <h2 className="text-[15px] font-bold tracking-wide text-[var(--color-ink)]">
           {th ? "กระดานจักรวาล" : "Cosmic Board"}
         </h2>
       </div>
@@ -305,7 +305,7 @@ export function ConstellationMap({ data, workspaceKey }: { data: ConstellationDa
         onPointerDown={event => {if((event.target as HTMLElement).closest("button,a,input,textarea,.constellation-attached-panel,.workspace-note-panel"))return;drag.current={x:event.clientX,y:event.clientY,panX:pan.x,panY:pan.y};event.currentTarget.setPointerCapture(event.pointerId);}}
         onPointerMove={event => {if(drag.current)setPan({x:drag.current.panX+(event.clientX-drag.current.x)/(fit*zoom),y:drag.current.panY+(event.clientY-drag.current.y)/(fit*zoom)});}}
         onPointerUp={() => {drag.current=null;}} onPointerCancel={() => {drag.current=null;}}>
-        <svg className="constellation-starfield" aria-hidden="true"><g fill="#c7dfff">{stars.map(([x,y],index)=><circle key={index} cx={`${x}%`} cy={`${y}%`} r={index%3===0?1.6:0.9} className="constellation-star" style={{animationDelay:`-${(index*0.37)%6}s`,animationDuration:`${3+(index%5)}s`}}/>)}</g></svg>
+        <svg className="constellation-starfield" aria-hidden="true"><g fill="currentColor">{stars.map(([x,y],index)=><circle key={index} cx={`${x}%`} cy={`${y}%`} r={index%3===0?1.6:0.9} className="constellation-star" style={{animationDelay:`-${(index*0.37)%6}s`,animationDuration:`${3+(index%5)}s`}}/>)}</g></svg>
         <div className="constellation-scene" style={{transform:`translate(-50%, -50%) translate(${pan.x}px, ${pan.y}px) scale(${fit*zoom})`,transition:easing?"transform .5s cubic-bezier(.22,.8,.25,1)":undefined}}>
           <svg className="constellation-lines" viewBox="0 0 1040 660" aria-hidden="true" style={{overflow:"visible"}}>
             <defs><filter id="constellation-glow" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="5000" height="5000"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
