@@ -227,6 +227,14 @@
     font-family: var(--font-mono); font-size: 0.9em;
     background: var(--color-surface); padding: 0.15em 0.4em; border-radius: 4px;
   }
+  .prose-risa u { text-decoration: underline; text-underline-offset: 3px; }
+  .prose-risa .risa-text-sm { font-size: 0.85em; }
+  .prose-risa .risa-text-lg { font-size: 1.22em; line-height: 1.55; }
+  .prose-risa .risa-text-xl { font-size: 1.48em; line-height: 1.4; font-weight: 500; }
+  .prose-risa .risa-indent-1 { padding-inline-start: 2rem; }
+  .prose-risa .risa-indent-2 { padding-inline-start: 4rem; }
+  .prose-risa .risa-indent-3 { padding-inline-start: 6rem; }
+  .prose-risa .risa-indent-4 { padding-inline-start: 8rem; }
 
   .hairline { border-color: var(--color-line); }
 }
