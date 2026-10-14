@@ -3,8 +3,8 @@ import { mmsRecords } from '@/lib/mms-import';
 
 export function MmsArchiveCards({locale, categories, excludedIds = []}: {locale:string;categories:string[];excludedIds?:string[]}) {
  return <section className="my-10">
-  <h2 className="mb-3 text-2xl">MMS Hub · {locale==='th'?'เนื้อหาจากเครือข่าย':'Partner archive'}</h2>
-  <p className="mb-6 text-sm text-muted">{locale==='th'?'บทความและภาพจาก MMS Hub โดยคงบทบาทและเครดิตของต้นฉบับ':'Source-language content and photographs from MMS Hub, with original roles and credits retained.'}</p>
+  <h2 className="mb-3 text-2xl">{locale==='th'?'คลังเนื้อหา':'Archive'}</h2>
+  <p className="mb-6 text-sm text-muted">{locale==='th'?'บทความและภาพที่บันทึกไว้ในระบบ':'Archived articles and photographs recorded in the system.'}</p>
   <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">{mmsRecords.filter(r=>categories.includes(r.category) && !excludedIds.includes(r.id)).map(r=><Link key={r.id} href={`/${locale}/mms-hub/${r.id}`} className="risa-archive-card block border-b border-line pb-6">
    {/* eslint-disable-next-line @next/next/no-img-element */}
    {r.cover&&<img src={r.cover} alt={r.title} loading="lazy" className="mb-4 h-52 w-full object-contain"/>}

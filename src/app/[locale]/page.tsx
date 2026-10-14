@@ -28,9 +28,10 @@ export default async function HomePage() {
       <div className="container-page risa-event-first"><MsicFeature locale={locale} /></div>
       <section className="minimal-hero risa-featured-news">
         <div className="minimal-hero-copy">
-          <p className="minimal-eyebrow">{featured?.slug.startsWith("mms-hub-") ? (th ? "จากเครือข่าย · MMS Hub" : "PARTNER ARCHIVE · MMS Hub") : (th ? "ข่าวสารล่าสุด · RISA" : "LATEST NEWS · RISA")}</p>
           <h2 lang={featured ? contentLanguage(featured, "title", locale) : locale}>{featured ? pick(featured, "title", locale) : th ? "ข่าวสารจาก RISA" : "News from RISA"}</h2>
-          <p className="minimal-intro" lang={featured ? contentLanguage(featured, "excerpt", locale) : locale}>{featured ? pick(featured, "excerpt", locale) : th ? "ติดตามข่าวสารและความเคลื่อนไหวของสมาคมได้เร็ว ๆ นี้" : "Association news and updates are coming soon."}</p>
+          <p className="minimal-intro" lang={featured ? contentLanguage(featured, "excerpt", locale) : locale}>
+            {(featured ? pick(featured, "excerpt", locale).replace(/^(MMS Hub · (Original-language source:\s*)?|จาก MMS Hub ·\s*)/i, "") : "") || (th ? "ติดตามข่าวสารและความเคลื่อนไหวของสมาคมได้เร็ว ๆ นี้" : "Association news and updates are coming soon.")}
+          </p>
           {featured?.published_at && <p className="minimal-news-date mt-5"><time dateTime={featured.published_at}>{formatCalendarDate(featured.published_at, th ? "th-TH" : "en-GB")}</time></p>}
           <Link href={L(featured ? `/news/${featured.slug}` : "/news")} className="minimal-hero-link">
             <span className="minimal-circle"><ArrowRight size={22} aria-hidden /></span>

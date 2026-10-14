@@ -18,7 +18,6 @@ export default async function MsicPage() {
   return <article className="container-page msic-story">
     <Link href={`/${locale}/activities`} className="msic-back">← {th ? "กิจกรรมทั้งหมด" : "All activities"}</Link>
     <header>
-      <p className="minimal-eyebrow">MSIC · {th ? "ประมวลภาพกิจกรรม" : "EVENT PHOTO ESSAY"}</p>
       <h1>MedSpark Innovation Competition</h1>
       <p className="msic-summary">{th ? "จากการนำเสนอแนวคิดสู่การแลกเปลี่ยนความคิดเห็นและการมอบรางวัล — ภาพบรรยากาศเวทีนวัตกรรมทางการแพทย์สำหรับเยาวชน" : "From student presentations to discussion and awards — moments from a medical-innovation competition for young people."}</p>
     </header>
