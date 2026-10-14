@@ -102,7 +102,7 @@
 .minimal-activities { display: flex; gap: 28px; padding-top: 32px; font-size: 14px; }
 .minimal-activities a { display: inline-flex; align-items: center; gap: 12px; }
 .minimal-activity-label { color: #796332; flex-shrink: 0; }
-.risa-public > footer { background: #102b3c; color: #f5f4f0; border: 0; --color-ink: #f5f4f0; --color-muted: #c0c9cb; --color-faint: #aebbbc; --color-line: #35505f; --color-accent: #dcc99c; }
+.risa-public > footer { position: relative; z-index: 20; background: #040813; color: #f1f5f9; border-top: 1px solid rgba(140, 185, 230, 0.18); --color-ink: #f8fafc; --color-muted: #cbd5e1; --color-faint: #94a3b8; --color-line: rgba(140, 185, 230, 0.16); --color-accent: #d6bf91; }
 .risa-public > footer img { filter: grayscale(1) brightness(0) invert(1); }
 .risa-public > footer .bg-paper { background: transparent; }
 @media (max-width: 900px) {

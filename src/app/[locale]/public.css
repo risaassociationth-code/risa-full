@@ -245,14 +245,74 @@ body:has(.risa-public) { background: #070c18; }
 .risa-public .risa-cta-band p { color: var(--color-muted); }
 .risa-public .risa-cta-band a { border-radius: 2px; box-shadow: none; }
 .risa-public > footer {
-  background: #060b15;
-  color: var(--color-ink);
-  border-top: 1px solid rgba(140, 185, 230, 0.12);
-  --color-paper: #09101e;
+  position: relative;
+  z-index: 20;
+  background: #040813;
+  color: #f1f5f9;
+  border-top: 1px solid rgba(140, 185, 230, 0.18);
+  box-shadow: 0 -24px 48px rgba(2, 6, 15, 0.85);
+  --color-ink: #f8fafc;
+  --color-ink-2: #e2e8f0;
+  --color-muted: #cbd5e1;
+  --color-faint: #94a3b8;
+  --color-line: rgba(140, 185, 230, 0.16);
+  --color-paper: #0a1120;
+  --color-surface: #040813;
 }
 .risa-public > footer .risa-logo-plate img { filter: brightness(0) invert(1); }
 .risa-public > footer :is(a, button):focus-visible { outline-color: var(--color-accent); }
 .risa-public > footer a:hover { text-decoration: underline; }
+
+/* Enhanced high-contrast footer typography & contact visibility */
+.risa-public > footer h2,
+.risa-public > footer [class*="text-ink"] {
+  color: #f8fafc !important;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+.risa-public > footer p,
+.risa-public > footer .prose-risa,
+.risa-public > footer [class*="text-muted"] {
+  color: #cbd5e1 !important;
+}
+.risa-public > footer nav a {
+  color: #cbd5e1 !important;
+  transition: color 0.15s ease;
+}
+.risa-public > footer nav a:hover {
+  color: var(--color-accent) !important;
+}
+.risa-public > footer address {
+  color: #cbd5e1;
+}
+.risa-public > footer address a {
+  color: #f8fafc !important;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: color 0.15s ease;
+}
+.risa-public > footer address a:hover {
+  color: var(--color-accent) !important;
+}
+.risa-public > footer address svg {
+  color: var(--color-accent) !important;
+  opacity: 0.95;
+}
+.risa-public > footer .border-t {
+  border-color: rgba(140, 185, 230, 0.16) !important;
+}
+.risa-public > footer [class*="text-faint"] {
+  color: #94a3b8 !important;
+}
+.risa-public > footer .bg-paper {
+  background: rgba(18, 31, 49, 0.7) !important;
+  border-color: rgba(140, 185, 230, 0.2) !important;
+  color: #cbd5e1 !important;
+}
+.risa-public > footer .bg-paper:hover {
+  border-color: var(--color-accent) !important;
+  color: var(--color-ink) !important;
+}
 @media (max-width: 800px) {
   .risa-public .risa-introduction { grid-template-columns: 1fr; gap: 24px; padding-block: 40px; }
   .risa-public .risa-introduction h1 { max-width: 42rem; }
