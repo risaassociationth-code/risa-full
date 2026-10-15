@@ -48,15 +48,7 @@ function TierGroup({
       {/* 1. Incoming Vertical Connector from Tier Above */}
       {hasTopConnector && (
         <div className="flex flex-col items-center">
-          <div className="h-6 sm:h-8 w-0.5 bg-gradient-to-b from-[#8cb9e6]/50 via-accent to-accent" />
-          <div
-            className="size-2.5 sm:size-3 -my-0.5 rounded-full ring-4 ring-[#050a16] shadow-lg z-20"
-            style={{
-              backgroundColor: beaconColor,
-              boxShadow: `0 0 12px ${beaconColor}`,
-            }}
-          />
-          <div className="h-5 sm:h-7 w-0.5 bg-accent" />
+          <div className="h-11 sm:h-15 w-0.5 bg-gradient-to-b from-[#8cb9e6]/50 via-accent to-accent" />
         </div>
       )}
 
@@ -77,12 +69,7 @@ function TierGroup({
                   )}
                 />
                 {/* Vertical drop stem into the card */}
-                <div className="relative h-full w-0.5 bg-accent">
-                  <span
-                    className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 size-1.5 rounded-full bg-accent ring-2 ring-[#050a16]"
-                    style={{ boxShadow: `0 0 6px ${beaconColor}` }}
-                  />
-                </div>
+                <div className="relative h-full w-0.5 bg-accent" />
               </div>
 
               {/* Card Frame */}
@@ -118,14 +105,7 @@ function TierGroup({
                     />
                   )}
                   {/* Vertical drop stem into the card */}
-                  <div className="relative h-full w-0.5 bg-accent">
-                    {total > 1 && (
-                      <span
-                        className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 size-1.5 rounded-full bg-accent ring-2 ring-[#050a16]"
-                        style={{ boxShadow: `0 0 6px ${beaconColor}` }}
-                      />
-                    )}
-                  </div>
+                  <div className="relative h-full w-0.5 bg-accent" />
                 </div>
               )}
 
