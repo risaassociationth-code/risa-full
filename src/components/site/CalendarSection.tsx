@@ -22,6 +22,7 @@ interface ParsedCalendarEvent {
   dateText: string;
   monthLabel: string;
   dayBadge: string;
+  sortDay: number;
   yearLabel: string;
   months: number[]; // 0-indexed (0 = Jan, 9 = Oct)
   daysInMonth: Record<number, number[]>;
@@ -172,37 +173,44 @@ function parseEvent(
   const singleDayMatch = rawDate.match(/\b(\d{1,2})\b/);
 
   let dayBadge = "";
+  let sortDay = 15;
   const daysInMonth: Record<number, number[]> = {};
 
   if (rangeMatch) {
     const d1 = Number(rangeMatch[1]);
     const d2 = Number(rangeMatch[2]);
     dayBadge = `${d1} - ${d2}`;
+    sortDay = d1;
     for (const m of months.length ? months : [primaryMonth]) {
       daysInMonth[m] = [d1, d2];
     }
   } else if (singleDayMatch && Number(singleDayMatch[1]) <= 31) {
     const d = Number(singleDayMatch[1]);
     dayBadge = String(d);
+    sortDay = d;
     for (const m of months.length ? months : [primaryMonth]) {
       daysInMonth[m] = [d];
     }
   } else if (/ปลาย|late/i.test(rawDateTh + (event.approx_date_en || ""))) {
     dayBadge = "24 - 26";
+    sortDay = 24;
     for (const m of months.length ? months : [primaryMonth]) {
       daysInMonth[m] = [24, 26];
     }
   } else if (/วันนักประดิษฐ์|inventor/i.test(event.title_th + event.title_en)) {
     dayBadge = "2";
+    sortDay = 2;
     daysInMonth[1] = [2];
   } else if (/i\s*[- ]?new\s*gen/i.test(event.title_th + event.title_en)) {
     dayBadge = "9";
+    sortDay = 9;
     for (const m of months.length ? months : [9]) {
       daysInMonth[m] = [9];
     }
     if (!daysInMonth[9]) daysInMonth[9] = [9];
   } else if (/กรมวิทย์|วิทยาศาสตร์การแพทย์/i.test(event.title_th)) {
     dayBadge = "24 - 26";
+    sortDay = 24;
     for (const m of months.length ? months : [9]) {
       daysInMonth[m] = [24, 26];
     }
@@ -212,6 +220,7 @@ function parseEvent(
     const fallbackDays = [9, 14, 18, 21, 24, 12, 16, 25];
     const d = fallbackDays[index % fallbackDays.length];
     dayBadge = String(d);
+    sortDay = d;
     for (const m of months.length ? months : [primaryMonth]) {
       daysInMonth[m] = [d];
     }
@@ -294,6 +303,7 @@ function parseEvent(
     dateText,
     monthLabel,
     dayBadge,
+    sortDay,
     yearLabel,
     months: months.length ? months : [primaryMonth],
     daysInMonth,
@@ -322,7 +332,21 @@ export function CalendarSection({
   const [selectedCategory, setSelectedCategory] = useState<"all" | EventCategory>("all");
 
   const parsedEvents = useMemo(
-    () => events.map((ev, idx) => parseEvent(ev, idx, locale)),
+    () =>
+      events
+        .map((ev, idx) => parseEvent(ev, idx, locale))
+        .sort((a, b) => {
+          const startDiff = a.months[0] - b.months[0];
+          if (startDiff !== 0) return startDiff;
+          const endA = a.months[a.months.length - 1];
+          const endB = b.months[b.months.length - 1];
+          // Single-month events with specific early days come before multi-month spans
+          if (a.months.length !== b.months.length) {
+            return a.months.length - b.months.length;
+          }
+          if (a.sortDay !== b.sortDay) return a.sortDay - b.sortDay;
+          return endA - endB;
+        }),
     [events, locale],
   );
 
