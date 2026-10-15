@@ -23,10 +23,13 @@ const GALLERY_PATTERNS = [
   /(?:<p[^>]*>(?:\s*<img[^>]+>\s*)+<\/p>\s*)+$/gi,
 ];
 
+const MMS_NOTICE_PARAGRAPH_RE =
+  /<p[^>]*>(?:(?!<\/p>)[\s\S])*(?:MMS[-\s]*Hub|เนื้อหาจากเครือข่าย|Partner content|Reproduced from MMS|ไม่ใช่ประกาศหรือผลงานของ RISA)(?:(?!<\/p>)[\s\S])*<\/p>/gi;
+
 function extractGalleryFromBody(html: string): { cleanBody: string; images: string[] } {
   let cleanBody = (html || "")
     .replace(/<div[^>]*class="[^"]*mms-source-notice[^"]*"[^>]*>[\s\S]*?<\/div>/gi, "")
-    .replace(/<p[^>]*>\s*<strong>\s*MMS[-\s]*Hub[\s\S]*?<\/p>/gi, "");
+    .replace(MMS_NOTICE_PARAGRAPH_RE, "");
   const images: string[] = [];
   for (const pattern of GALLERY_PATTERNS) {
     cleanBody = cleanBody.replace(pattern, (match) => {
@@ -50,7 +53,7 @@ function cleanInitialRow(row: Row): Row {
     if (typeof next[k] === "string") {
       next[k] = (next[k] as string)
         .replace(/<div[^>]*class="[^"]*mms-source-notice[^"]*"[^>]*>[\s\S]*?<\/div>/gi, "")
-        .replace(/<p[^>]*>\s*<strong>\s*MMS[-\s]*Hub[\s\S]*?<\/p>/gi, "");
+        .replace(MMS_NOTICE_PARAGRAPH_RE, "");
     }
   }
   if (Array.isArray(next.tags)) {

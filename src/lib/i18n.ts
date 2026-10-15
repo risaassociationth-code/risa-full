@@ -10,6 +10,13 @@ export function isLocale(v: string | undefined): v is Locale {
 
 const MMS_PREFIX_RE = /^(?:จาก\s*MMS[-\s]*Hub\s*·\s*|MMS[-\s]*Hub\s*·\s*(?:Original-language source:\s*)?)/i;
 
+function stripMmsBranding(val: string): string {
+  return val
+    .replace(MMS_PREFIX_RE, "")
+    .replace(/<div[^>]*class="[^"]*mms-source-notice[^"]*"[^>]*>[\s\S]*?<\/div>/gi, "")
+    .replace(/<p[^>]*>(?:(?!<\/p>)[\s\S])*(?:MMS[-\s]*Hub|เนื้อหาจากเครือข่าย|Partner content|Reproduced from MMS|ไม่ใช่ประกาศหรือผลงานของ RISA)(?:(?!<\/p>)[\s\S])*<\/p>/gi, "");
+}
+
 /** Pick the `_th` / `_en` variant of a bilingual record field. */
 export function pick<T extends Record<string, unknown>>(
   row: T,
@@ -18,10 +25,10 @@ export function pick<T extends Record<string, unknown>>(
 ): string {
   const primary = row[`${base}_${locale}`];
   if (typeof primary === "string" && primary.trim() !== "") {
-    return primary.replace(MMS_PREFIX_RE, "");
+    return stripMmsBranding(primary);
   }
   const fallback = row[`${base}_${locale === "th" ? "en" : "th"}`];
-  return typeof fallback === "string" ? fallback.replace(MMS_PREFIX_RE, "") : "";
+  return typeof fallback === "string" ? stripMmsBranding(fallback) : "";
 }
 
 /** Mark untranslated Thai fields correctly without changing source content. */

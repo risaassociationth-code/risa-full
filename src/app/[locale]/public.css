@@ -393,27 +393,9 @@ body:has(.risa-public) { background: #070c18; }
   line-height: 1.35 !important;
 }
 
-/* MMS Partner Content Notice */
+/* MMS Partner Content Notice (hidden) */
 .risa-public .mms-source-notice {
-  margin-bottom: 2rem;
-  padding: 1.1rem 1.35rem;
-  border-radius: 0.875rem;
-  background: rgba(18, 31, 49, 0.55);
-  border: 1px solid var(--color-line-soft);
-  font-size: 0.875rem;
-  line-height: 1.65;
-  color: var(--color-muted);
-}
-.risa-public .mms-source-notice strong {
-  color: var(--color-accent);
-}
-.risa-public .mms-source-notice a {
-  color: var(--color-ink);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.risa-public .mms-source-notice a:hover {
-  color: var(--color-accent);
+  display: none !important;
 }
 
 /* MMS Photo Gallery: Precision 3-Column Uniform Grid matching design spec */

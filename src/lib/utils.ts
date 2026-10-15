@@ -32,7 +32,7 @@ export function formatBytes(bytes?: number | null): string {
 function formatGalleries(html: string): string {
   const withoutNotice = html
     .replace(/<div[^>]*class="[^"]*mms-source-notice[^"]*"[^>]*>[\s\S]*?<\/div>/gi, "")
-    .replace(/<p[^>]*>\s*<strong>\s*MMS[-\s]*Hub[\s\S]*?<\/p>/gi, "")
+    .replace(/<p[^>]*>(?:(?!<\/p>)[\s\S])*(?:MMS[-\s]*Hub|เนื้อหาจากเครือข่าย|Partner content|Reproduced from MMS|ไม่ใช่ประกาศหรือผลงานของ RISA)(?:(?!<\/p>)[\s\S])*<\/p>/gi, "")
     .replace(/alt="ภาพประกอบจาก MMS Hub"/gi, 'alt="ภาพประกอบกิจกรรม"');
   const galleryBlockRegex =
     /(?:<h3[^>]*>\s*ประมวลภาพกิจกรรม\s*\/\s*Photo Gallery\s*<\/h3>\s*)?(?:<p[^>]*>(?:\s*<img[^>]+>\s*)+<\/p>\s*)+/gi;
