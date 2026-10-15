@@ -467,7 +467,7 @@ export function CalendarSection({
   const categories: { key: "all" | EventCategory; label: string }[] = [
     { key: "all", label: th ? "ทั้งหมด" : "All" },
     { key: "conference", label: th ? "งานประชุม / สัมมนา" : "Conferences / Seminars" },
-    { key: "internal", label: th ? "กิจกรรมภายในบริษัท" : "Internal Activities" },
+    { key: "internal", label: th ? "กิจกรรมภายในสมาคม" : "Internal Activities" },
     { key: "other", label: th ? "อื่น ๆ" : "Other" },
   ];
 
@@ -570,7 +570,7 @@ export function CalendarSection({
             </div>
             <div className="flex items-center gap-3 text-[13px] font-medium text-[#334155]">
               <span className="size-3 shrink-0 rounded-full bg-[#349b76]" />
-              <span>{th ? "กิจกรรมภายในบริษัท" : "Internal Activities"}</span>
+              <span>{th ? "กิจกรรมภายในสมาคม" : "Internal Activities"}</span>
             </div>
             <div className="flex items-center gap-3 text-[13px] font-medium text-[#334155]">
               <span className="size-3 shrink-0 rounded-full bg-[#68a8dc]" />
