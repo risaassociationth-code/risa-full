@@ -10,7 +10,7 @@ import type { Row } from "@/components/admin/collection-config";
 export async function manageImportedNews(slug: string): Promise<ActionResult<{ id: string }>> {
   await requireUser();
   const article = mmsNews.find((item) => item.slug === slug);
-  if (!article) return { ok: false, error: "ไม่พบข่าวจากคลัง MMS Hub" };
+  if (!article) return { ok: false, error: "ไม่พบข่าวจากคลังข้อมูล" };
   const existing = (await sql<{ id: string }[]>`select id from news where slug = ${slug} limit 1`)[0];
   if (existing) return { ok: true, data: { id: existing.id } };
   return createRow("news", { ...article } as Row);

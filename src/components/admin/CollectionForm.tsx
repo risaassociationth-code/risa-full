@@ -24,7 +24,9 @@ const GALLERY_PATTERNS = [
 ];
 
 function extractGalleryFromBody(html: string): { cleanBody: string; images: string[] } {
-  let cleanBody = html || "";
+  let cleanBody = (html || "")
+    .replace(/<div[^>]*class="[^"]*mms-source-notice[^"]*"[^>]*>[\s\S]*?<\/div>/gi, "")
+    .replace(/<p[^>]*>\s*<strong>\s*MMS[-\s]*Hub[\s\S]*?<\/p>/gi, "");
   const images: string[] = [];
   for (const pattern of GALLERY_PATTERNS) {
     cleanBody = cleanBody.replace(pattern, (match) => {
@@ -36,6 +38,25 @@ function extractGalleryFromBody(html: string): { cleanBody: string; images: stri
     });
   }
   return { cleanBody: cleanBody.trim() || "<p></p>", images };
+}
+
+function cleanInitialRow(row: Row): Row {
+  const next: Row = { ...row };
+  const prefixRe = /^(?:จาก\s*MMS[-\s]*Hub\s*·\s*|MMS[-\s]*Hub\s*·\s*(?:Original-language source:\s*)?)/i;
+  for (const k of ["excerpt_th", "excerpt_en"] as const) {
+    if (typeof next[k] === "string") next[k] = (next[k] as string).replace(prefixRe, "");
+  }
+  for (const k of ["body_th", "body_en"] as const) {
+    if (typeof next[k] === "string") {
+      next[k] = (next[k] as string)
+        .replace(/<div[^>]*class="[^"]*mms-source-notice[^"]*"[^>]*>[\s\S]*?<\/div>/gi, "")
+        .replace(/<p[^>]*>\s*<strong>\s*MMS[-\s]*Hub[\s\S]*?<\/p>/gi, "");
+    }
+  }
+  if (Array.isArray(next.tags)) {
+    next.tags = (next.tags as string[]).filter((t) => !/^mms[-\s]*hub$/i.test(String(t).trim()));
+  }
+  return next;
 }
 
 function combineBodyAndGallery(cleanBody: string, images: string[]): string {
@@ -71,14 +92,14 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
   const isNew = initial === null;
   const guided = config.key === "news" || config.key === "activities";
   const importedNews = guided && /^mms-hub-\d+$/.test(String(initial?.slug ?? ""));
-  const [values, setValues] = useState<Row>(() => ({ ...(initial ?? {}), ...(scope ?? {}) }));
+  const [values, setValues] = useState<Row>(() => cleanInitialRow({ ...(initial ?? {}), ...(scope ?? {}) }));
   const [galleryImages, setGalleryImages] = useState<string[]>(() =>
     guided
       ? extractGalleryFromBody(String(initial?.body_th || initial?.body_en || "")).images
       : [],
   );
   const [galleryPickerIndex, setGalleryPickerIndex] = useState<number | "new" | null>(null);
-  const [savedSnapshot, setSavedSnapshot] = useState(() => JSON.stringify({ ...(initial ?? {}), ...(scope ?? {}) }));
+  const [savedSnapshot, setSavedSnapshot] = useState(() => JSON.stringify(cleanInitialRow({ ...(initial ?? {}), ...(scope ?? {}) })));
   const [savedAt, setSavedAt] = useState<string>(String(initial?.updated_at ?? ""));
   const [saveError, setSaveError] = useState<string | null>(null);
   const [step, setStep] = useState(0);

@@ -278,12 +278,14 @@ export function CollectionTable({ config, rows: initialRows, scopeValue, hrefFor
                             : String(row[col.name] ?? "—")
                           ) : col.kind === "tags" ? (
                             <div className="flex flex-wrap gap-1">
-                              {(row[col.name] as string[] | null)?.length ? (
-                                (row[col.name] as string[]).map((tag) => (
-                                  <span key={tag} className="rounded-full bg-surface-2 px-2 py-0.5 text-[11px] text-ink-2">
-                                    {tag}
-                                  </span>
-                                ))
+                              {(row[col.name] as string[] | null)?.filter((t) => !/^mms[-\s]*hub$/i.test(t.trim())).length ? (
+                                (row[col.name] as string[])
+                                  .filter((t) => !/^mms[-\s]*hub$/i.test(t.trim()))
+                                  .map((tag) => (
+                                    <span key={tag} className="rounded-full bg-surface-2 px-2 py-0.5 text-[11px] text-ink-2">
+                                      {tag}
+                                    </span>
+                                  ))
                               ) : (
                                 <span className="text-faint">—</span>
                               )}

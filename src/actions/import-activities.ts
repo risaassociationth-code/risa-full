@@ -10,7 +10,7 @@ import type { Row } from "@/components/admin/collection-config";
 export async function manageImportedActivity(slug: string): Promise<ActionResult<{ id: string }>> {
   await requireUser();
   const activity = mmsActivities.find((item) => item.slug === slug);
-  if (!activity) return { ok: false, error: "ไม่พบกิจกรรมจากคลัง MMS Hub" };
+  if (!activity) return { ok: false, error: "ไม่พบกิจกรรมจากคลังข้อมูล" };
   const existing = (await sql<{ id: string }[]>`select id from activities where slug = ${slug} limit 1`)[0];
   if (existing) return { ok: true, data: { id: existing.id } };
   // Importing an already-public archive item must preserve its visibility.

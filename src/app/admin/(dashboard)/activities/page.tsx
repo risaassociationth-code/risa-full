@@ -14,8 +14,8 @@ export default async function Page() {
   const all: Row[] = [...rows, ...imported.map((activity) => ({ ...activity } as Row))];
   return <div>
     <Link href="/admin/news" className="mb-4 inline-block text-sm text-accent">จัดการข่าวสาร →</Link>
-    <PageHeader title="กิจกรรม" description={`${all.length} รายการ · ${rows.length} รายการในตัวแก้ไข · ${imported.length} รายการจาก MMS Hub`} />
-    <p className="mb-4 text-sm text-muted">คลิกชื่อกิจกรรมจาก MMS Hub เพื่อนำเข้าและแก้ไข โดยคงสถานะเผยแพร่เดิม วันที่เผยแพร่ต้นฉบับไม่ใช่วันจัดกิจกรรม โปรดตรวจสอบและเพิ่มวันจัดจริงเมื่อแก้ไข</p>
+    <PageHeader title="กิจกรรม" description={`${all.length} รายการ · ${rows.length} รายการในตัวแก้ไข · ${imported.length} รายการจากคลังข้อมูล`} />
+    <p className="mb-4 text-sm text-muted">คลิกชื่อกิจกรรมเพื่อนำเข้าและแก้ไข โดยคงสถานะเผยแพร่เดิม วันที่เผยแพร่ต้นฉบับไม่ใช่วันจัดกิจกรรม โปรดตรวจสอบและเพิ่มวันจัดจริงเมื่อแก้ไข</p>
     <CollectionTable config={{ ...config, hasSort: false }} rows={all} />
   </div>;
 }

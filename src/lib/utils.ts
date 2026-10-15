@@ -30,9 +30,13 @@ export function formatBytes(bytes?: number | null): string {
 }
 
 function formatGalleries(html: string): string {
+  const withoutNotice = html
+    .replace(/<div[^>]*class="[^"]*mms-source-notice[^"]*"[^>]*>[\s\S]*?<\/div>/gi, "")
+    .replace(/<p[^>]*>\s*<strong>\s*MMS[-\s]*Hub[\s\S]*?<\/p>/gi, "")
+    .replace(/alt="ภาพประกอบจาก MMS Hub"/gi, 'alt="ภาพประกอบกิจกรรม"');
   const galleryBlockRegex =
     /(?:<h3[^>]*>\s*ประมวลภาพกิจกรรม\s*\/\s*Photo Gallery\s*<\/h3>\s*)?(?:<p[^>]*>(?:\s*<img[^>]+>\s*)+<\/p>\s*)+/gi;
-  const withGalleries = html.replace(galleryBlockRegex, (match, offset, fullStr) => {
+  const withGalleries = withoutNotice.replace(galleryBlockRegex, (match, offset, fullStr) => {
     const imgRegex = /<img[^>]+>/gi;
     const imgs = match.match(imgRegex) || [];
     const hasHeading = /ประมวลภาพกิจกรรม\s*\/\s*Photo Gallery/i.test(match);

@@ -57,16 +57,18 @@ export default async function NewsDetailPage({ params }: PageProps<"/[locale]/ne
                 {pick(item, "excerpt", locale)}
               </p>
             )}
-            {item.tags.length > 0 && (
+            {item.tags.filter((tag) => !/^mms[-\s]*hub$/i.test(tag.trim())).length > 0 && (
               <ul className="mt-5 flex flex-wrap gap-2">
-                {item.tags.map((tag) => (
-                  <li
-                    key={tag}
-                    className="rounded-full border border-line bg-paper px-3 py-1 text-xs text-muted"
-                  >
-                    {tag}
-                  </li>
-                ))}
+                {item.tags
+                  .filter((tag) => !/^mms[-\s]*hub$/i.test(tag.trim()))
+                  .map((tag) => (
+                    <li
+                      key={tag}
+                      className="rounded-full border border-line bg-paper px-3 py-1 text-xs text-muted"
+                    >
+                      {tag}
+                    </li>
+                  ))}
               </ul>
             )}
           </div>

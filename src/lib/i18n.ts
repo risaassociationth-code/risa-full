@@ -8,6 +8,8 @@ export function isLocale(v: string | undefined): v is Locale {
   return v === "th" || v === "en";
 }
 
+const MMS_PREFIX_RE = /^(?:จาก\s*MMS[-\s]*Hub\s*·\s*|MMS[-\s]*Hub\s*·\s*(?:Original-language source:\s*)?)/i;
+
 /** Pick the `_th` / `_en` variant of a bilingual record field. */
 export function pick<T extends Record<string, unknown>>(
   row: T,
@@ -15,9 +17,11 @@ export function pick<T extends Record<string, unknown>>(
   locale: Locale,
 ): string {
   const primary = row[`${base}_${locale}`];
-  if (typeof primary === "string" && primary.trim() !== "") return primary;
+  if (typeof primary === "string" && primary.trim() !== "") {
+    return primary.replace(MMS_PREFIX_RE, "");
+  }
   const fallback = row[`${base}_${locale === "th" ? "en" : "th"}`];
-  return typeof fallback === "string" ? fallback : "";
+  return typeof fallback === "string" ? fallback.replace(MMS_PREFIX_RE, "") : "";
 }
 
 /** Mark untranslated Thai fields correctly without changing source content. */

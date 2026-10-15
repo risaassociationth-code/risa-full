@@ -16,7 +16,7 @@ export default async function Page() {
   return <div>
     <Link href="/admin" className="mb-4 inline-block text-sm text-accent">← กลับโต๊ะทำงาน</Link>
     <PageHeader title="ข่าวและกิจกรรมทั้งหมด" description="ค้นหาเรื่องเดิม เปิดแก้ไข หรือดูรายการที่เผยแพร่อยู่บนเว็บไซต์" />
-    <p className="mb-5 text-sm text-muted">เนื้อหาจากคลัง MMS Hub คงเครดิตต้นฉบับและสถานะเผยแพร่เดิมไว้เมื่อเปิดแก้ไข แหล่งที่มาและสถานะเผยแพร่เป็นคนละส่วนกัน</p>
+    <p className="mb-5 text-sm text-muted">เนื้อหาจากคลังข้อมูลคงสถานะเผยแพร่เดิมไว้เมื่อเปิดแก้ไข แหล่งที่มาและสถานะเผยแพร่เป็นคนละส่วนกัน</p>
     <ContentDesk items={items} />
   </div>;
 }

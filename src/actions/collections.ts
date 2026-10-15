@@ -231,7 +231,7 @@ export async function deleteRow(key: string, id: string): Promise<ActionResult> 
     if (!before) return { ok: false, error: "ไม่พบรายการที่ต้องการลบ" };
 
     if ((key === "news" ? mmsNews : key === "activities" ? mmsActivities : []).some((article) => article.slug === before.slug)) {
-      return { ok: false, error: "เนื้อหาจาก MMS Hub ต้องใช้สถานะฉบับร่างเพื่อซ่อนจากหน้าเว็บ" };
+      return { ok: false, error: "เนื้อหาจากคลังข้อมูลต้องใช้สถานะฉบับร่างเพื่อซ่อนจากหน้าเว็บ" };
     }
 
     await sql.begin(async (tx) => {
