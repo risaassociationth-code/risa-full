@@ -159,21 +159,34 @@ function getSecondSaturdayOfJanuary(year: number): number {
   return firstSaturday + 7;
 }
 
+function isInventorsOrINewGen(ev: CalendarEvent): boolean {
+  return /วันนักประดิษฐ์|inventor|i\s*[- ]?new\s*gen/i.test(`${ev.title_th} ${ev.title_en}`);
+}
+
 function parseEvent(
   event: CalendarEvent,
   index: number,
   locale: Locale,
 ): ParsedCalendarEvent {
   const th = locale === "th";
-  const title = pick(event, "title", locale);
+  const isChildrensDay = /วันเด็ก|children/i.test(event.title_th + event.title_en);
+  const isInventorsDay = isInventorsOrINewGen(event);
+
+  const title = isInventorsDay
+    ? th
+      ? "งานวันนักประดิษฐ์ 2570 (I-New Gen Award 2027)"
+      : "Thailand Inventors' Day 2027 (I-New Gen Award 2027)"
+    : pick(event, "title", locale);
   const rawDate = pick(event, "approx_date", locale).trim();
   const rawDateTh = (event.approx_date_th || "").trim();
-  const body = pick(event, "body", locale).trim();
-  const isChildrensDay = /วันเด็ก|children/i.test(event.title_th + event.title_en);
-  const isINewGen = /i\s*[- ]?new\s*gen/i.test(event.title_th + event.title_en);
+  const body = isInventorsDay
+    ? th
+      ? "ศูนย์นิทรรศการและการประชุมไบเทค บางนา (BITEC Bangna)\nนิทรรศการสิ่งประดิษฐ์\nการประกวด I-New Gen & IPITEx\nเวิร์คช็อป\nผู้เข้าร่วม: นักประดิษฐ์, นักวิจัย, นักเรียน/นักศึกษา, ชาวต่างชาติ (จัดโดย วช.)"
+      : "BITEC Bangna, Bangkok\nInvention Exhibition\nI-New Gen & IPITEx Competitions\nWorkshops\nParticipants: Inventors, Researchers, High school & University students, International delegates (NRCT)"
+    : pick(event, "body", locale).trim();
 
-  const category = classifyCategory(event.title_th, event.title_en, event.body_th || "");
-  const months = isINewGen ? [9] : detectMonths(`${rawDateTh} ${event.approx_date_en || ""}`);
+  const category = classifyCategory(title, event.title_en, body);
+  const months = isInventorsDay ? [1] : detectMonths(`${rawDateTh} ${event.approx_date_en || ""}`);
   const primaryMonth = months.length > 0 ? months[0] : 9; // Default Oct if unspecified
 
   // Extract explicit day numbers (e.g. "9", "24 - 26", "2")
@@ -189,10 +202,10 @@ function parseEvent(
     dayBadge = String(secondSat);
     sortDay = secondSat;
     daysInMonth[0] = [secondSat];
-  } else if (isINewGen) {
-    dayBadge = "5 - 9";
-    sortDay = 5;
-    daysInMonth[9] = [5, 6, 7, 8, 9];
+  } else if (isInventorsDay) {
+    dayBadge = "2 - 6";
+    sortDay = 2;
+    daysInMonth[1] = [2, 3, 4, 5, 6];
   } else if (rangeMatch) {
     const d1 = Number(rangeMatch[1]);
     const d2 = Number(rangeMatch[2]);
@@ -214,10 +227,6 @@ function parseEvent(
     for (const m of months.length ? months : [primaryMonth]) {
       daysInMonth[m] = [24, 26];
     }
-  } else if (/วันนักประดิษฐ์|inventor/i.test(event.title_th + event.title_en)) {
-    dayBadge = "2";
-    sortDay = 2;
-    daysInMonth[1] = [2];
   } else if (/กรมวิทย์|วิทยาศาสตร์การแพทย์/i.test(event.title_th)) {
     dayBadge = "24 - 26";
     sortDay = 24;
@@ -250,7 +259,8 @@ function parseEvent(
     monthLabel = th ? "ต.ค." : "Oct";
   }
 
-  const yearLabel = th ? "2569" : "2026";
+  const is2027 = isInventorsDay || /2027|2570/.test(`${title} ${rawDate}`);
+  const yearLabel = is2027 ? (th ? "2570" : "2027") : th ? "2569" : "2026";
 
   // Full date display line
   const hasYear = /25\d\d|20\d\d/.test(rawDate);
@@ -258,10 +268,10 @@ function parseEvent(
     ? th
       ? `วันเสาร์ที่ ${dayBadge} มกราคม ${yearLabel} (เสาร์ที่ 2 ของเดือนมกราคม)`
       : `Saturday, ${dayBadge} January ${yearLabel} (2nd Saturday of January)`
-    : isINewGen
+    : isInventorsDay
       ? th
-        ? `5 - 9 ตุลาคม ${yearLabel}`
-        : `5 - 9 October ${yearLabel}`
+        ? "2 - 6 กุมภาพันธ์ 2570"
+        : "2 - 6 February 2027"
       : rawDate
         ? hasYear
           ? rawDate
@@ -345,28 +355,34 @@ export function CalendarSection({
   // Default to October 2026 (ตุลาคม 2569) to match the canonical calendar view
   const [viewYear, setViewYear] = useState(2026);
   const [viewMonth, setViewMonth] = useState(9); // 0-indexed: 9 = October
-  const [selectedDay, setSelectedDay] = useState<number | null>(9);
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [filterMode, setFilterMode] = useState<"all" | "month" | "day">("all");
   const [selectedCategory, setSelectedCategory] = useState<"all" | EventCategory>("all");
 
-  const parsedEvents = useMemo(
-    () =>
-      events
-        .map((ev, idx) => parseEvent(ev, idx, locale))
-        .sort((a, b) => {
-          const startDiff = a.months[0] - b.months[0];
-          if (startDiff !== 0) return startDiff;
-          const endA = a.months[a.months.length - 1];
-          const endB = b.months[b.months.length - 1];
-          // Single-month events with specific early days come before multi-month spans
-          if (a.months.length !== b.months.length) {
-            return a.months.length - b.months.length;
-          }
-          if (a.sortDay !== b.sortDay) return a.sortDay - b.sortDay;
-          return endA - endB;
-        }),
-    [events, locale],
-  );
+  const parsedEvents = useMemo(() => {
+    let seenInventorsDay = false;
+    const deduped = events.filter((ev) => {
+      if (isInventorsOrINewGen(ev)) {
+        if (seenInventorsDay) return false;
+        seenInventorsDay = true;
+      }
+      return true;
+    });
+    return deduped
+      .map((ev, idx) => parseEvent(ev, idx, locale))
+      .sort((a, b) => {
+        const startDiff = a.months[0] - b.months[0];
+        if (startDiff !== 0) return startDiff;
+        const endA = a.months[a.months.length - 1];
+        const endB = b.months[b.months.length - 1];
+        // Single-month events with specific early days come before multi-month spans
+        if (a.months.length !== b.months.length) {
+          return a.months.length - b.months.length;
+        }
+        if (a.sortDay !== b.sortDay) return a.sortDay - b.sortDay;
+        return endA - endB;
+      });
+  }, [events, locale]);
 
   // Map day number -> categories present in the currently viewed month
   const monthDayMarkers = useMemo(() => {
@@ -380,9 +396,7 @@ export function CalendarSection({
         map.set(d, list);
       }
     }
-    // Ensure October 2026 always shows the signature indicator dots on 9, 24, 26
     if (viewYear === 2026 && viewMonth === 9) {
-      if (!map.has(9)) map.set(9, ["conference"]);
       if (!map.has(24)) map.set(24, ["internal"]);
       if (!map.has(26)) map.set(26, ["internal"]);
     }
