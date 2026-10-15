@@ -104,28 +104,30 @@ function TierGroup({
                 tierType === "manager" && "w-full max-w-[240px] sm:max-w-[270px]"
               )}
             >
-              {/* Branch connector into card */}
-              <div className="relative w-full h-6 sm:h-7 flex justify-center">
-                {total > 1 && (
-                  <div
-                    className={cn(
-                      "absolute top-0 h-0.5 bg-accent",
-                      idx === 0 && "left-1/2 -right-3 sm:-right-4 rounded-l-full",
-                      idx === total - 1 && "-left-3 sm:-left-4 right-1/2 rounded-r-full",
-                      idx > 0 && idx < total - 1 && "-left-3 sm:-left-4 -right-3 sm:-right-4"
-                    )}
-                  />
-                )}
-                {/* Vertical drop stem into the card */}
-                <div className="relative h-full w-0.5 bg-accent">
+              {/* Branch connector into card (only for tiers below Level 1) */}
+              {hasTopConnector && (
+                <div className="relative w-full h-6 sm:h-7 flex justify-center">
                   {total > 1 && (
-                    <span
-                      className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 size-1.5 rounded-full bg-accent ring-2 ring-[#050a16]"
-                      style={{ boxShadow: `0 0 6px ${beaconColor}` }}
+                    <div
+                      className={cn(
+                        "absolute top-0 h-0.5 bg-accent",
+                        idx === 0 && "left-1/2 -right-3 sm:-right-4 rounded-l-full",
+                        idx === total - 1 && "-left-3 sm:-left-4 right-1/2 rounded-r-full",
+                        idx > 0 && idx < total - 1 && "-left-3 sm:-left-4 -right-3 sm:-right-4"
+                      )}
                     />
                   )}
+                  {/* Vertical drop stem into the card */}
+                  <div className="relative h-full w-0.5 bg-accent">
+                    {total > 1 && (
+                      <span
+                        className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 size-1.5 rounded-full bg-accent ring-2 ring-[#050a16]"
+                        style={{ boxShadow: `0 0 6px ${beaconColor}` }}
+                      />
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Card Frame */}
               <div className="w-full h-full">
@@ -210,7 +212,7 @@ export default async function TeamPage() {
 
       <Section className="relative z-10">
         {/* Page Hero Header */}
-        <div className="mb-10 border-b border-line/60 pb-8 md:pb-12">
+        <div className="mb-6 border-b border-line/60 pb-6 md:pb-8">
           <h1 className="text-3xl font-medium tracking-tight sm:text-5xl md:text-6xl text-ink">
             {th ? "ผังองค์กรสมาคม" : "Organization Chart"}
           </h1>
@@ -222,7 +224,7 @@ export default async function TeamPage() {
         </div>
 
         {/* Tree Viewport (Fits screen width naturally without requiring side-scrolling) */}
-        <div className="w-full flex flex-col items-center pb-20 pt-4 risa-org-tree">
+        <div className="w-full flex flex-col items-center pb-20 pt-0 risa-org-tree">
           {/* === TIER 1: Executive Leadership (President / Head) === */}
           <TierGroup
             beaconColor="#d6bf91"
