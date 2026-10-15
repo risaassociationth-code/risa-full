@@ -22,6 +22,7 @@ interface ParsedCalendarEvent {
   dateText: string;
   monthLabel: string;
   dayBadge: string;
+  sortYear: number;
   sortDay: number;
   yearLabel: string;
   months: number[]; // 0-indexed (0 = Jan, 9 = Oct)
@@ -260,6 +261,7 @@ function parseEvent(
   }
 
   const is2027 = isInventorsDay || /2027|2570/.test(`${title} ${rawDate}`);
+  const sortYear = is2027 ? 2027 : 2026;
   const yearLabel = is2027 ? (th ? "2570" : "2027") : th ? "2569" : "2026";
 
   // Full date display line
@@ -331,6 +333,7 @@ function parseEvent(
     dateText,
     monthLabel,
     dayBadge,
+    sortYear,
     sortDay,
     yearLabel,
     months: months.length ? months : [primaryMonth],
@@ -371,6 +374,8 @@ export function CalendarSection({
     return deduped
       .map((ev, idx) => parseEvent(ev, idx, locale))
       .sort((a, b) => {
+        const yearDiff = a.sortYear - b.sortYear;
+        if (yearDiff !== 0) return yearDiff;
         const startDiff = a.months[0] - b.months[0];
         if (startDiff !== 0) return startDiff;
         const endA = a.months[a.months.length - 1];
@@ -388,6 +393,7 @@ export function CalendarSection({
   const monthDayMarkers = useMemo(() => {
     const map = new Map<number, EventCategory[]>();
     for (const ev of parsedEvents) {
+      if (ev.sortYear !== viewYear) continue;
       const days = ev.daysInMonth[viewMonth];
       if (!days) continue;
       for (const d of days) {
@@ -443,15 +449,16 @@ export function CalendarSection({
         return false;
       }
       if (filterMode === "day" && selectedDay !== null) {
+        if (ev.sortYear !== viewYear) return false;
         const days = ev.daysInMonth[viewMonth] ?? [];
         return days.includes(selectedDay) || ev.months.includes(viewMonth);
       }
       if (filterMode === "month") {
-        return ev.months.includes(viewMonth);
+        return ev.sortYear === viewYear && ev.months.includes(viewMonth);
       }
       return true;
     });
-  }, [parsedEvents, selectedCategory, filterMode, selectedDay, viewMonth]);
+  }, [parsedEvents, selectedCategory, filterMode, selectedDay, viewMonth, viewYear]);
 
   function prevMonth() {
     if (viewMonth === 0) {
