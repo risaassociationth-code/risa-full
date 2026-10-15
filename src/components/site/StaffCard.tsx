@@ -12,7 +12,7 @@ export function StaffCard({ member, locale, preview = false, size = "md" }: { me
   const isSm = size === "sm";
 
   return (
-    <article className="risa-profile-card min-w-0 overflow-hidden rounded-2xl border border-line bg-paper shadow-sm">
+    <article className="risa-profile-card flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-paper shadow-sm">
       <div className={`border-b border-line bg-surface ${isSm ? "p-2" : "p-3"}`}>
         <div className="overflow-hidden rounded-xl">
           <div className="aspect-[4/5] overflow-hidden bg-[#e8edf2]">
@@ -23,12 +23,12 @@ export function StaffCard({ member, locale, preview = false, size = "md" }: { me
           </div>
         </div>
       </div>
-      <div className={isSm ? "p-3.5" : "p-5"}>
+      <div className={`flex flex-1 flex-col ${isSm ? "p-3.5" : "p-5"}`}>
         <h2 className={`break-words font-medium text-ink ${isSm ? "text-base" : "text-xl"}`}>{name}</h2>
         {pick(member, "position", locale) && <p className={`mt-2 break-words text-accent ${isSm ? "text-xs" : "text-sm"}`}>{pick(member, "position", locale)}</p>}
         {pick(member, "department", locale) && <p className={`mt-1 break-words text-muted ${isSm ? "text-[11px]" : "text-sm"}`}>{pick(member, "department", locale)}</p>}
         {pick(member, "bio", locale) && <p className={`mt-3 whitespace-pre-line break-words leading-relaxed text-muted ${isSm ? "text-[11px]" : "text-sm"}`}>{pick(member, "bio", locale)}</p>}
-        {(email || phone) && <div className={`mt-4 space-y-1.5 border-t border-line pt-4 ${isSm ? "text-[11px]" : "text-sm"}`}>
+        {(email || phone) && <div className={`mt-auto space-y-1.5 border-t border-line pt-4 ${isSm ? "text-[11px]" : "text-sm"}`}>
           {email && <a href={preview ? undefined : `mailto:${email}`} className="flex items-start gap-2 break-all text-ink hover:text-accent"><Mail className={`mt-0.5 shrink-0 ${isSm ? "size-3.5" : "size-4"}`} aria-hidden /><span>{email}</span></a>}
           {phone && <a href={preview ? undefined : `tel:${phone.replace(/[^+\d]/g, "")}`} className="flex items-start gap-2 break-all text-ink hover:text-accent"><Phone className={`mt-0.5 shrink-0 ${isSm ? "size-3.5" : "size-4"}`} aria-hidden /><span>{phone}</span></a>}
         </div>}

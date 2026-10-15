@@ -30,6 +30,14 @@ export default async function NewsDetailPage({ params }: PageProps<"/[locale]/ne
   if (!item) notFound();
 
   const related = (await getNews(4)).filter((n) => n.id !== item.id).slice(0, 3);
+  const rawBody = pick(item, "body", locale);
+  const coverBase = item.cover_url ? item.cover_url.split("?")[0] : "";
+  const dedupedBody = coverBase
+    ? rawBody.replace(
+        new RegExp(`<div class="mms-photo-card"><img[^>]*src="${coverBase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:\\?[^"]*)?"[^>]*></div>`, "gi"),
+        "",
+      )
+    : rawBody;
 
   return (
     <>
@@ -87,7 +95,7 @@ export default async function NewsDetailPage({ params }: PageProps<"/[locale]/ne
             <div
               lang={contentLanguage(item, "body", locale)}
               className="prose-risa"
-              dangerouslySetInnerHTML={{ __html: sanitizeHtml(pick(item, "body", locale)) }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(dedupedBody) }}
             />
           </div>
         </div>

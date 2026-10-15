@@ -164,6 +164,46 @@ function isInventorsOrINewGen(ev: CalendarEvent): boolean {
   return /วันนักประดิษฐ์|inventor|i\s*[- ]?new\s*gen/i.test(`${ev.title_th} ${ev.title_en}`);
 }
 
+function defaultBodyForEvent(titleTh: string, titleEn: string, th: boolean): string {
+  const combined = `${titleTh} ${titleEn}`;
+  if (/วันเด็ก|children/i.test(combined)) {
+    return th
+      ? "กิจกรรมส่งเสริมการเรียนรู้วิทยาศาสตร์และนวัตกรรมสำหรับเยาวชน\nเวิร์คช็อปและการทดลองเชิงปฏิบัติการ\nผู้เข้าร่วม: เยาวชน, นักเรียน, ประชาชนทั่วไป"
+      : "Youth Science and Innovation Learning Activities\nHands-on Workshops & Demonstrations\nParticipants: Youth, Students, General Public";
+  }
+  if (/medspark|msic/i.test(combined)) {
+    return th
+      ? "การประกวดนวัตกรรมเครื่องมือทางการแพทย์ชนิดบุกรุกน้อย ระดับมัธยมศึกษา\nอบรมเชิงปฏิบัติการและนำเสนอผลงาน (Pitching)\nผู้เข้าร่วม: นักเรียนระดับมัธยมศึกษา, นักวิจัยพี่เลี้ยง"
+      : "High School Minimally Invasive Medical Device Innovation Competition\nWorkshops, Mentoring & Final Pitching\nParticipants: High School Students, Research Mentors";
+  }
+  if (/\bsts\b/i.test(combined)) {
+    return th
+      ? "เวทีความร่วมมือด้านวิทยาศาสตร์ เทคโนโลยี และนวัตกรรมระดับนานาชาติ (STS forum)\nการอบรมเตรียมความพร้อมนักวิจัยรุ่นใหม่ (NRCT YLP Workshop)\nผู้เข้าร่วม: นักวิจัยรุ่นใหม่, ผู้เชี่ยวชาญระดับนานาชาติ"
+      : "Science and Technology in Society (STS) International Forum\nNRCT Young Leaders Program (YLP) Preparatory Workshop\nParticipants: Early-Career Researchers, International Experts";
+  }
+  if (/thailand research expo|มหกรรมงานวิจัย/i.test(combined)) {
+    return th
+      ? "โรงแรมเซ็นทาราแกรนด์ และบางกอกคอนเวนชันเซ็นเตอร์ เซ็นทรัลเวิลด์\nมหกรรมงานวิจัยแห่งชาติ ประจำปี 2569 (จัดโดย วช.)\nการประชุมวิชาการ นิทรรศการผลงานวิจัย และการประกวดนวัตกรรม\nผู้เข้าร่วม: นักวิจัย, คณาจารย์, นักศึกษา, ภาคอุตสาหกรรม"
+      : "Centara Grand & Bangkok Convention Centre at CentralWorld\nThailand Research Expo 2026 (Organized by NRCT)\nAcademic Conferences, Research Exhibition & Innovation Competitions\nParticipants: Researchers, Faculty, Students, Industry Partners";
+  }
+  if (/สกสว|tsri/i.test(combined)) {
+    return th
+      ? "สำนักงานคณะกรรมการส่งเสริมวิทยาศาสตร์ วิจัยและนวัตกรรม (สกสว.)\nการประชุมวิชาการและเวทีแลกเปลี่ยนทิศทางระบบวิทยาศาสตร์ วิจัยและนวัตกรรม (ววน.)\nผู้เข้าร่วม: นักวิจัย, เครือข่ายมหาวิทยาลัย, หน่วยงานภาครัฐและเอกชน"
+      : "Thailand Science Research and Innovation (TSRI)\nAcademic Forum & National Science, Research and Innovation Ecosystem Symposium\nParticipants: Researchers, University Networks, Public & Private Sectors";
+  }
+  if (/กรมวิทย์|department of.*science/i.test(combined)) {
+    return th
+      ? "ศูนย์การประชุมอิมแพ็คฟอรั่ม เมืองทองธานี\nการประชุมวิชาการวิทยาศาสตร์การแพทย์ ประจำปี (กรมวิทยาศาสตร์การแพทย์)\nการนำเสนอผลงานวิชาการและนิทรรศการนวัตกรรมด้านวิทยาศาสตร์การแพทย์\nผู้เข้าร่วม: นักวิชาการ, บุคลากรทางการแพทย์, นักวิจัย"
+      : "IMPACT Forum Convention Center, Muang Thong Thani\nAnnual Medical Sciences Conference (Department of Medical Sciences)\nAcademic Presentations & Medical Science Innovation Exhibition\nParticipants: Medical Scientists, Healthcare Professionals, Researchers";
+  }
+  if (/medihack/i.test(combined)) {
+    return th
+      ? "กิจกรรม Hackathon พัฒนานวัตกรรมเครื่องมือแพทย์ชนิดบุกรุกน้อย\nการคิดเชิงออกแบบ (Design Thinking) และการแก้ปัญหาเชิงสร้างสรรค์ร่วมกับผู้เชี่ยวชาญ\nผู้เข้าร่วม: นักเรียนระดับมัธยมศึกษาตอนปลาย, นักศึกษา, นักพัฒนาเทคโนโลยีการแพทย์"
+      : "Minimally Invasive Medical Device Innovation Hackathon\nDesign Thinking, Creative Problem Solving & Expert Mentoring\nParticipants: High School & University Students, Medical Tech Developers";
+  }
+  return "";
+}
+
 function parseEvent(
   event: CalendarEvent,
   index: number,
@@ -180,19 +220,36 @@ function parseEvent(
     : pick(event, "title", locale);
   const rawDate = pick(event, "approx_date", locale).trim();
   const rawDateTh = (event.approx_date_th || "").trim();
+  const rawBodyText = pick(event, "body", locale).trim();
   const body = isInventorsDay
     ? th
       ? "ศูนย์นิทรรศการและการประชุมไบเทค บางนา (BITEC Bangna)\nนิทรรศการสิ่งประดิษฐ์\nการประกวด I-New Gen & IPITEx\nเวิร์คช็อป\nผู้เข้าร่วม: นักประดิษฐ์, นักวิจัย, นักเรียน/นักศึกษา, ชาวต่างชาติ (จัดโดย วช.)"
       : "BITEC Bangna, Bangkok\nInvention Exhibition\nI-New Gen & IPITEx Competitions\nWorkshops\nParticipants: Inventors, Researchers, High school & University students, International delegates (NRCT)"
-    : pick(event, "body", locale).trim();
+    : (!rawBodyText || /^science and technology society\.?$/i.test(rawBodyText))
+      ? (defaultBodyForEvent(event.title_th, event.title_en, th) || rawBodyText)
+      : rawBodyText;
 
   const category = classifyCategory(title, event.title_en, body);
   const months = isInventorsDay ? [1] : detectMonths(`${rawDateTh} ${event.approx_date_en || ""}`);
-  const primaryMonth = months.length > 0 ? months[0] : 9; // Default Oct if unspecified
+  const primaryMonth = months.length > 0 ? months[0] : 9;
 
-  // Extract explicit day numbers (e.g. "9", "24 - 26", "2")
-  const rangeMatch = rawDate.match(/\b(\d{1,2})\s*[-–—]\s*(\d{1,2})\b/);
-  const singleDayMatch = rawDate.match(/\b(\d{1,2})\b/);
+  // Strip 4-digit years before matching explicit day numbers
+  const dateWithoutYear = rawDate.replace(/\b(25\d\d|20\d\d)\b/g, "").trim();
+  const rangeMatch = dateWithoutYear.match(/\b(\d{1,2})\s*[-–—]\s*(\d{1,2})\b/);
+  const singleDayMatch = dateWithoutYear.match(/\b(\d{1,2})\b/);
+
+  let monthLabel = "";
+  if (months.length === 1) {
+    monthLabel = th ? TH_MONTHS_SHORT[months[0]] : EN_MONTHS_SHORT[months[0]];
+  } else if (months.length > 1) {
+    const first = th ? TH_MONTHS_SHORT[months[0]] : EN_MONTHS_SHORT[months[0]];
+    const last = th
+      ? TH_MONTHS_SHORT[months[months.length - 1]]
+      : EN_MONTHS_SHORT[months[months.length - 1]];
+    monthLabel = `${first} - ${last}`;
+  } else {
+    monthLabel = th ? "ต.ค." : "Oct";
+  }
 
   let dayBadge = "";
   let sortDay = 15;
@@ -223,41 +280,13 @@ function parseEvent(
       daysInMonth[m] = [d];
     }
   } else if (/ปลาย|late/i.test(rawDateTh + (event.approx_date_en || ""))) {
-    dayBadge = "24 - 26";
-    sortDay = 24;
-    for (const m of months.length ? months : [primaryMonth]) {
-      daysInMonth[m] = [24, 26];
-    }
-  } else if (/กรมวิทย์|วิทยาศาสตร์การแพทย์/i.test(event.title_th)) {
-    dayBadge = "24 - 26";
-    sortDay = 24;
-    for (const m of months.length ? months : [9]) {
-      daysInMonth[m] = [24, 26];
-    }
-    if (!daysInMonth[9]) daysInMonth[9] = [24, 26];
+    dayBadge = th ? "ปลายเดือน" : "Late";
+    sortDay = 25;
   } else {
-    // Fallback deterministic day based on index so every event has a clean numeric badge and calendar dot
-    const fallbackDays = [9, 14, 18, 21, 24, 12, 16, 25];
-    const d = fallbackDays[index % fallbackDays.length];
-    dayBadge = String(d);
-    sortDay = d;
-    for (const m of months.length ? months : [primaryMonth]) {
-      daysInMonth[m] = [d];
-    }
-  }
-
-  // Month label on top of badge
-  let monthLabel = "";
-  if (months.length === 1) {
-    monthLabel = th ? TH_MONTHS_SHORT[months[0]] : EN_MONTHS_SHORT[months[0]];
-  } else if (months.length > 1) {
-    const first = th ? TH_MONTHS_SHORT[months[0]] : EN_MONTHS_SHORT[months[0]];
-    const last = th
-      ? TH_MONTHS_SHORT[months[months.length - 1]]
-      : EN_MONTHS_SHORT[months[months.length - 1]];
-    monthLabel = `${first} - ${last}`;
-  } else {
-    monthLabel = th ? "ต.ค." : "Oct";
+    // Month-only or multi-month event without a fixed day number: display the month on the badge instead of a fake day
+    dayBadge = monthLabel;
+    monthLabel = months.length > 1 ? (th ? "ช่วงเดือน" : "Months") : (th ? "ตลอดเดือน" : "Monthly");
+    sortDay = 15 + (index % 5);
   }
 
   const is2027 = isInventorsDay || /2027|2570/.test(`${title} ${rawDate}`);
@@ -278,7 +307,7 @@ function parseEvent(
         ? hasYear
           ? rawDate
           : `${rawDate} ${yearLabel}`
-        : `${dayBadge} ${monthLabel} ${yearLabel}`;
+        : `${dayBadge} ${yearLabel}`;
 
   // Parse body lines into structured metadata
   const rawLines = body
@@ -294,7 +323,7 @@ function parseEvent(
   for (const line of rawLines) {
     if (/^(ผู้เข้าร่วม|participants)\s*:/i.test(line)) {
       participantsLine = line;
-    } else if (/^(สถานที่|venue|ณ\s)/i.test(line) || /ศูนย์ประชุม|โรงแรม|ไบเทค|วช\./i.test(line)) {
+    } else if (/^(สถานที่|venue|ณ\s)/i.test(line) || /ศูนย์การประชุม|ศูนย์ประชุม|โรงแรม|ไบเทค|วช\.|สกสว|impact|centara|bitec/i.test(line)) {
       if (!locationLine) locationLine = line;
       else remaining.push(line);
     } else {
@@ -308,10 +337,11 @@ function parseEvent(
 
   if (remaining.length > 0) {
     if (remaining.length <= 3 && !remaining[0].startsWith("-")) {
-      organizerLine = remaining.join("   ");
+      organizerLine = remaining.join(" · ");
       remaining.length = 0;
     } else if (!remaining[0].startsWith("-")) {
-      organizerLine = remaining.slice(0, 2).join("   ");
+      organizerLine = remaining.slice(0, 2).join(" · ");
+      remaining.splice(0, 2);
     }
   }
 
@@ -355,9 +385,9 @@ export function CalendarSection({
 }) {
   const th = locale === "th";
 
-  // Default to October 2026 (ตุลาคม 2569) to match the canonical calendar view
+  // Default to January 2026 (มกราคม 2569) so the calendar opens at the start of the 2569 schedule
   const [viewYear, setViewYear] = useState(2026);
-  const [viewMonth, setViewMonth] = useState(9); // 0-indexed: 9 = October
+  const [viewMonth, setViewMonth] = useState(0); // 0-indexed: 0 = January
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [filterMode, setFilterMode] = useState<"all" | "month" | "day">("all");
   const [selectedCategory, setSelectedCategory] = useState<"all" | EventCategory>("all");
@@ -401,10 +431,6 @@ export function CalendarSection({
         if (!list.includes(ev.category)) list.push(ev.category);
         map.set(d, list);
       }
-    }
-    if (viewYear === 2026 && viewMonth === 9) {
-      if (!map.has(24)) map.set(24, ["internal"]);
-      if (!map.has(26)) map.set(26, ["internal"]);
     }
     return map;
   }, [parsedEvents, viewMonth, viewYear]);
@@ -624,7 +650,17 @@ export function CalendarSection({
           <div className="flex items-center gap-2.5">
             <Megaphone className="size-6 text-[#155eef] -rotate-12 stroke-[2]" />
             <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#0f2537]">
-              {th ? "กิจกรรมที่กำลังจะมาถึง" : "Upcoming Events"}
+              {filterMode === "day" && selectedDay !== null
+                ? th
+                  ? `กิจกรรมวันที่ ${selectedDay} ${TH_MONTHS_FULL[viewMonth]} ${viewYear + 543}`
+                  : `Events on ${selectedDay} ${EN_MONTHS_FULL[viewMonth]} ${viewYear}`
+                : filterMode === "month"
+                  ? th
+                    ? `กิจกรรมประจำเดือน${TH_MONTHS_FULL[viewMonth]} ${viewYear + 543}`
+                    : `Events in ${EN_MONTHS_FULL[viewMonth]} ${viewYear}`
+                  : th
+                    ? "ตารางกิจกรรมประจำปี"
+                    : "Annual Event Schedule"}
             </h2>
           </div>
 
@@ -704,7 +740,13 @@ export function CalendarSection({
                         <div
                           className={`flex flex-col items-center justify-center px-2 py-3 sm:py-4 ${badgeBodyClass}`}
                         >
-                          <span className="text-xl sm:text-[26px] font-extrabold leading-none tracking-tight">
+                          <span
+                            className={
+                              /^\d/.test(ev.dayBadge)
+                                ? "text-xl sm:text-[26px] font-extrabold leading-none tracking-tight"
+                                : "text-sm sm:text-[17px] font-bold leading-tight tracking-tight"
+                            }
+                          >
                             {ev.dayBadge}
                           </span>
                           <span className="mt-1.5 text-xs font-medium opacity-85">

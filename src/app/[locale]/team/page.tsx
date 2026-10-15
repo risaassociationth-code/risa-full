@@ -7,7 +7,6 @@ import { StaffCard } from "@/components/site/StaffCard";
 import { Section } from "@/components/site/Section";
 import { OrgChartBackground } from "@/components/site/OrgChartBackground";
 import { cn } from "@/lib/utils";
-import { Sparkles } from "lucide-react";
 
 export async function generateMetadata(): Promise<Metadata> {
   const th = (await getLocale()) === "th";
@@ -142,10 +141,6 @@ export default async function TeamPage() {
         <OrgChartBackground />
         <Section className="relative z-10">
           <div className="mb-12 border-b border-line pb-10 md:pb-14">
-            <p className="mb-5 flex items-center gap-2 text-xs font-semibold uppercase tracking-[.24em] text-accent">
-              <Sparkles className="size-3.5 text-accent" />
-              RISA · {th ? "ทีมงานของเรา" : "Our people"}
-            </p>
             <h1 className="text-4xl font-normal tracking-tight md:text-6xl text-ink">
               {th ? "ผังองค์กร" : "Organization Chart"}
             </h1>

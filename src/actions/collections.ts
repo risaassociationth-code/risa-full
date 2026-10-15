@@ -198,9 +198,10 @@ export async function updateRow(
       if (error) return { ok: false, error };
     }
     await ensureSlug(config, payload, id);
-    if ((key === "news" ? mmsNews : key === "activities" ? mmsActivities : []).some((article) => article.slug === before.slug)) {
-      // Keep the source slug so a Draft reliably hides the archive version.
-      payload.slug = String(before.slug);
+    const normalizedBeforeSlug = String(before.slug ?? "").trim().replace(/^mms-hub-/, "risa-");
+    if ((key === "news" ? mmsNews : key === "activities" ? mmsActivities : []).some((article) => article.slug === normalizedBeforeSlug || article.slug === before.slug)) {
+      // Keep the canonical source slug so a Draft reliably hides the archive version.
+      payload.slug = normalizedBeforeSlug;
     }
     if (config.hasStatus) {
       const status = readStatus(values);
@@ -230,7 +231,8 @@ export async function deleteRow(key: string, id: string): Promise<ActionResult> 
       select * from ${sql(config.table)} where id = ${id} limit 1`;
     if (!before) return { ok: false, error: "ไม่พบรายการที่ต้องการลบ" };
 
-    if ((key === "news" ? mmsNews : key === "activities" ? mmsActivities : []).some((article) => article.slug === before.slug)) {
+    const normalizedBeforeSlug = String(before.slug ?? "").trim().replace(/^mms-hub-/, "risa-");
+    if ((key === "news" ? mmsNews : key === "activities" ? mmsActivities : []).some((article) => article.slug === normalizedBeforeSlug || article.slug === before.slug)) {
       return { ok: false, error: "เนื้อหาจากคลังข้อมูลต้องใช้สถานะฉบับร่างเพื่อซ่อนจากหน้าเว็บ" };
     }
 

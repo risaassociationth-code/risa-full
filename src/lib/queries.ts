@@ -1,7 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { sql } from "./db";
-import { mmsNews } from './mms-import';
+import { mmsActivities, mmsNews, normalizeImportedSlug } from './mms-import';
 
 type Status = { status: string };
 
@@ -106,16 +106,47 @@ export type Partner = { id: string; name: string; logo_url: string; url: string 
 
 // ── public reads (published only) ──────────────────────────────────────────
 
-function withFreshCover<T extends { cover_url?: string }>(item: T): T {
-  if (!item?.cover_url) return item;
+function withFreshCover<T extends { cover_url?: string; slug?: string }>(item: T): T {
+  if (!item) return item;
   return {
     ...item,
-    cover_url: item.cover_url.replace(/\/images\/mms-hub\/([^"'>\s?]+)(?:\?v=\d+)?/g, "/images/mms-hub/$1?v=4"),
+    ...(typeof item.slug === "string" ? { slug: normalizeImportedSlug(item.slug) } : {}),
+    ...(item.cover_url
+      ? { cover_url: item.cover_url.replace(/\/images\/mms-hub\/([^"'>\s?]+)(?:\?v=\d+)?/g, "/images/mms-hub/$1?v=4") }
+      : {}),
+  };
+}
+
+function enrichNewsWithImport(item: News): News {
+  const normalized = withFreshCover(item);
+  const src = mmsNews.find((n) => n.slug === normalized.slug);
+  if (!src) return normalized;
+  return {
+    ...normalized,
+    title_en: (!normalized.title_en || normalized.title_en === normalized.title_th) ? src.title_en : normalized.title_en,
+    excerpt_en: (!normalized.excerpt_en || normalized.excerpt_en === normalized.excerpt_th) ? src.excerpt_en : normalized.excerpt_en,
+    body_en: (!normalized.body_en || normalized.body_en === normalized.body_th) ? src.body_en : normalized.body_en,
+  };
+}
+
+function enrichActivityWithImport(item: Activity): Activity {
+  const normalized = withFreshCover(item);
+  const src = mmsActivities.find((a) => a.slug === normalized.slug);
+  if (!src) return normalized;
+  return {
+    ...normalized,
+    title_en: (!normalized.title_en || normalized.title_en === normalized.title_th) ? src.title_en : normalized.title_en,
+    excerpt_en: (!normalized.excerpt_en || normalized.excerpt_en === normalized.excerpt_th) ? src.excerpt_en : normalized.excerpt_en,
+    body_en: (!normalized.body_en || normalized.body_en === normalized.body_th) ? src.body_en : normalized.body_en,
+    start_date: normalized.start_date || src.start_date,
+    end_date: normalized.end_date || src.end_date,
+    venue_th: normalized.venue_th || src.venue_th,
+    venue_en: normalized.venue_en || src.venue_en,
   };
 }
 
 export const getNews = cache(async (limit = 50, offset = 0) => {
-  const own = (await sql<News[]>`select * from news order by published_at desc, created_at desc`).map(withFreshCover);
+  const own = (await sql<News[]>`select * from news order by published_at desc, created_at desc`).map(enrichNewsWithImport);
   const managedSlugs = new Set(own.map((article) => article.slug));
   return [...own.filter((article) => article.status === 'published'), ...mmsNews.filter((article) => !managedSlugs.has(article.slug))]
     .sort((a,b)=>(Date.parse(b.published_at)||0)-(Date.parse(a.published_at)||0)).slice(offset,offset+limit);
@@ -125,30 +156,45 @@ export const countNews = cache(async () =>
   (await getNews(Number.MAX_SAFE_INTEGER)).length);
 
 export const getNewsBySlug = cache(async (slug: string) => {
-  const managed = (await sql<News[]>`select * from news where slug = ${slug} limit 1`)[0];
-  const item = managed ? (managed.status === 'published' ? managed : undefined) : mmsNews.find((article) => article.slug === slug);
+  const canonical = normalizeImportedSlug(slug);
+  const legacy = canonical.replace(/^risa-/, 'mms-hub-');
+  const managed = (await sql<News[]>`select * from news where slug in (${canonical}, ${legacy}) limit 1`)[0];
+  const item = managed ? (managed.status === 'published' ? enrichNewsWithImport(managed) : undefined) : mmsNews.find((article) => article.slug === canonical);
   return item ? withFreshCover(item) : undefined;
 });
 
-export const getActivities = cache(async (limit = 50, offset = 0) =>
-  (await sql<Activity[]>`select * from activities where status = 'published'
-                  order by start_date desc nulls last, created_at desc limit ${limit} offset ${offset}`).map(withFreshCover));
+export const getActivities = cache(async (limit = 50, offset = 0) => {
+  const own = (await sql<Activity[]>`select * from activities order by start_date desc nulls last, created_at desc`).map(enrichActivityWithImport);
+  const managedSlugs = new Set(own.map((activity) => activity.slug));
+  return [
+    ...own.filter((activity) => activity.status === 'published'),
+    ...mmsActivities.filter((activity) => !managedSlugs.has(activity.slug)),
+  ]
+    .sort((a, b) => (Date.parse(b.start_date ?? '') || 0) - (Date.parse(a.start_date ?? '') || 0))
+    .slice(offset, offset + limit);
+});
 
 /** Archive cards disappear once an editor claims a partner event, even as Draft. */
 export const getManagedMmsActivityIds = cache(async () =>
-  (await sql<{ slug: string }[]>`select slug from activities where slug like 'mms-hub-%'`)
-    .map((row) => row.slug.replace(/^mms-hub-/, '')));
+  (await sql<{ slug: string }[]>`select slug from activities where slug like 'mms-hub-%' or slug like 'risa-%'`)
+    .map((row) => row.slug.replace(/^(mms-hub|risa)-/, '')));
 
-export const getUpcomingActivities = cache(async (limit = 3) =>
-  (await sql<Activity[]>`select * from activities where status = 'published'
-                  and (end_date is null or end_date >= current_date)
-                  order by start_date asc nulls last limit ${limit}`).map(withFreshCover));
+export const getUpcomingActivities = cache(async (limit = 3) => {
+  const today = new Date().toISOString().slice(0, 10);
+  const all = await getActivities(100);
+  return all.filter((a) => (a.end_date ?? a.start_date ?? '') >= today).slice(0, limit);
+});
 
 export const countActivities = cache(async () =>
-  (await sql<{ n: number }[]>`select count(*)::int as n from activities where status = 'published'`)[0].n);
+  (await getActivities(Number.MAX_SAFE_INTEGER)).length);
 
 export const getActivityBySlug = cache(async (slug: string) => {
-  const item = (await sql<Activity[]>`select * from activities where slug = ${slug} and status = 'published' limit 1`)[0];
+  const canonical = normalizeImportedSlug(slug);
+  const legacy = canonical.replace(/^risa-/, 'mms-hub-');
+  const managed = (await sql<Activity[]>`select * from activities where slug in (${canonical}, ${legacy}) limit 1`)[0];
+  const item = managed
+    ? (managed.status === 'published' ? enrichActivityWithImport(managed) : undefined)
+    : mmsActivities.find((activity) => activity.slug === canonical);
   return item ? withFreshCover(item) : undefined;
 });
 

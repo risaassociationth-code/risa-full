@@ -31,6 +31,17 @@ export default async function ActivityDetailPage({
     ? localePath(locale, item.register_url)
     : item.register_url;
 
+  const venue = pick(item, "venue", locale);
+  const hasSidebar = Boolean(item.start_date || venue || item.register_url);
+  const rawBody = pick(item, "body", locale);
+  const coverBase = item.cover_url ? item.cover_url.split("?")[0] : "";
+  const dedupedBody = coverBase
+    ? rawBody.replace(
+        new RegExp(`<div class="mms-photo-card"><img[^>]*src="${coverBase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:\\?[^"]*)?"[^>]*></div>`, "gi"),
+        "",
+      )
+    : rawBody;
+
   return (
     <>
       <div className="border-b border-line bg-surface">
@@ -53,8 +64,8 @@ export default async function ActivityDetailPage({
         </div>
       </div>
 
-      <div className="container-page grid gap-10 py-12 md:py-16 lg:grid-cols-12 lg:gap-14">
-        <div className="lg:col-span-8">
+      <div className={hasSidebar ? "container-page grid gap-10 py-12 md:py-16 lg:grid-cols-12 lg:gap-14" : "container-page py-12 md:py-16"}>
+        <div className={hasSidebar ? "lg:col-span-8" : "mx-auto max-w-3xl"}>
           <div className="mb-10 aspect-[16/9] overflow-hidden rounded-2xl border border-line">
             {item.cover_url ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -66,48 +77,50 @@ export default async function ActivityDetailPage({
           <div
             lang={contentLanguage(item, "body", locale)}
             className="prose-risa"
-            dangerouslySetInnerHTML={{ __html: sanitizeHtml(pick(item, "body", locale)) }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(dedupedBody) }}
           />
         </div>
 
-        <aside className="lg:col-span-4">
-          <div className="sticky top-24 rounded-2xl border border-line bg-surface p-6">
-            <dl className="space-y-5 text-sm">
-              {item.start_date && (
-                <div>
-                  <dt className="mb-1.5 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-faint">
-                    <CalendarDays className="size-3.5" strokeWidth={1.7} />
-                    {t(locale, "date")}
-                  </dt>
-                  <dd className="font-medium">
-                    {formatDate(item.start_date, locale)}
-                    {item.end_date && item.end_date !== item.start_date && (
-                      <> – {formatDate(item.end_date, locale)}</>
-                    )}
-                  </dd>
-                </div>
+        {hasSidebar && (
+          <aside className="lg:col-span-4">
+            <div className="sticky top-24 rounded-2xl border border-line bg-surface p-6">
+              <dl className="space-y-5 text-sm">
+                {item.start_date && (
+                  <div>
+                    <dt className="mb-1.5 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-faint">
+                      <CalendarDays className="size-3.5" strokeWidth={1.7} />
+                      {t(locale, "date")}
+                    </dt>
+                    <dd className="font-medium">
+                      {formatDate(item.start_date, locale)}
+                      {item.end_date && item.end_date !== item.start_date && (
+                        <> – {formatDate(item.end_date, locale)}</>
+                      )}
+                    </dd>
+                  </div>
+                )}
+                {venue && (
+                  <div>
+                    <dt className="mb-1.5 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-faint">
+                      <MapPin className="size-3.5" strokeWidth={1.7} />
+                      {t(locale, "venue")}
+                    </dt>
+                    <dd className="leading-relaxed">{venue}</dd>
+                  </div>
+                )}
+              </dl>
+              {item.register_url && (
+                <a
+                  href={registerHref}
+                  className="mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-accent px-5 text-sm font-medium text-accent-ink transition-[filter] hover:brightness-110"
+                >
+                  {t(locale, "register")}
+                  <ExternalLink className="size-3.5" />
+                </a>
               )}
-              {pick(item, "venue", locale) && (
-                <div>
-                  <dt className="mb-1.5 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-faint">
-                    <MapPin className="size-3.5" strokeWidth={1.7} />
-                    {t(locale, "venue")}
-                  </dt>
-                  <dd className="leading-relaxed">{pick(item, "venue", locale)}</dd>
-                </div>
-              )}
-            </dl>
-            {item.register_url && (
-              <a
-                href={registerHref}
-                className="mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-accent px-5 text-sm font-medium text-accent-ink transition-[filter] hover:brightness-110"
-              >
-                {t(locale, "register")}
-                <ExternalLink className="size-3.5" />
-              </a>
-            )}
-          </div>
-        </aside>
+            </div>
+          </aside>
+        )}
       </div>
 
       <CtaBand />

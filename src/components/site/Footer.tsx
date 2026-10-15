@@ -32,7 +32,7 @@ export async function Footer() {
   ].filter((s) => s.href);
 
   return (
-    <footer className="relative z-20 mt-auto border-t border-line bg-surface">
+    <footer id="contact" className="relative z-20 mt-auto border-t border-line bg-surface">
       <div className="container-page grid gap-10 py-14 md:grid-cols-12 md:gap-8">
         <div className="md:col-span-4">
           <span className="risa-logo-plate">

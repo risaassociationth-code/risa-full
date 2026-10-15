@@ -2,14 +2,14 @@ import { CollectionTable } from "@/components/admin/CollectionTable";
 import { getCollection } from "@/components/admin/collection-config";
 import { listRows } from "@/components/admin/collection-data";
 import Link from "next/link";
-import { mmsNews } from "@/lib/mms-import";
+import { mmsNews, normalizeImportedSlug } from "@/lib/mms-import";
 import { PageHeader } from "@/components/admin/ui";
 import type { Row } from "@/components/admin/collection-config";
 
 export default async function Page() {
   const config = getCollection("news");
   const rows = await listRows("news");
-  const managedSlugs = new Set(rows.map((row) => row.slug));
+  const managedSlugs = new Set(rows.map((row) => normalizeImportedSlug(String(row.slug ?? ""))));
   const imported = mmsNews.filter((article) => !managedSlugs.has(article.slug));
   const allNews: Row[] = [...rows, ...imported.map((article) => ({ ...article } as Row))]
     .sort((a, b) => (Date.parse(String(b.published_at ?? "")) || 0) - (Date.parse(String(a.published_at ?? "")) || 0));

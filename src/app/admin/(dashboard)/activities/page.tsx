@@ -1,7 +1,7 @@
 import { CollectionTable } from "@/components/admin/CollectionTable";
 import { getCollection } from "@/components/admin/collection-config";
 import { listRows } from "@/components/admin/collection-data";
-import { mmsActivities } from "@/lib/mms-import";
+import { mmsActivities, normalizeImportedSlug } from "@/lib/mms-import";
 import { PageHeader } from "@/components/admin/ui";
 import type { Row } from "@/components/admin/collection-config";
 import Link from "next/link";
@@ -9,7 +9,7 @@ import Link from "next/link";
 export default async function Page() {
   const config = getCollection("activities");
   const rows = await listRows("activities");
-  const managedSlugs = new Set(rows.map((row) => row.slug));
+  const managedSlugs = new Set(rows.map((row) => normalizeImportedSlug(String(row.slug ?? ""))));
   const imported = mmsActivities.filter((activity) => !managedSlugs.has(activity.slug));
   const all: Row[] = [...rows, ...imported.map((activity) => ({ ...activity } as Row))];
   return <div>
