@@ -14,7 +14,6 @@ export default async function CalendarPage() {
   const th = locale === "th";
   return <Section>
     <div className="mb-12 border-b border-line pb-10 md:pb-14">
-      <p className="mb-5 text-xs font-medium uppercase tracking-[.24em] text-accent">RISA · {th ? "กิจกรรมประจำปี" : "Yearly events"}</p>
       <h1 className="text-4xl font-normal tracking-tight md:text-6xl">{th ? "ปฏิทิน" : "Calendar"}</h1>
     </div>
     <CalendarSection events={events} locale={locale} />
