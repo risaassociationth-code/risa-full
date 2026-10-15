@@ -170,9 +170,10 @@ function parseEvent(
   const rawDateTh = (event.approx_date_th || "").trim();
   const body = pick(event, "body", locale).trim();
   const isChildrensDay = /วันเด็ก|children/i.test(event.title_th + event.title_en);
+  const isINewGen = /i\s*[- ]?new\s*gen/i.test(event.title_th + event.title_en);
 
   const category = classifyCategory(event.title_th, event.title_en, event.body_th || "");
-  const months = detectMonths(`${rawDateTh} ${event.approx_date_en || ""}`);
+  const months = isINewGen ? [9] : detectMonths(`${rawDateTh} ${event.approx_date_en || ""}`);
   const primaryMonth = months.length > 0 ? months[0] : 9; // Default Oct if unspecified
 
   // Extract explicit day numbers (e.g. "9", "24 - 26", "2")
@@ -188,6 +189,10 @@ function parseEvent(
     dayBadge = String(secondSat);
     sortDay = secondSat;
     daysInMonth[0] = [secondSat];
+  } else if (isINewGen) {
+    dayBadge = "5 - 9";
+    sortDay = 5;
+    daysInMonth[9] = [5, 6, 7, 8, 9];
   } else if (rangeMatch) {
     const d1 = Number(rangeMatch[1]);
     const d2 = Number(rangeMatch[2]);
@@ -213,13 +218,6 @@ function parseEvent(
     dayBadge = "2";
     sortDay = 2;
     daysInMonth[1] = [2];
-  } else if (/i\s*[- ]?new\s*gen/i.test(event.title_th + event.title_en)) {
-    dayBadge = "9";
-    sortDay = 9;
-    for (const m of months.length ? months : [9]) {
-      daysInMonth[m] = [9];
-    }
-    if (!daysInMonth[9]) daysInMonth[9] = [9];
   } else if (/กรมวิทย์|วิทยาศาสตร์การแพทย์/i.test(event.title_th)) {
     dayBadge = "24 - 26";
     sortDay = 24;
@@ -260,11 +258,15 @@ function parseEvent(
     ? th
       ? `วันเสาร์ที่ ${dayBadge} มกราคม ${yearLabel} (เสาร์ที่ 2 ของเดือนมกราคม)`
       : `Saturday, ${dayBadge} January ${yearLabel} (2nd Saturday of January)`
-    : rawDate
-      ? hasYear
-        ? rawDate
-        : `${rawDate} ${yearLabel}`
-      : `${dayBadge} ${monthLabel} ${yearLabel}`;
+    : isINewGen
+      ? th
+        ? `5 - 9 ตุลาคม ${yearLabel}`
+        : `5 - 9 October ${yearLabel}`
+      : rawDate
+        ? hasYear
+          ? rawDate
+          : `${rawDate} ${yearLabel}`
+        : `${dayBadge} ${monthLabel} ${yearLabel}`;
 
   // Parse body lines into structured metadata
   const rawLines = body
