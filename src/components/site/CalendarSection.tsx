@@ -153,6 +153,12 @@ function classifyCategory(titleTh: string, titleEn: string, bodyTh: string): Eve
   return "conference";
 }
 
+function getSecondSaturdayOfJanuary(year: number): number {
+  const jan1Day = new Date(year, 0, 1).getDay(); // 0 = Sun ... 6 = Sat
+  const firstSaturday = 1 + ((6 - jan1Day + 7) % 7);
+  return firstSaturday + 7;
+}
+
 function parseEvent(
   event: CalendarEvent,
   index: number,
@@ -163,6 +169,7 @@ function parseEvent(
   const rawDate = pick(event, "approx_date", locale).trim();
   const rawDateTh = (event.approx_date_th || "").trim();
   const body = pick(event, "body", locale).trim();
+  const isChildrensDay = /วันเด็ก|children/i.test(event.title_th + event.title_en);
 
   const category = classifyCategory(event.title_th, event.title_en, event.body_th || "");
   const months = detectMonths(`${rawDateTh} ${event.approx_date_en || ""}`);
@@ -176,7 +183,12 @@ function parseEvent(
   let sortDay = 15;
   const daysInMonth: Record<number, number[]> = {};
 
-  if (rangeMatch) {
+  if (isChildrensDay) {
+    const secondSat = getSecondSaturdayOfJanuary(2026); // 10 Jan 2026
+    dayBadge = String(secondSat);
+    sortDay = secondSat;
+    daysInMonth[0] = [secondSat];
+  } else if (rangeMatch) {
     const d1 = Number(rangeMatch[1]);
     const d2 = Number(rangeMatch[2]);
     dayBadge = `${d1} - ${d2}`;
@@ -244,11 +256,15 @@ function parseEvent(
 
   // Full date display line
   const hasYear = /25\d\d|20\d\d/.test(rawDate);
-  const dateText = rawDate
-    ? hasYear
-      ? rawDate
-      : `${rawDate} ${yearLabel}`
-    : `${dayBadge} ${monthLabel} ${yearLabel}`;
+  const dateText = isChildrensDay
+    ? th
+      ? `วันเสาร์ที่ ${dayBadge} มกราคม ${yearLabel} (เสาร์ที่ 2 ของเดือนมกราคม)`
+      : `Saturday, ${dayBadge} January ${yearLabel} (2nd Saturday of January)`
+    : rawDate
+      ? hasYear
+        ? rawDate
+        : `${rawDate} ${yearLabel}`
+      : `${dayBadge} ${monthLabel} ${yearLabel}`;
 
   // Parse body lines into structured metadata
   const rawLines = body
