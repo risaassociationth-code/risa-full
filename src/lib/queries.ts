@@ -106,8 +106,16 @@ export type Partner = { id: string; name: string; logo_url: string; url: string 
 
 // ── public reads (published only) ──────────────────────────────────────────
 
+function withFreshCover<T extends { cover_url?: string }>(item: T): T {
+  if (!item?.cover_url) return item;
+  return {
+    ...item,
+    cover_url: item.cover_url.replace(/\/images\/mms-hub\/([^"'>\s?]+)(?:\?v=\d+)?/g, "/images/mms-hub/$1?v=4"),
+  };
+}
+
 export const getNews = cache(async (limit = 50, offset = 0) => {
-  const own = await sql<News[]>`select * from news order by published_at desc, created_at desc`;
+  const own = (await sql<News[]>`select * from news order by published_at desc, created_at desc`).map(withFreshCover);
   const managedSlugs = new Set(own.map((article) => article.slug));
   return [...own.filter((article) => article.status === 'published'), ...mmsNews.filter((article) => !managedSlugs.has(article.slug))]
     .sort((a,b)=>(Date.parse(b.published_at)||0)-(Date.parse(a.published_at)||0)).slice(offset,offset+limit);
@@ -118,12 +126,13 @@ export const countNews = cache(async () =>
 
 export const getNewsBySlug = cache(async (slug: string) => {
   const managed = (await sql<News[]>`select * from news where slug = ${slug} limit 1`)[0];
-  return managed ? (managed.status === 'published' ? managed : undefined) : mmsNews.find((article) => article.slug === slug);
+  const item = managed ? (managed.status === 'published' ? managed : undefined) : mmsNews.find((article) => article.slug === slug);
+  return item ? withFreshCover(item) : undefined;
 });
 
 export const getActivities = cache(async (limit = 50, offset = 0) =>
-  sql<Activity[]>`select * from activities where status = 'published'
-                  order by start_date desc nulls last, created_at desc limit ${limit} offset ${offset}`);
+  (await sql<Activity[]>`select * from activities where status = 'published'
+                  order by start_date desc nulls last, created_at desc limit ${limit} offset ${offset}`).map(withFreshCover));
 
 /** Archive cards disappear once an editor claims a partner event, even as Draft. */
 export const getManagedMmsActivityIds = cache(async () =>
@@ -131,15 +140,17 @@ export const getManagedMmsActivityIds = cache(async () =>
     .map((row) => row.slug.replace(/^mms-hub-/, '')));
 
 export const getUpcomingActivities = cache(async (limit = 3) =>
-  sql<Activity[]>`select * from activities where status = 'published'
+  (await sql<Activity[]>`select * from activities where status = 'published'
                   and (end_date is null or end_date >= current_date)
-                  order by start_date asc nulls last limit ${limit}`);
+                  order by start_date asc nulls last limit ${limit}`).map(withFreshCover));
 
 export const countActivities = cache(async () =>
   (await sql<{ n: number }[]>`select count(*)::int as n from activities where status = 'published'`)[0].n);
 
-export const getActivityBySlug = cache(async (slug: string) =>
-  (await sql<Activity[]>`select * from activities where slug = ${slug} and status = 'published' limit 1`)[0]);
+export const getActivityBySlug = cache(async (slug: string) => {
+  const item = (await sql<Activity[]>`select * from activities where slug = ${slug} and status = 'published' limit 1`)[0];
+  return item ? withFreshCover(item) : undefined;
+});
 
 export const getCommittee = cache(async () =>
   sql<CommitteeMember[]>`select * from committee_members where status = 'published' order by sort, created_at`);

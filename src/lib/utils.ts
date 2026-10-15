@@ -45,7 +45,7 @@ function formatGalleries(html: string): string {
     const cards = imgs.map((img) => `<div class="mms-photo-card">${img}</div>`).join("");
     return `<div class="mms-photo-gallery not-prose"><h3 class="mms-photo-gallery-title">ประมวลภาพกิจกรรม / Photo Gallery</h3><div class="mms-photo-grid">${cards}</div></div>`;
   });
-  return withGalleries.replace(/\/images\/mms-hub\/([^"'>\s?]+)(?:\?v=\d+)?/g, "/images/mms-hub/$1?v=2");
+  return withGalleries.replace(/\/images\/mms-hub\/([^"'>\s?]+)(?:\?v=\d+)?/g, "/images/mms-hub/$1?v=4");
 }
 
 /** Shared parser-based policy for saved content, public output and previews. */
