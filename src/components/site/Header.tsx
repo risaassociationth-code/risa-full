@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { RisingLineEntrance } from "./RisingLineEntrance";
+import navigationStyles from "./RisingLineEntrance.module.css";
 import { getSettings } from "@/lib/content";
 import { getLocale } from "@/lib/request";
 import { localePath, pick, t } from "@/lib/i18n";
@@ -18,7 +18,7 @@ export async function Header() {
   const orgName = pick(settings, "org_name", locale);
 
   return (
-    <RisingLineEntrance locale={locale}>
+    <div className={navigationStyles.normalNav}>
     <header className="risa-site-header sticky top-0 z-[60] border-b border-line bg-paper/92 backdrop-blur-md">
       <a
         href="#main"
@@ -53,6 +53,6 @@ export async function Header() {
         </div>
       </div>
     </header>
-    </RisingLineEntrance>
+    </div>
   );
 }

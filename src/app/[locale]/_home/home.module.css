@@ -1,0 +1,183 @@
+.home {
+  --ink: #153736;
+  --green: #08675c;
+  --paper: #fcfaf5;
+  color-scheme: light;
+  color: var(--ink);
+  background: var(--paper);
+}
+.home ::selection { background: #bfe67d; color: #133e38; }
+.home :is(a, button):focus-visible {
+  outline: 3px solid #0d6258;
+  outline-offset: 4px;
+}
+.home :is(section, aside)[id] { scroll-margin-top: 100px; }
+
+/* The localized homepage keeps the public navigation and its language switch. */
+:global(.risa-public):has(.home) :global(.risa-site-header) {
+  --color-ink: #153736;
+  --color-ink-2: #294d47;
+  --color-muted: #4c6660;
+  --color-accent: #08675c;
+  --color-line: #c8d9ce;
+  --color-surface: #e2eee5;
+  color: #153736;
+  background: #fbfcf7;
+  box-shadow: none;
+  border-color: #cddfd4;
+  backdrop-filter: none;
+}
+:global(.risa-public):has(.home) :global(.risa-site-header) > :global(.container-page) {
+  max-width: 1400px;
+  padding-inline: clamp(22px, 5vw, 84px);
+  min-height: 76px;
+}
+:global(.risa-public):has(.home) :global(.risa-site-header .risa-logo-plate img) {
+  height: 36px;
+  filter: brightness(0);
+}
+:global(.risa-public):has(.home) :global(.risa-site-header) a[aria-current="true"] {
+  background: #154841;
+  color: white;
+}
+:global(.risa-public):has(.home) :global(.risa-site-header) :is(a, button):focus-visible {
+  outline-color: #08675c;
+}
+.hero {
+  background: #e8f3eb;
+  border-bottom: 1px solid #c8dfd0;
+}
+.heroGrid, .field {
+  width: 100%;
+  max-width: 1400px;
+  margin-inline: auto;
+  padding-inline: clamp(22px, 5vw, 84px);
+}
+.heroGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.96fr) minmax(0, 1.04fr);
+  align-items: center;
+  gap: clamp(30px, 5vw, 80px);
+  padding-block: clamp(52px, 6.6vw, 98px);
+}
+.lead { min-width: 0; }
+.lead h1 {
+  font-weight: 620;
+  font-size: clamp(2.85rem, 4.85vw, 4.85rem);
+  letter-spacing: -.04em;
+  line-height: 1.075;
+  text-wrap: initial;
+}
+.lead h1 span { display: block; color: var(--green); }
+.home:lang(th) .lead h1 {
+  font-size: clamp(2.55rem, 4.45vw, 4.4rem);
+  letter-spacing: -.018em;
+  line-height: 1.24;
+}
+.vision { max-width: 36rem; margin-top: clamp(21px, 2.4vw, 34px); }
+.vision strong { display: block; color: #254d43; font-weight: 650; font-size: .93rem; }
+.vision :global(.prose-risa) { color: #36584f; margin-top: 6px; font-size: clamp(1rem, 1.3vw, 1.14rem); line-height: 1.65; }
+.vision :global(.prose-risa) p { margin: 0; line-height: inherit; }
+.home:lang(th) .vision :global(.prose-risa) { line-height: 1.8; }
+.actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 24px; margin-top: 26px; }
+.primary, .plansLink, .storyLink {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: .65rem; min-height: 46px; font-size: .94rem; font-weight: 620;
+}
+.primary { border-radius: 6px; padding: 10px 19px; background: #09594f; color: white; }
+.primary:hover { background: #133e38; }
+.plansLink { color: #14584e; }
+.plansLink:hover, .storyLink:hover, .networkLink:hover { text-decoration: underline; }
+.heroFigure {
+  position: relative;
+  min-width: 0;
+  padding: 14px 16px 0 0;
+  margin: 0;
+}
+.heroFigure::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 50px 12%;
+  background: #c7dd67;
+  border-radius: 4px clamp(56px, 7.3vw, 108px) 0 0;
+}
+.heroImage {
+  position: relative;
+  overflow: hidden;
+  background: #d1ded2;
+  border-radius: 4px clamp(56px, 7.3vw, 108px) 4px 4px;
+}
+.heroImage img { display: block; width: 100%; height: auto; aspect-ratio: 1.40; object-fit: cover; object-position: 48% 45%; }
+.heroFigure figcaption {
+  display: flex; align-items: baseline; gap: 10px;
+  padding-top: 13px; color: #36584f; font-size: .84rem; line-height: 1.6;
+}
+.captionMark { align-self: center; width: 21px; border-top: 3px solid #548c68; flex: 0 0 auto; }
+.field {
+  padding-top: clamp(50px, 6vw, 84px);
+  padding-bottom: clamp(48px, 5.5vw, 80px);
+}
+.fieldGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.03fr) minmax(0, .97fr);
+  align-items: center;
+  gap: clamp(36px, 7vw, 104px);
+}
+.fieldText { grid-column: 2; grid-row: 1; }
+.fieldText h2 {
+  font-size: clamp(2rem, 3.45vw, 3.65rem);
+  line-height: 1.12; letter-spacing: -.034em; font-weight: 600;
+}
+.fieldText p {
+  margin-top: 18px; max-width: 37rem; color: #4c625b; font-size: 1.04rem; line-height: 1.8;
+}
+.home:lang(th) .fieldText h2 { font-size: clamp(1.9rem, 3.25vw, 3.3rem); line-height: 1.32; letter-spacing: -.014em; }
+.fieldText .programme { margin-top: 12px; font-size: .94rem; }
+.programme a { color: #0b6358; text-decoration: underline; }
+.programme svg { display: inline; vertical-align: baseline; }
+.storyLink { gap: 11px; color: #0b6358; border-bottom: 1px solid #94b9a5; margin-top: 19px; }
+.storyFigure { grid-column: 1; grid-row: 1; margin: 0; }
+.storyFigure img {
+  display: block; width: 100%; aspect-ratio: 1.69; object-fit: cover;
+  object-position: center 35%; border-radius: 4px;
+}
+.storyFigure figcaption { margin-top: 8px; color: #536961; font-size: .82rem; }
+.network {
+  display: grid; grid-template-columns: minmax(0, .87fr) minmax(0, 1.13fr);
+  gap: 24px clamp(24px, 6vw, 84px); align-items: start;
+  border-block: 1px solid #e4d2b2;
+  padding: clamp(20px, 2.6vw, 38px);
+  margin-top: clamp(34px, 4vw, 60px);
+  background: #f7edd7;
+}
+.networkHeading { display: flex; align-items: flex-start; gap: 16px; }
+.networkHeading > svg { flex: 0 0 26px; margin-top: 3px; color: #86611d; }
+.networkHeading h3 { font-size: clamp(1.35rem, 2vw, 2rem); font-weight: 600; line-height: 1.25; }
+.home:lang(th) .networkHeading h3 { line-height: 1.5; }
+.networkLink { display: inline-flex; align-items: baseline; gap: 15px; line-height: 1.6; font-weight: 580; }
+.networkLink > svg { align-self: center; flex-shrink: 0; }
+.source { display: flex; flex-wrap: wrap; gap: 3px 15px; font-size: .82rem; color: #655330; margin-top: 9px; }
+.source a { display: inline-flex; align-items: center; gap: 3px; text-decoration: underline; }
+
+@media (max-width: 800px) {
+  :global(.risa-public):has(.home) :global(.risa-site-header) > :global(.container-page) { min-height: 64px; }
+  :global(.risa-public):has(.home) :global(.risa-site-header .risa-logo-plate img) { height: 30px; }
+  .heroGrid { grid-template-columns: 1fr; gap: 30px; padding-block: 40px 30px; }
+  .lead h1 { font-size: clamp(2.65rem, 7vw, 3.55rem); }
+  .home:lang(th) .lead h1 { font-size: clamp(2.45rem, 7vw, 3.4rem); }
+  .vision { margin-top: 18px; }
+  .actions { margin-top: 18px; }
+  .heroFigure { padding: 9px 10px 0 0; }
+  .heroFigure::before, .heroImage { border-top-right-radius: 60px; }
+  .heroImage img { aspect-ratio: 1.6; object-position: 45% 35%; }
+  .heroFigure figcaption { padding-top: 8px; }
+  .fieldGrid { grid-template-columns: 1fr; gap: 24px; }
+  .fieldText, .storyFigure { grid-column: 1; grid-row: auto; }
+  .network { grid-template-columns: 1fr; gap: 12px; }
+  .home :is(section, aside)[id] { scroll-margin-top: 80px; }
+}
+@media (max-width: 440px) {
+  .actions { gap: 0 14px; }
+  .primary { padding-inline: 13px; }
+  .primary, .plansLink { font-size: .86rem; }
+}

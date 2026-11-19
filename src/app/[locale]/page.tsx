@@ -1,59 +1,103 @@
+import { ArrowDown, ArrowRight, ArrowUpRight, Images, MessagesSquare } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
-import { MsicFeature } from "@/components/site/MsicFeature";
-import { CosmicNetworkBackground } from "@/components/site/CosmicNetworkBackground";
-import { ArrowRight } from "lucide-react";
+import { EditableRich } from "@/components/editable/Editable";
+import { blockValue, getContentMap } from "@/lib/content";
+import { getHomepageContent } from "@/lib/homepage";
+import { contentLanguage, formatDate, localePath, pick } from "@/lib/i18n";
 import { getLocale } from "@/lib/request";
-import { contentLanguage, localePath, pick } from "@/lib/i18n";
-import { formatCalendarDate } from "@/lib/calendar-date";
-import { getSettings } from "@/lib/content";
-import { getNews, getUpcomingActivities } from "@/lib/queries";
-import { Editable, EditableRich } from "@/components/editable/Editable";
+import { Listings } from "./_home/Listings";
+import styles from "./_home/home.module.css";
 
 export default async function HomePage() {
-  const [locale, news, activities, settings] = await Promise.all([
-    getLocale(), getNews(4), getUpcomingActivities(2), getSettings(),
-  ]);
-  const L = (href: string) => href.startsWith("/") ? localePath(locale, href) : href;
-  const featured = news[0];
-  const latestNews = news.slice(1);
+  const [locale, content, blocks] = await Promise.all([getLocale(), getHomepageContent(), getContentMap()]);
+  const vision = blockValue(blocks.get("about.vision.body"), locale);
   const th = locale === "th";
+  const gallery = localePath(locale, "/activities/msic-2026");
+  const { networkStory, msicProgrammeUrl } = content;
+
   return (
-    <div className="minimal-home relative isolate overflow-hidden min-h-screen">
-      <CosmicNetworkBackground />
-      <div className="relative z-10 space-y-12">
-      <section className="container-page risa-introduction">
-        <div><p className="minimal-eyebrow">RISA</p><h1>{pick(settings, "org_name", locale)}</h1></div>
-        <div className="risa-mission"><EditableRich k="global.footer.about_body" /><Link href={L("/activities")} className="risa-gold-link"><Editable k="home.hero.secondary_label" /><ArrowRight size={20} aria-hidden /></Link></div>
-      </section>
-      <div className="container-page risa-event-first"><MsicFeature locale={locale} /></div>
-      <section className="minimal-hero risa-featured-news">
-        <div className="minimal-hero-copy">
-          <h2 lang={featured ? contentLanguage(featured, "title", locale) : locale}>{featured ? pick(featured, "title", locale) : th ? "ข่าวสารจาก RISA" : "News from RISA"}</h2>
-          <p className="minimal-intro" lang={featured ? contentLanguage(featured, "excerpt", locale) : locale}>
-            {(featured ? pick(featured, "excerpt", locale).replace(/^(MMS Hub · (Original-language source:\s*)?|จาก MMS Hub ·\s*)/i, "") : "") || (th ? "ติดตามข่าวสารและความเคลื่อนไหวของสมาคมได้เร็ว ๆ นี้" : "Association news and updates are coming soon.")}
-          </p>
-          {featured?.published_at && <p className="minimal-news-date mt-5"><time dateTime={featured.published_at}>{formatCalendarDate(featured.published_at, th ? "th-TH" : "en-GB")}</time></p>}
-          <Link href={L(featured ? `/news/${featured.slug}` : "/news")} className="minimal-hero-link">
-            <span className="minimal-circle"><ArrowRight size={22} aria-hidden /></span>
-            <span>{featured ? (th ? "อ่านข่าวต่อ" : "Read the story") : (th ? "ดูข่าวทั้งหมด" : "View all news")}</span>
-          </Link>
+    <div className={styles.home}>
+      <section className={styles.hero} aria-labelledby="home-vision">
+        <div className={styles.heroGrid}>
+          <div className={styles.lead}>
+            <h1 id="home-vision">
+              {th ? "เชื่อมงานวิจัย" : "Connecting research"}
+              <span>{th ? "กับอุตสาหกรรมไทย" : "with Thai industry"}</span>
+            </h1>
+            {vision && <div className={styles.vision}>
+              <strong>{th ? "วิสัยทัศน์ของ RISA" : "RISA’s vision"}</strong>
+              <EditableRich k="about.vision.body" />
+            </div>}
+            <div className={styles.actions}>
+              <a href="#field-story" className={styles.primary}>
+                {th ? "เรื่องเล่าจากกิจกรรม" : "Explore the field story"} <ArrowDown size={17} aria-hidden />
+              </a>
+              <a href="#plans" className={styles.plansLink}>
+                {th ? "กิจกรรมที่กำลังจะมาถึง" : "Upcoming activities"} <ArrowRight size={16} aria-hidden />
+              </a>
+            </div>
+          </div>
+          <figure className={styles.heroFigure}>
+            <div className={styles.heroImage}>
+              <Image
+                src="/images/msic-2026/student-presentation.jpg"
+                alt={th ? "นักเรียนสามคนบนเวที MedSpark คนหนึ่งถือไมโครโฟนนำเสนอแนวคิด" : "Three students on the MedSpark stage, one presenting with a microphone."}
+                width={1567} height={1045} sizes="(max-width: 800px) 93vw, (max-width: 1400px) 49vw, 660px"
+                fetchPriority="high" loading="eager"
+              />
+            </div>
+            <figcaption>
+              <span className={styles.captionMark} aria-hidden />
+              <span>{th ? "นักเรียนนำเสนอแนวคิดบนเวที MedSpark" : "Student presentations at MedSpark"}</span>
+            </figcaption>
+          </figure>
         </div>
-        {featured?.cover_url ? <Link href={L(`/news/${featured.slug}`)} className="minimal-news-cover">
-          {/* The admin media library accepts external image URLs. */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={featured.cover_url} alt={pick(featured, "title", locale)} fetchPriority="high" />
-        </Link> : <div className="minimal-news-panel">
-          <p className="minimal-eyebrow">{th ? "ข่าวและความเคลื่อนไหว" : "NEWS & UPDATES"}</p>
-          <span className="minimal-news-word" aria-hidden>{th ? "ข่าวสาร" : "News"}</span>
-          <Link href={L("/news")}>{th ? "ดูข่าวทั้งหมด" : "View all news"} <ArrowRight size={20} aria-hidden /></Link>
-        </div>}
       </section>
-      <section className="container-page minimal-updates">
-        <div className="minimal-updates-heading"><Editable k="home.news.title" as="h2" /><Link href={L("/news")}><Editable k="home.news.link_label" /> <ArrowRight size={16} aria-hidden /></Link></div>
-        {latestNews.length ? <div className="minimal-news-list">{latestNews.map(item => <Link key={item.id} href={L(`/news/${item.slug}`)} className="minimal-news-item"><span className="minimal-news-date">{item.published_at ? formatCalendarDate(item.published_at, th ? "th-TH" : "en-GB", "short") : ""}</span><h3 lang={contentLanguage(item, "title", locale)}>{pick(item, "title", locale)}</h3><ArrowRight size={18} aria-hidden /></Link>)}</div> : !featured && <p className="text-muted">{locale === "th" ? "ติดตามข่าวสารจาก RISA ได้เร็ว ๆ นี้" : "Updates from RISA are coming soon."}</p>}
-        {activities.length > 0 && <div className="minimal-activities"><Link href={L("/activities")} className="minimal-activity-label"><Editable k="home.activities.title" /></Link>{activities.map(item => <Link key={item.id} href={L(`/activities/${item.slug}`)}>{pick(item, "title", locale)} <ArrowRight size={16} aria-hidden /></Link>)}</div>}
+
+      <section id="field-story" className={styles.field} aria-labelledby="field-title">
+        <div className={styles.fieldGrid}>
+          <div className={styles.fieldText}>
+            <h2 id="field-title">{th ? "จากแนวคิดเครื่องมือแพทย์ สู่เวที MedSpark" : "Medical-device ideas take the stage at MedSpark"}</h2>
+            <p>{th
+              ? "ที่งาน MedSpark Innovation Competition นักเรียนขึ้นเวทีนำเสนอแนวคิดและแลกเปลี่ยนความคิดเห็นกับผู้ร่วมงาน ภาพกิจกรรมบันทึกเรื่องราวตั้งแต่การนำเสนอไปจนถึงพิธีมอบรางวัล"
+              : "At the MedSpark Innovation Competition, students presented their ideas and discussed them with the audience. The photographs follow the event from the presentations to the awards."}</p>
+            {msicProgrammeUrl && <p className={styles.programme}>
+              {th ? "โจทย์การประกวดครั้งนี้คือเครื่องมือแพทย์ชนิดบุกรุกน้อย " : "The competition focused on minimally invasive medical devices. "}
+              <a href={msicProgrammeUrl}>{th ? "ดูกำหนดการจาก MMS Hub" : "Competition programme from MMS Hub"} <ArrowUpRight size={13} aria-hidden /></a>
+            </p>}
+            <Link className={styles.storyLink} href={gallery}>
+              <Images size={19} aria-hidden /> {th ? "ชมภาพและอ่านเรื่องราว" : "Read the photo story"} <ArrowRight size={17} aria-hidden />
+            </Link>
+          </div>
+          <figure className={styles.storyFigure}>
+            <Image src="/images/msic-2026/discussion.jpg"
+              alt={th ? "ผู้ร่วมงานถือไมโครโฟนแลกเปลี่ยนความคิดเห็นจากที่นั่งด้านหน้า" : "A participant speaks into a microphone from the front row."}
+              width={2048} height={1365} sizes="(max-width: 800px) 90vw, (max-width: 1400px) 43vw, 600px" />
+            <figcaption>{th ? "ช่วงแลกเปลี่ยนความคิดเห็นในงาน MedSpark" : "A conversation with the audience at MedSpark."}</figcaption>
+          </figure>
+        </div>
+
+        {networkStory && (
+          <aside className={styles.network} aria-labelledby="network-title">
+            <div className={styles.networkHeading}>
+              <MessagesSquare size={24} aria-hidden />
+              <h3 id="network-title">{th ? "เครือข่ายผู้เชี่ยวชาญด้านเครื่องมือแพทย์" : "Medical-device expert networks"}</h3>
+            </div>
+            <div>
+              <Link className={styles.networkLink} href={localePath(locale, `/news/${networkStory.slug}`)}>
+                <span lang={contentLanguage(networkStory, "title", locale)}>{pick(networkStory, "title", locale)}</span>
+                <ArrowRight size={17} aria-hidden />
+              </Link>
+              <p className={styles.source}>
+                {networkStory.sourceUrl && <a href={networkStory.sourceUrl}>{th ? "จากคลังข่าว MMS Hub" : "From the MMS Hub archive"} <ArrowUpRight size={13} aria-hidden /></a>}
+                {networkStory.published_at && <time dateTime={networkStory.published_at}>{formatDate(networkStory.published_at, locale)}</time>}
+              </p>
+            </div>
+          </aside>
+        )}
       </section>
-      </div>
+      <Listings locale={locale} content={content} />
     </div>
   );
 }

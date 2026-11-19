@@ -11,6 +11,8 @@ const SHORT: Record<Locale, string> = { th: "ไทย", en: "EN" };
 export function LocaleSwitch({ current }: { current: Locale }) {
   const pathname = usePathname();
   const search = useSearchParams().toString();
+  // A full homepage language switch also updates the root document language.
+  const LocaleLink = /^\/(th|en)\/?$/.test(pathname) ? "a" : Link;
 
   return (
     <div
@@ -19,7 +21,7 @@ export function LocaleSwitch({ current }: { current: Locale }) {
       aria-label="เปลี่ยนภาษา / Change language"
     >
       {LOCALES.map((l) => (
-        <Link
+        <LocaleLink
           key={l}
           href={switchLocaleHref(pathname, search, l)}
           lang={l}
@@ -34,7 +36,7 @@ export function LocaleSwitch({ current }: { current: Locale }) {
           )}
         >
           {SHORT[l]}
-        </Link>
+        </LocaleLink>
       ))}
     </div>
   );
