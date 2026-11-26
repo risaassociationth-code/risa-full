@@ -1,4 +1,1 @@
-{
-  "installCommand": "corepack pnpm install --frozen-lockfile --ignore-scripts",
-  "buildCommand": "node ./scripts/homepage-release-build.cjs"
-}
+{"installCommand":"corepack pnpm install --frozen-lockfile --ignore-scripts","buildCommand":"node ./scripts/homepage-release-build.cjs"}

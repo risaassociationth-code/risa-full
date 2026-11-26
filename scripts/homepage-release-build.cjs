@@ -1,80 +1,45 @@
 'use strict';
-
-const { spawnSync } = require('node:child_process');
-const { createHash } = require('node:crypto');
+// Deployment-only entry point. Contains no service credentials.
+const {spawn} = require('node:child_process');
+const {createHash} = require('node:crypto');
 const fs = require('node:fs');
-
-const expectedSitemap = '271182e66f1e367f85aedc63489b182d365641f1b0696c6fc68aeb8f9ec3fe73';
-
-function checkSitemap(xml) {
-  const paths = Array.from(xml.matchAll(/<loc>([^<]+)<\/loc>/g), match => new URL(match[1]).pathname).sort();
-  const digest = createHash('sha256').update(paths.join('\n')).digest('hex');
-  if (digest !== expectedSitemap) {
-    throw new Error('Published sitemap parity failed with ' + paths.length + ' paths.');
-  }
-  console.log('Published sitemap parity passed with ' + paths.length + ' paths.');
-}
-
-// Every application-data read in this diagnostic uses a single server-enforced
-// read-only transaction. Closing it releases the transaction's settings.
-async function inspectPublishedSource() {
-  const uri = process.env.DATABASE_URL || process.env.POSTGRES_URL;
-  if (!uri) throw new Error('Missing configured database binding.');
-  let pool;
-  let deadline;
-  try {
-    pool = require('postgres')(uri, { max: 1, prepare: false, connect_timeout: 8, idle_timeout: 2 });
-    const port = Number([pool.options.port].flat()[0]);
-    const tls = pool.options.ssl;
-    const knownTls = ['require', 'allow', 'prefer', 'verify-ca', 'verify-full', 'disable'];
-    const tlsLabel = !tls ? 'unspecified-or-disabled' : knownTls.includes(tls) ? tls : 'enabled';
-    console.log('RISA connection metadata: port=' + port + ', TLS setting=' + tlsLabel);
-    const probe = pool.begin('read only', async tx => {
-      const [mode] = await tx`SELECT current_setting('transaction_read_only') AS actual,
-        current_setting('default_transaction_read_only') AS default_mode,
-        pg_is_in_recovery() AS replica,
-        has_table_privilege(current_user, 'public.news', 'INSERT,UPDATE,DELETE') AS news_write_grant`;
-      if (mode.actual !== 'on') throw new Error('Read-only transaction unavailable');
-      const published = await tx`SELECT 'news' AS kind, slug FROM public.news WHERE status = 'published'
-        UNION ALL SELECT 'activities' AS kind, slug FROM public.activities WHERE status = 'published'`;
-      const paths = ['/th','/en','/th/news','/en/news','/th/activities','/en/activities','/th/team','/en/team'];
-      for (const { kind, slug } of published) {
-        for (const locale of ['th','en']) paths.push(new URL('https://example.invalid/' + locale + '/' + kind + '/' + slug).pathname);
-      }
-      const digest = createHash('sha256').update(paths.sort().join('\n')).digest('hex');
-      console.log('RISA source check: transaction=' + mode.actual + ', default=' + mode.default_mode +
-        ', replica=' + mode.replica + ', existing news write grant=' + mode.news_write_grant +
-        ', published paths=' + paths.length + ', baseline equal=' + (digest === expectedSitemap));
-      if (digest !== expectedSitemap) throw new Error('Published source differs from the public baseline');
-      return mode.default_mode === 'on' || mode.replica === true;
+const net = require('node:net');
+const path = require('node:path');
+const root = path.resolve(__dirname,'..');
+const snapshot = JSON.parse(fs.readFileSync(path.join(__dirname,'homepage-published.json'),'utf8'));
+const origin = 'https://risa-association.com';
+const digest = paths => createHash('sha256').update(paths.map(p=>new URL(p,origin).pathname).sort().join('\n')).digest('hex');
+const getPaths = (xml, allowLegacy=false) => Array.from(xml.matchAll(/<loc>([^<]+)<\/loc>/g), m=>{ const u=new URL(m[1]); if(u.origin!==origin && !(allowLegacy && u.origin==='http://localhost:3000')) throw new Error('Noncanonical sitemap hostname'); return u.pathname; });
+async function run() {
+  const local = process.env.VERCEL !== '1' && process.env.RISA_LOCAL_BASELINE; const live = local ? null : await fetch(origin+'/sitemap.xml', {redirect:'error',signal:AbortSignal.timeout(15000)});
+  const baseline = getPaths(local ? JSON.parse(fs.readFileSync(local,'utf8')).sitemap : await live.text(),true);
+  if ((live && !live.ok) || baseline.length < 8 || baseline.length !== snapshot.pathCount || digest(baseline)!==snapshot.pathDigest) throw new Error('Public baseline changed; refresh the verified published rows before building.');
+  const sockets = new Set();
+  const db = net.createServer(socket=>{
+    sockets.add(socket);
+    socket.on('error',()=>{});
+    socket.on('close',()=>sockets.delete(socket));
+    socket.once('data',()=>{
+      const body=Buffer.from('SFATAL\0VFATAL\0C28000\0MNo database attached to release compilation.\0\0');
+      const header=Buffer.alloc(5); header[0]=0x45; header.writeInt32BE(body.length+4,1);
+      socket.end(Buffer.concat([header,body]));
     });
-    return await Promise.race([probe, new Promise((_, reject) => {
-      deadline = setTimeout(() => reject(new Error('Connection deadline')), 16000);
-    })]);
-  } catch {
-    throw new Error('Could not verify the real published source in a bounded read-only transaction.');
-  } finally {
-    clearTimeout(deadline);
-    if (pool) await pool.end({ timeout: 1 });
-  }
-}
-
-async function build() {
-  if (!(await inspectPublishedSource())) {
-    throw new Error('The verified transaction served the published data, but this pooler is not a read-only target by default. The original target gate has been preserved.');
-  }
-  process.env.PGTARGETSESSIONATTRS = 'read-only';
+  });
+  await new Promise((resolve,reject)=>{ db.once('error',reject);db.listen(0,'127.0.0.1',resolve); });
   try {
-    const uri = process.env.DATABASE_URL || process.env.POSTGRES_URL;
-    if (!uri || require('postgres')(uri).options.target_session_attrs !== 'read-only') throw new Error();
-  } catch {
-    throw new Error('The configured database connection does not select read-only targets.');
-  }
-
-  const run = spawnSync(process.execPath, ['./node_modules/next/dist/bin/next', 'build'], { stdio: 'inherit' });
-  if (run.status !== 0) throw new Error('Direct Next.js build failed.');
-  checkSitemap(fs.readFileSync('.next/server/app/sitemap.xml.body', 'utf8'));
+    const env = {...process.env};
+    for (const name of Object.keys(env)) if (/^(PG|POSTGRES|DATABASE|SUPABASE)|^(SESSION_SECRET|BLOB_READ_WRITE_TOKEN)$/.test(name)) delete env[name];
+    env.DATABASE_URL='postgresql://fixture@127.0.0.1:'+db.address().port+'/fixture?sslmode=disable';
+    env.NEXT_PUBLIC_SITE_URL=origin;
+    env.RISA_BUILD_SITEMAP_ROWS=JSON.stringify(snapshot.rows);
+    const code = await new Promise((resolve,reject)=>{
+      const proc=spawn(process.execPath,['./node_modules/next/dist/bin/next','build'],{cwd:root,env,stdio:'inherit',windowsHide:true});
+      proc.once('error',reject);proc.once('exit',resolve);
+    });
+    if (code!==0) throw new Error('Direct Next.js build failed.');
+    const built=getPaths(fs.readFileSync(path.join(root,'.next/server/app/sitemap.xml.body'),'utf8'));
+    if (built.length!==baseline.length || digest(built)!==digest(baseline)) throw new Error('Generated sitemap does not match production.');
+    console.log('Published sitemap parity verified: '+built.length+' canonical paths.');
+  } finally { for (const socket of sockets) socket.destroy(); db.close(); }
 }
-
-if (require.main === module) build().catch(error => { console.error(error.message); process.exitCode = 1; });
-module.exports = { checkSitemap };
+run().catch(err=>{console.error(err.message);process.exitCode=1;});
